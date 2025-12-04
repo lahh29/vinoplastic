@@ -51,6 +51,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { addDays } from 'date-fns';
 
 interface UserData {
     id: string; // Corresponds to UID
@@ -65,6 +66,11 @@ interface Empleado {
     id_empleado: string;
     nombre_completo: string;
 }
+
+const initialEmpleadoState: Omit<UserData, 'id' | 'email' | 'role'> = {
+  id_empleado: '',
+  nombre: '',
+};
 
 export default function UsuariosPage() {
     const { user: currentUser } = useUser();
@@ -113,40 +119,39 @@ export default function UsuariosPage() {
         setIsEditing(false);
     };
 
-    const handleSave = async () => {
-      checkAdminAndExecute(async () => {
-        if (!selectedUser || !selectedUser.id || !firestore) return;
-        setIsSubmitting(true);
+    const handleSave = () => {
+        checkAdminAndExecute(async () => {
+            if (!selectedUser || !selectedUser.id || !firestore) return;
+            setIsSubmitting(true);
+            try {
+                const userDocRef = doc(firestore, 'usuarios', selectedUser.id);
+                const dataToSave = {
+                    nombre: selectedUser.nombre || '',
+                    role: selectedUser.role || 'lector',
+                    id_empleado: selectedUser.id_empleado || ''
+                };
+                
+                await setDoc(userDocRef, dataToSave, { merge: true });
 
-        try {
-            const userDocRef = doc(firestore, 'usuarios', selectedUser.id);
-            const dataToSave = {
-                nombre: selectedUser.nombre || '',
-                role: selectedUser.role || 'lector',
-                id_empleado: selectedUser.id_empleado || ''
-            };
-            
-            await setDoc(userDocRef, dataToSave, { merge: true });
-
-            toast({
-                title: 'Éxito',
-                description: `Se ha actualizado el usuario ${selectedUser.email}.`,
-                className: "bg-green-100 text-green-800 border-green-300",
-            });
-            
-            closeDialogs();
-        } catch (error) {
-            console.error("Error guardando usuario:", error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "No se pudo guardar el usuario.",
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-      });
+                toast({
+                    title: 'Éxito',
+                    description: `Se ha actualizado el usuario ${selectedUser.email}.`,
+                    className: "bg-green-100 text-green-800 border-green-300",
+                });
+                closeDialogs();
+            } catch (error) {
+                console.error("Error guardando usuario:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "No se pudo guardar el usuario.",
+                });
+            } finally {
+                setIsSubmitting(false);
+            }
+        });
     };
+
 
     const handleDelete = (user: UserData) => {
         checkAdminAndExecute(() => {
@@ -162,7 +167,7 @@ export default function UsuariosPage() {
         });
     };
 
-    const confirmDelete = async () => {
+    const confirmDelete = () => {
       checkAdminAndExecute(async () => {
         if (!userToDelete || !firestore) return;
         setIsSubmitting(true);
@@ -327,7 +332,7 @@ export default function UsuariosPage() {
                             <Command>
                                 <CommandInput placeholder="Buscar por nombre o ID..." />
                                 <CommandList>
-                                    <ScrollArea className="h-64">
+                                    <ScrollArea className='h-64'>
                                         <CommandEmpty>No se encontró el empleado.</CommandEmpty>
                                         <CommandGroup>
                                             {empleados?.map(emp => (
