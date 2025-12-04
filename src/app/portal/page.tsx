@@ -190,13 +190,13 @@ export default function PortalPage() {
   const cursosCompletados = empleadoPerfil.cursosConEstado.filter(c => c.estado !== 'Pendiente');
 
   return (
-    <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{ duration: 0.5 }} className="space-y-8">
+    <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="space-y-8">
       <h1 className="text-4xl font-bold tracking-tight">Bienvenido a tu Portal</h1>
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-2xl flex items-center gap-3"><User/>Información General</CardTitle>
+              <CardTitle className="text-2xl flex items-center gap-3"><User/>{empleadoPerfil.nombre_completo}</CardTitle>
               <CardDescription>Tu perfil y puesto actual</CardDescription>
             </div>
             <Badge variant="secondary" className="text-sm">ID: {empleadoPerfil.id_empleado}</Badge>
