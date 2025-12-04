@@ -12,32 +12,16 @@ import Link from 'next/link';
 import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock } from 'lucide-react';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import React, { useMemo } from 'react';
-import { doc, collection, Timestamp } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 
 
 // Interfaces
-interface Contrato {
-  id: string;
-  nombre_completo: string;
-  indeterminado?: boolean;
-  fechas_contrato: {
-    termino: Timestamp;
-  };
-}
-
 interface UserData {
     id: string; // Corresponds to UID
     email: string;
     nombre?: string;
     role: 'admin' | 'lector';
 }
-
-const getDate = (timestamp: any): Date | null => {
-    if (!timestamp) return null;
-    if (timestamp.toDate) return timestamp.toDate();
-    const date = new Date(timestamp);
-    return isValid(date) ? date : null;
-};
 
 export default function InicioPage() {
     const { user } = useUser();
@@ -50,8 +34,8 @@ export default function InicioPage() {
     const { data: currentUserData } = useDoc<UserData>(currentUserInfoRef);
     
     const userName = useMemo(() => {
-        return currentUserData?.nombre || 'Usuario';
-    }, [currentUserData]);
+        return currentUserData?.nombre || user?.displayName || 'Usuario';
+    }, [currentUserData, user]);
 
 
   return (

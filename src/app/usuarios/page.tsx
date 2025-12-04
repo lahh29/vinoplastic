@@ -37,13 +37,13 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, PlusCircle, Trash2, Edit, CheckSquare, Eye, Loader2 } from 'lucide-react';
+import { Search, Trash2, Edit, CheckSquare, Eye, Loader2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useCollection, useDoc, useFirestore, useMemoFirebase, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import { useUser } from '@/firebase';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -69,7 +69,6 @@ export default function UsuariosPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
     const [selectedUser, setSelectedUser] = useState<Partial<UserData> | null>(null);
     const [userToDelete, setUserToDelete] = useState<UserData | null>(null);
 
@@ -89,39 +88,25 @@ export default function UsuariosPage() {
         setIsEditing(true);
     };
 
-    const openCreateDialog = () => {
-        setSelectedUser({ nombre: '', email: '', role: 'lector' });
-        setIsCreating(true);
-    };
-
     const closeDialogs = () => {
         setSelectedUser(null);
         setIsEditing(false);
-        setIsCreating(false);
     };
 
     const handleSave = async () => {
-        if (!selectedUser || !selectedUser.email || !selectedUser.role || !firestore) return;
+        if (!selectedUser || !selectedUser.id || !firestore) return;
         setIsSubmitting(true);
 
         try {
-            // Para un usuario nuevo, el ID (UID) no lo conocemos del lado del cliente.
-            // Una Cloud Function que cree el usuario y el doc de rol sería la solución ideal.
-            // Como workaround, usamos el email como ID temporal para usuarios nuevos.
-            const docId = isCreating ? selectedUser.email : selectedUser.id;
-            if (!docId) throw new Error("No se puede guardar sin un ID o email.");
-
-            const userDocRef = doc(firestore, 'usuarios', docId);
-
-            setDocumentNonBlocking(userDocRef, {
+            const userDocRef = doc(firestore, 'usuarios', selectedUser.id);
+            await setDocumentNonBlocking(userDocRef, {
                 nombre: selectedUser.nombre || '',
-                email: selectedUser.email,
-                role: selectedUser.role
+                role: selectedUser.role || 'lector'
             }, { merge: true });
 
             toast({
                 title: 'Éxito',
-                description: `Se ha ${isCreating ? 'creado' : 'actualizado'} el usuario ${selectedUser.email}.`,
+                description: `Se ha actualizado el usuario ${selectedUser.email}.`,
                 className: "bg-green-100 text-green-800 border-green-300",
             });
             
@@ -139,7 +124,7 @@ export default function UsuariosPage() {
     };
 
     const handleDelete = (user: UserData) => {
-        if (user.email === currentUser?.email) {
+        if (user.id === currentUser?.uid) {
             toast({
                 variant: 'destructive',
                 title: 'Acción no permitida',
@@ -158,7 +143,7 @@ export default function UsuariosPage() {
             await deleteDocumentNonBlocking(userDocRef);
             toast({
                 title: 'Usuario Eliminado',
-                description: `El usuario ${userToDelete.email} ha sido eliminado.`,
+                description: `El rol del usuario ${userToDelete.email} ha sido eliminado. La cuenta de autenticación aún existe.`,
             });
             setUserToDelete(null);
         } catch(error) {
@@ -166,7 +151,7 @@ export default function UsuariosPage() {
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: "No se pudo eliminar el usuario.",
+                description: "No se pudo eliminar el rol del usuario.",
             });
         } finally {
             setIsSubmitting(false);
@@ -192,10 +177,9 @@ export default function UsuariosPage() {
                 </p>
             </div>
             {isAdmin && (
-                <Button onClick={openCreateDialog} className="rounded-full shadow-lg hover:shadow-xl transition-shadow">
-                    <PlusCircle className="mr-2 h-5 w-5" />
-                    Añadir Usuario
-                </Button>
+                <div className="text-sm p-2 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-md">
+                    La creación de usuarios debe realizarse desde la <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className='font-bold underline'>Consola de Firebase</a>.
+                </div>
             )}
        </div>
       <Card>
@@ -254,7 +238,7 @@ export default function UsuariosPage() {
                                             <Edit className="h-4 w-4" />
                                             <span className="sr-only">Editar</span>
                                         </Button>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(user)} disabled={user.email === currentUser?.email}>
+                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(user)} disabled={user.id === currentUser?.uid}>
                                             <Trash2 className="h-4 w-4 text-destructive/70 hover:text-destructive" />
                                             <span className="sr-only">Eliminar</span>
                                         </Button>
@@ -270,13 +254,13 @@ export default function UsuariosPage() {
         </CardContent>
       </Card>
 
-        {/* Edit/Create Dialog */}
-        <Dialog open={isEditing || isCreating} onOpenChange={closeDialogs}>
+        {/* Edit Dialog */}
+        <Dialog open={isEditing} onOpenChange={closeDialogs}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>{isCreating ? 'Añadir Nuevo Usuario' : 'Editar Usuario'}</DialogTitle>
+                    <DialogTitle>Editar Usuario</DialogTitle>
                     <DialogDescription>
-                        {isCreating ? 'Introduce los datos del nuevo usuario. El email debe coincidir con una cuenta existente en Firebase Authentication.' : `Modificando permisos para ${selectedUser?.email}`}
+                        Modificando permisos para {selectedUser?.email}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -286,7 +270,7 @@ export default function UsuariosPage() {
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="email" className="text-right">Correo</Label>
-                        <Input id="email" value={selectedUser?.email || ''} onChange={(e) => setSelectedUser(prev => prev ? {...prev, email: e.target.value} : null)} className="col-span-3" disabled={!isCreating} />
+                        <Input id="email" value={selectedUser?.email || ''} className="col-span-3" disabled />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="role" className="text-right">Rol</Label>
@@ -305,7 +289,7 @@ export default function UsuariosPage() {
                     <Button variant="outline" onClick={closeDialogs}>Cancelar</Button>
                     <Button onClick={handleSave} disabled={isSubmitting}>
                          {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Guardar
+                        Guardar Cambios
                     </Button>
                 </DialogFooter>
             </DialogContent>

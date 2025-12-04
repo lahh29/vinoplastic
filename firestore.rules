@@ -1,3 +1,4 @@
+
 /**
  * Core Philosophy:
  * This ruleset establishes a dynamic, role-based access control (RBAC) model.
@@ -43,10 +44,12 @@ service cloud.firestore {
      *   Controls access to user roles.
      *   - Any signed-in user can read the user list to facilitate UI logic.
      *   - Only admins can write/delete any user document.
+     *   - A user can read their own document.
      * @path /usuarios/{userId}
      */
     match /usuarios/{userId} {
-      allow read: if isSignedIn();
+      allow list: if isSignedIn();
+      allow get: if isSignedIn() && request.auth.uid == userId;
       allow write, delete: if isAdmin();
     }
 
