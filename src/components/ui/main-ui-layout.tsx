@@ -39,6 +39,8 @@ import { motion } from 'framer-motion';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
 
 const navItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
@@ -145,46 +147,49 @@ function Notifications() {
           )}
         </DockIcon>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-2xl">
+      <DialogContent className="sm:max-w-2xl rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl">Notificaciones</DialogTitle>
           <DialogDescription>
             Alertas importantes sobre contratos y evaluaciones del personal.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-6 py-4">
-          <div>
-            <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2 mb-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-destructive"/> Contratos por Vencer
             </h4>
-            <div className="space-y-3">
-                {notifications.expiringContracts.length > 0 ? (
-                notifications.expiringContracts.map(c => (
-                    <div key={c.id} className="p-3 bg-secondary/50 rounded-lg">
-                    <p className="font-semibold text-sm">{c.nombre_completo}</p>
-                    <p className="text-xs text-destructive">Vence: {formatDate(c.fechas_contrato.termino)}</p>
-                    </div>
-                ))
-                ) : <p className="p-2 text-sm text-muted-foreground italic">Nada por aquí.</p>}
-            </div>
+            <ScrollArea className="h-64 pr-4">
+              <div className="space-y-3">
+                  {notifications.expiringContracts.length > 0 ? (
+                  notifications.expiringContracts.map(c => (
+                      <div key={c.id} className="p-3 bg-secondary/50 rounded-lg">
+                      <p className="font-semibold text-sm">{c.nombre_completo}</p>
+                      <p className="text-xs text-destructive">Vence: {formatDate(c.fechas_contrato.termino)}</p>
+                      </div>
+                  ))
+                  ) : <div className="flex h-full items-center justify-center"><p className="p-2 text-sm text-muted-foreground italic">Nada por aquí.</p></div>}
+              </div>
+            </ScrollArea>
           </div>
-          <Separator />
-          <div>
-            <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2 mb-3">
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
               <FileClock className="h-4 w-4 text-primary"/> Evaluaciones Próximas
             </h4>
-            <div className="space-y-3">
-                {notifications.dueEvaluations.length > 0 ? (
-                notifications.dueEvaluations.map((item: any) => (
-                    <div key={item.contrato.id + item.tipo} className="p-3 bg-secondary/50 rounded-lg">
-                    <p className="font-semibold text-sm">{item.contrato.nombre_completo}</p>
-                    <p className="text-xs text-primary">
-                        {item.tipo} evaluación antes del: {item.fecha}
-                    </p>
-                    </div>
-                ))
-                ) : <p className="p-2 text-sm text-muted-foreground italic">Todo al día.</p>}
-            </div>
+            <ScrollArea className="h-64 pr-4">
+                <div className="space-y-3">
+                    {notifications.dueEvaluations.length > 0 ? (
+                    notifications.dueEvaluations.map((item: any) => (
+                        <div key={item.contrato.id + item.tipo} className="p-3 bg-secondary/50 rounded-lg">
+                        <p className="font-semibold text-sm">{item.contrato.nombre_completo}</p>
+                        <p className="text-xs text-primary">
+                            {item.tipo} evaluación antes del: {item.fecha}
+                        </p>
+                        </div>
+                    ))
+                    ) : <div className="flex h-full items-center justify-center"><p className="p-2 text-sm text-muted-foreground italic">Todo al día.</p></div>}
+                </div>
+            </ScrollArea>
           </div>
         </div>
       {notificationCount === 0 && <p className="py-8 text-center text-sm text-muted-foreground">¡Sin notificaciones pendientes!</p>}
