@@ -1,9 +1,9 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon, PlusCircle, Building, Briefcase, Plane, UserCheck } from 'lucide-react';
+import { Calendar as CalendarIcon, PlusCircle, Building, Plane } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -43,11 +43,11 @@ const DayWithEvents = ({ date, events }: { date: Date, events: (Vacacion | DiaFe
         <div className="relative h-full w-full flex items-center justify-center">
             <span>{date.getDate()}</span>
             {events.length > 0 && (
-                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
                     {events.slice(0, 3).map((event, index) => (
                         <div key={index} className={cn(
-                            "h-1.5 w-1.5 rounded-full",
-                            'nombre' in event ? 'bg-orange-500' : badgeColors[event.tipo]
+                            "h-1 w-1 rounded-full",
+                            'nombre' in event ? 'bg-orange-400' : badgeColors[event.tipo]
                         )}></div>
                     ))}
                 </div>
@@ -121,12 +121,12 @@ export default function VacacionesPage() {
                     <CardTitle>Calendario de Ausencias</CardTitle>
                     <CardDescription>Eventos programados para todo el personal.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex justify-center">
+                <CardContent className="flex justify-center p-0 sm:p-2">
                     <Calendar
                         mode="single"
                         className="p-0 w-full"
                         locale={es}
-                        numberOfMonths={2}
+                        numberOfMonths={1}
                         components={{
                             Day: ({ date }) => {
                                 const dateKey = date.toISOString().split('T')[0];
@@ -136,17 +136,9 @@ export default function VacacionesPage() {
                         }}
                         modifiers={{
                             festivo: (diasFestivos || []).map(f => f.fecha.toDate()),
-                            vacaciones: (vacaciones || []).flatMap(v => {
-                                const range = [];
-                                for(let d = v.fecha_inicio.toDate(); d <= v.fecha_fin.toDate(); d = addDays(d, 1)) {
-                                    range.push(d);
-                                }
-                                return range;
-                            })
                         }}
                         modifiersClassNames={{
                             festivo: 'text-orange-500 font-bold',
-                            vacaciones: 'bg-blue-100/10 dark:bg-blue-900/30'
                         }}
                     />
                 </CardContent>
