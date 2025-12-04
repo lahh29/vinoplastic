@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Trash2, Edit, CheckSquare, Eye, Loader2 } from 'lucide-react';
+import { Search, Trash2, Edit, CheckSquare, Eye, Loader2, Link2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useCollection, useDoc, useFirestore, useMemoFirebase, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import { useUser } from '@/firebase';
@@ -46,13 +46,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { collection, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRoleCheck } from '@/hooks/use-role-check';
-
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 interface UserData {
     id: string; // Corresponds to UID
     email: string;
     nombre?: string;
     role: 'admin' | 'lector';
+    id_empleado?: string;
+}
+
+interface Empleado {
+    id: string;
+    id_empleado: string;
+    nombre_completo: string;
 }
 
 export default function UsuariosPage() {
@@ -62,17 +73,22 @@ export default function UsuariosPage() {
     const { isAdmin, checkAdminAndExecute } = useRoleCheck();
 
     const usuariosRef = useMemoFirebase(() => collection(firestore, 'usuarios'), [firestore]);
-    const { data: users, isLoading } = useCollection<UserData>(usuariosRef);
+    const plantillaRef = useMemoFirebase(() => collection(firestore, 'Plantilla'), [firestore]);
+
+    const { data: users, isLoading: loadingUsers } = useCollection<UserData>(usuariosRef);
+    const { data: empleados, isLoading: loadingEmpleados } = useCollection<Empleado>(plantillaRef);
     
-    // Fetch current user's role
-    const currentUserRoleRef = useMemoFirebase(() => currentUser ? doc(firestore, 'usuarios', currentUser.uid) : null, [currentUser, firestore]);
-    const { data: currentUserData, isLoading: isLoadingCurrentUser } = useDoc<UserData>(currentUserRoleRef);
+    const { data: currentUserData, isLoading: isLoadingCurrentUser } = useDoc<UserData>(
+        useMemoFirebase(() => currentUser ? doc(firestore, 'usuarios', currentUser.uid) : null, [currentUser, firestore])
+    );
+    const isLoading = loadingUsers || loadingEmpleados || isLoadingCurrentUser;
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [selectedUser, setSelectedUser] = useState<Partial<UserData> | null>(null);
     const [userToDelete, setUserToDelete] = useState<UserData | null>(null);
+    const [isEmpleadoPopoverOpen, setIsEmpleadoPopoverOpen] = useState(false);
 
 
     const filteredUsers = useMemo(() => {
@@ -80,7 +96,8 @@ export default function UsuariosPage() {
         return users.filter(user =>
             user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
+            user.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.id_empleado?.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [users, searchTerm]);
     
@@ -105,7 +122,8 @@ export default function UsuariosPage() {
             const userDocRef = doc(firestore, 'usuarios', selectedUser.id);
             await setDocumentNonBlocking(userDocRef, {
                 nombre: selectedUser.nombre || '',
-                role: selectedUser.role || 'lector'
+                role: selectedUser.role || 'lector',
+                id_empleado: selectedUser.id_empleado || ''
             }, { merge: true });
 
             toast({
@@ -167,7 +185,6 @@ export default function UsuariosPage() {
       });
     };
 
-
     const getAccessLevel = (role: UserData['role']) => {
         switch (role) {
             case 'admin': return { label: 'Acceso Completo', icon: CheckSquare, className: 'text-green-500' };
@@ -178,33 +195,39 @@ export default function UsuariosPage() {
     
   return (
     <div className="space-y-8">
-       <div className="flex justify-between items-center">
+       <div className="flex justify-between items-start">
             <div>
                 <h1 className="text-4xl font-bold tracking-tight">Gestión de Usuarios</h1>
-                <p className="mt-2 text-lg text-muted-foreground">
-                Administra los roles y permisos de acceso a la plataforma.
+                <p className="mt-2 text-lg text-muted-foreground max-w-2xl">
+                Administra los roles, permisos y la vinculación de empleados a sus cuentas de usuario.
                 </p>
             </div>
             {isAdmin && (
-                <div className="text-sm p-2 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-md">
-                    La creación de usuarios debe realizarse desde la <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className='font-bold underline'>Consola de Firebase</a>.
+                <div className="text-sm p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg max-w-sm">
+                   <p className="font-bold mb-1">Flujo de Trabajo:</p>
+                   <ol className="list-decimal list-inside text-xs space-y-1">
+                       <li>Crea el usuario en la <strong>Consola de Firebase &rarr; Authentication</strong>.</li>
+                       <li>Regresa aquí, edita el nuevo usuario y vincúlalo a un empleado.</li>
+                   </ol>
                 </div>
             )}
        </div>
       <Card>
         <CardHeader>
           <CardTitle>Usuarios del Sistema</CardTitle>
-          <CardDescription>
-            {isLoading ? 'Cargando usuarios...' : `Listado de usuarios con acceso a la plataforma.`}
-          </CardDescription>
-          <div className="relative pt-4 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por correo o rol..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 rounded-full"
-            />
+          <div className="flex justify-between items-center">
+            <CardDescription>
+                {isLoading ? 'Cargando usuarios...' : `Listado de usuarios con acceso a la plataforma.`}
+            </CardDescription>
+             <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                placeholder="Buscar por correo, rol, ID..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 rounded-full w-full max-w-xs"
+                />
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -214,15 +237,14 @@ export default function UsuariosPage() {
                 <TableRow>
                   <TableHead>Usuario</TableHead>
                   <TableHead>Rol Asignado</TableHead>
-                  <TableHead>Nivel de Acceso</TableHead>
+                  <TableHead>Empleado Vinculado</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading || isLoadingCurrentUser ? (
+                {isLoading ? (
                     <TableRow><TableCell colSpan={4} className="h-24 text-center">Cargando datos de usuarios...</TableCell></TableRow>
                 ) : filteredUsers.map((user) => {
-                    const access = getAccessLevel(user.role);
                     return (
                         <TableRow key={user.id}>
                             <TableCell className="font-medium">
@@ -235,10 +257,14 @@ export default function UsuariosPage() {
                                 </Badge>
                             </TableCell>
                             <TableCell>
-                                <div className={`flex items-center gap-2 ${access.className}`}>
-                                    <access.icon className="h-4 w-4" />
-                                    <span>{access.label}</span>
-                                </div>
+                                {user.id_empleado ? (
+                                    <div className="flex items-center gap-2 text-green-600">
+                                        <Link2 className="h-4 w-4" />
+                                        <span className="text-sm font-medium">{user.id_empleado}</span>
+                                    </div>
+                                ) : (
+                                    <span className="text-sm text-amber-600 italic">Sin vincular</span>
+                                )}
                             </TableCell>
                             <TableCell className="text-right">
                                 {isAdmin && (
@@ -265,33 +291,62 @@ export default function UsuariosPage() {
 
         {/* Edit Dialog */}
         <Dialog open={isEditing} onOpenChange={closeDialogs}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
                     <DialogTitle>Editar Usuario</DialogTitle>
                     <DialogDescription>
-                        Modificando permisos para {selectedUser?.email}
+                        Modificando permisos y datos para {selectedUser?.email}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-6 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="nombre" className="text-right">Nombre</Label>
                         <Input id="nombre" value={selectedUser?.nombre || ''} onChange={(e) => setSelectedUser(prev => prev ? {...prev, nombre: e.target.value} : null)} className="col-span-3" />
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="email" className="text-right">Correo</Label>
-                        <Input id="email" value={selectedUser?.email || ''} className="col-span-3" disabled />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
+                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="role" className="text-right">Rol</Label>
                         <Select value={selectedUser?.role} onValueChange={(value: 'admin' | 'lector') => setSelectedUser(prev => prev ? {...prev, role: value} : null)}>
-                            <SelectTrigger className="col-span-3">
-                                <SelectValue placeholder="Seleccionar un rol" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="admin">Administrador</SelectItem>
-                                <SelectItem value="lector">Lector</SelectItem>
-                            </SelectContent>
+                            <SelectTrigger className="col-span-3"><SelectValue placeholder="Seleccionar un rol" /></SelectTrigger>
+                            <SelectContent><SelectItem value="admin">Administrador</SelectItem><SelectItem value="lector">Lector</SelectItem></SelectContent>
                         </Select>
+                    </div>
+                     <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="id_empleado" className="text-right">Vincular Empleado</Label>
+                        <Popover open={isEmpleadoPopoverOpen} onOpenChange={setIsEmpleadoPopoverOpen}>
+                            <PopoverTrigger asChild>
+                            <Button variant="outline" role="combobox" className={cn("w-auto justify-between col-span-3", !selectedUser?.id_empleado && "text-muted-foreground")}>
+                                {selectedUser?.id_empleado
+                                ? empleados?.find(emp => emp.id_empleado === selectedUser.id_empleado)?.nombre_completo
+                                : "Selecciona un empleado para vincular"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command>
+                                <CommandInput placeholder="Buscar por nombre o ID..." />
+                                <CommandList>
+                                    <ScrollArea className="h-64">
+                                        <CommandEmpty>No se encontró el empleado.</CommandEmpty>
+                                        <CommandGroup>
+                                            {empleados?.map(emp => (
+                                                <CommandItem
+                                                    value={`${emp.nombre_completo} ${emp.id_empleado}`}
+                                                    key={emp.id}
+                                                    onSelect={() => {
+                                                        setSelectedUser(prev => prev ? {...prev, id_empleado: emp.id_empleado} : null);
+                                                        setIsEmpleadoPopoverOpen(false);
+                                                    }}
+                                                >
+                                                    <Check className={cn("mr-2 h-4 w-4", emp.id_empleado === selectedUser?.id_empleado ? "opacity-100" : "opacity-0")} />
+                                                    <span>{emp.nombre_completo} <span className="text-xs text-muted-foreground ml-2">ID: {emp.id_empleado}</span></span>
+                                                </CommandItem>
+                                            ))}
+                                        </ScrollArea>
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                            </PopoverContent>
+                        </Popover>
                     </div>
                 </div>
                 <DialogFooter>
