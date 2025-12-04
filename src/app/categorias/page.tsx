@@ -82,11 +82,6 @@ const getStatusInfo = (empleado: EmpleadoPromocion, reglasAscenso: ReglaAscenso[
     const regla = reglasAscenso.find(r => r.puesto_actual === puestoActual);
     
     if (!regla) {
-        const esPuestoFinal = !reglasAscenso.some(r => r.puesto_siguiente === puestoActual);
-        const tieneCategoria = /[A-E]$/.test(puestoActual);
-        if (tieneCategoria && esPuestoFinal) {
-             return { status: 'Máxima Categoría', message: 'El empleado ha alcanzado la categoría más alta en su plan de carrera.', color: 'bg-yellow-500/10 border-yellow-500/30', textColor: 'text-yellow-400' };
-        }
         return { status: 'Pendiente', message: 'Este puesto no forma parte de un plan de carrera o es la categoría inicial.', color: 'bg-gray-400/10 border-gray-400/30', textColor: 'text-gray-400' };
     }
 
@@ -173,7 +168,23 @@ export default function PromocionesPage() {
   
   const isLoading = l1 || l2 || l3 || l4 || l5 || l6;
 
-  const areasUnicas = useMemo(() => Array.from(new Set((empleados || []).map(e => e.puesto.area).filter(Boolean))).sort(), [empleados]);
+  const areasAgrupadas = useMemo(() => {
+    if (!empleados) return {};
+    const groups: Record<string, Set<string>> = {};
+    empleados.forEach(emp => {
+        const dept = emp.puesto.departamento || 'SIN DEPARTAMENTO';
+        const area = emp.puesto.area || 'SIN ÁREA';
+        if (!groups[dept]) {
+            groups[dept] = new Set();
+        }
+        groups[dept].add(area);
+    });
+    // Sort areas within each department
+    for (const dept in groups) {
+        groups[dept] = new Set(Array.from(groups[dept]).sort());
+    }
+    return groups;
+  }, [empleados]);
 
   const empleadosElegibles = useMemo<EmpleadoPromocion[]>(() => {
     if (isLoading || !empleados || !perfiles || !historiales || !promociones || !catalogoCursos) return [];
@@ -200,7 +211,8 @@ export default function PromocionesPage() {
 
             coberturaCursos = cursosObligatoriosIds.size > 0 ? (completadosIds.length / cursosObligatoriosIds.size) * 100 : 100;
         }
-        return { ...emp, coberturaCursos, promocionData: promocionesMap.get(emp.id_empleado), cursosCompletados, cursosPendientes };
+        const promocionData = promocionesMap.get(emp.id_empleado);
+        return { ...emp, coberturaCursos, promocionData, cursosCompletados, cursosPendientes };
     });
   }, [isLoading, empleados, perfiles, historiales, promociones, catalogoCursos]);
 
@@ -298,12 +310,34 @@ export default function PromocionesPage() {
     <div className="flex h-full flex-col lg:flex-row gap-6">
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="w-full lg:max-w-xs lg:w-1/4 h-full">
         <Card className="flex flex-col h-full rounded-2xl shadow-lg border-border/50">
-            <CardHeader className="p-6 border-b"><CardTitle className="flex items-center gap-3 text-xl"><Briefcase className="h-5 w-5 text-primary" /> Áreas de Trabajo</CardTitle><CardDescription>{areasUnicas.length} áreas encontradas</CardDescription></CardHeader>
+            <CardHeader className="p-6 border-b"><CardTitle className="flex items-center gap-3 text-xl"><Briefcase className="h-5 w-5 text-primary" /> Áreas de Trabajo</CardTitle><CardDescription>Filtra por departamento y área.</CardDescription></CardHeader>
             <CardContent className="flex-1 p-2 overflow-hidden">
             <ScrollArea className="h-full">
                 <div className="flex flex-col gap-1 p-2">
                     <Button variant={!selectedArea ? 'secondary' : 'ghost'} className="justify-start text-left" onClick={() => setSelectedArea(null)}>Todas las áreas</Button>
-                {areasUnicas.map(area => (<Button key={area} variant={selectedArea === area ? 'secondary' : 'ghost'} className="justify-start text-left h-auto py-2" onClick={() => setSelectedArea(area)}><span className="flex-1">{area}</span>{selectedArea === area && <ChevronRight className="h-4 w-4 opacity-50 ml-2 shrink-0" />}</Button>))}
+                    <Accordion type="multiple" className="w-full">
+                      {Object.keys(areasAgrupadas).sort().map(dept => (
+                        <AccordionItem value={dept} key={dept} className="border-b-0">
+                           <AccordionTrigger className="py-2 px-2 text-sm font-semibold hover:no-underline rounded-md hover:bg-muted">
+                                {dept}
+                            </AccordionTrigger>
+                            <AccordionContent className="pb-1 pl-4">
+                               <div className="flex flex-col items-start mt-1 space-y-1">
+                                    {Array.from(areasAgrupadas[dept]).map(area => (
+                                        <Button
+                                            key={area}
+                                            variant={selectedArea === area ? 'secondary' : 'ghost'}
+                                            className="w-full h-auto justify-start text-left text-xs py-1.5"
+                                            onClick={() => setSelectedArea(area)}
+                                        >
+                                            {area}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
                 </div>
             </ScrollArea>
             </CardContent>
@@ -334,24 +368,26 @@ export default function PromocionesPage() {
                     const statusInfo = getStatusInfo(emp, reglasAscenso);
                     return(
                     <motion.div layout key={emp.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }} className="h-full">
-                        <Card className="group flex flex-col h-full hover:shadow-lg transition-all duration-200 cursor-pointer border hover:border-primary/50 relative overflow-hidden" onClick={() => setSelectedEmpleado(emp)}>
-                            <CardContent className="p-4 flex-1 flex flex-col">
-                                <div className="flex-1 mb-4">
-                                    <div className="flex justify-between items-start">
-                                        <Badge className={cn('text-xs font-semibold border', statusInfo.color, statusInfo.textColor)}>{statusInfo.status}</Badge>
-                                        <span className="text-xs font-mono text-muted-foreground">{emp.id_empleado}</span>
-                                    </div>
-                                    <p className="font-bold text-lg leading-tight mt-3">{emp.nombre_completo}</p>
-                                    <p className="text-sm text-muted-foreground">{emp.puesto.titulo}</p>
+                        <Card className="group flex flex-col h-full hover:shadow-xl transition-all duration-200 cursor-pointer border hover:border-primary overflow-hidden" onClick={() => setSelectedEmpleado(emp)}>
+                            <CardHeader className="p-4 flex-1">
+                                <div className="flex justify-between items-start">
+                                    <Badge className={cn('text-xs font-semibold border', statusInfo.color, statusInfo.textColor)}>{statusInfo.status}</Badge>
+                                    <span className="text-xs font-mono text-muted-foreground">{emp.id_empleado}</span>
                                 </div>
-                                <div className="space-y-1">
+                                <div className="mt-3">
+                                    <p className="font-bold text-lg leading-tight truncate">{emp.nombre_completo}</p>
+                                    <p className="text-sm text-muted-foreground truncate">{emp.puesto.titulo}</p>
+                                </div>
+                            </CardHeader>
+                            <CardFooter className="p-4 bg-secondary/30">
+                                <div className="w-full">
                                     <Label className="text-xs text-muted-foreground">Cobertura de Cursos</Label>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 mt-1">
                                         <Progress value={emp.coberturaCursos} className="h-1.5" />
                                         <span className="text-xs font-bold text-foreground">{emp.coberturaCursos.toFixed(0)}%</span>
                                     </div>
                                 </div>
-                            </CardContent>
+                            </CardFooter>
                         </Card>
                     </motion.div>
                     )})}
