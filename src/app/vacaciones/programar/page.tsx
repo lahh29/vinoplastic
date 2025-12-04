@@ -22,6 +22,7 @@ import { es } from 'date-fns/locale';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DateRange } from 'react-day-picker';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // Interfaces
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; }
