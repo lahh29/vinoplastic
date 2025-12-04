@@ -72,31 +72,29 @@ const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-5
 
 const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
     return (
-        <div className="border rounded-lg overflow-hidden">
-            <ScrollArea className="max-h-[50vh]">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Curso</TableHead>
-                            <TableHead className="text-center w-32">Calificación</TableHead>
-                            <TableHead className="text-right w-32">Estado</TableHead>
+        <ScrollArea className="h-[70vh] rounded-lg border">
+            <Table>
+                <TableHeader className='sticky top-0 bg-background z-10'>
+                    <TableRow>
+                        <TableHead>Curso</TableHead>
+                        <TableHead className="text-center w-32">Calificación</TableHead>
+                        <TableHead className="text-right w-32">Estado</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {cursos.map(({ curso, estado, calificacion }) => (
+                        <TableRow key={curso.id}>
+                            <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
+                            <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
+                            <TableCell className="text-right">
+                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
+                            </TableCell>
                         </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {cursos.map(({ curso, estado, calificacion }) => (
-                            <TableRow key={curso.id}>
-                                <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
-                                <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
-                                <TableCell className="text-right">
-                                    <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {cursos.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
-                    </TableBody>
-                </Table>
-            </ScrollArea>
-        </div>
+                    ))}
+                    {cursos.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
+                </TableBody>
+            </Table>
+        </ScrollArea>
     );
 };
 
@@ -207,76 +205,82 @@ export default function PerfilPage() {
       {isLoading && selectedEmpleado && <Loader2 className="mx-auto h-8 w-8 animate-spin" />}
       
       {selectedEmpleado && !isLoading && (
-        <Card className="overflow-hidden">
-            <CardHeader className={cn("p-6", statusColors[statusInfo!.status])}>
-                <CardTitle className="text-2xl text-white flex items-center justify-between">
-                    <div>{selectedEmpleado.nombre_completo}</div>
-                    <Badge variant="secondary" className="text-base flex items-center gap-2">
-                        {statusInfo?.status}
-                        {statusInfo?.status === 'Máxima Categoría' && (
-                             <motion.div
-                                animate={{ scale: [1, 1.2, 1], color: ['#fde047', '#facc15', '#eab308', '#facc15', '#fde047'] }}
-                                transition={{ duration: 1.5, repeat: Infinity }}
-                            >
-                                <Sparkles className="h-4 w-4"/>
-                            </motion.div>
-                        )}
-                    </Badge>
-                </CardTitle>
-                <CardDescription className="text-white/80">{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</CardDescription>
-            </CardHeader>
-
-            <CardContent className="p-6 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
-                        <Card className="h-full">
-                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><CalendarDays/></motion.div> Antigüedad</CardTitle></CardHeader>
-                            <CardContent className="space-y-4">
-                                <div><Label>Fecha de Ingreso</Label><p className="text-lg font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
-                                <div><Label>Tiempo en la Empresa</Label><p className="text-md font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
-                            </CardContent>
-                        </Card>
-                     </motion.div>
-                     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
-                        <Card className="h-full">
-                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><Award/></motion.div>Evaluaciones</CardTitle></CardHeader>
-                            <CardContent className="space-y-4">
-                                <div><Label>Evaluación de Desempeño</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></div>
-                                <div><Label>Examen Teórico</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.examen_teorico ?? 'N/A'}</p></div>
-                            </CardContent>
-                        </Card>
-                     </motion.div>
-                     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
-                        <Card className="h-full">
-                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><Target/></motion.div>Plan de Carrera</CardTitle></CardHeader>
-                            <CardContent>
-                                {reglaAplicable ? (
-                                <ul className="space-y-1 text-sm">
-                                    <li className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary"/>Siguiente Puesto: <span className="font-bold">{reglaAplicable.puesto_siguiente}</span></li>
-                                    <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary"/>Meses Mínimos: <span className="font-bold">{reglaAplicable.meses_minimos}</span></li>
-                                    <li className="flex items-center gap-2"><Award className="h-4 w-4 text-primary"/>Desempeño ≥ <span className="font-bold">{reglaAplicable.min_evaluacion_desempeno}</span></li>
-                                    {reglaAplicable.min_examen_teorico && <li className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary"/>Examen ≥ <span className="font-bold">{reglaAplicable.min_examen_teorico}%</span></li>}
-                                    <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary"/>Cursos ≥ <span className="font-bold">{reglaAplicable.min_cobertura_matriz}%</span></li>
-                                </ul>
-                            ) : (<p className="text-sm text-muted-foreground">No hay plan de carrera definido para este puesto.</p>)}
-                            </CardContent>
-                        </Card>
-                     </motion.div>
-                </div>
-                
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-lg flex items-center gap-2"><BookOpen/>Matriz de Habilidades</h3>
-                     {selectedEmpleado.cursosConEstado.length > 0 && (
-                        <Badge variant="secondary" className="text-sm">
-                          {selectedEmpleado.cursosConEstado.filter(c => c.estado === 'Aprobado').length} / {selectedEmpleado.cursosConEstado.length}
+        <>
+            <Card className={cn("overflow-hidden", statusColors[statusInfo!.status])}>
+                <CardHeader>
+                    <CardTitle className="text-2xl text-white flex items-center justify-between">
+                        <div>{selectedEmpleado.nombre_completo}</div>
+                        <Badge variant="secondary" className="text-base flex items-center gap-2">
+                            {statusInfo?.status}
+                            {statusInfo?.status === 'Máxima Categoría' && (
+                                 <motion.div
+                                    animate={{ scale: [1, 1.2, 1], color: ['#fde047', '#facc15', '#eab308', '#facc15', '#fde047'] }}
+                                    transition={{ duration: 1.5, repeat: Infinity }}
+                                >
+                                    <Sparkles className="h-4 w-4"/>
+                                </motion.div>
+                            )}
                         </Badge>
-                     )}
-                  </div>
-                  <CursosTable cursos={selectedEmpleado.cursosConEstado} />
-                </div>
-            </CardContent>
-        </Card>
+                    </CardTitle>
+                    <CardDescription className="text-white/80">{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</CardDescription>
+                </CardHeader>
+            </Card>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                    <Card className="h-full">
+                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><CalendarDays/></motion.div> Antigüedad</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div><Label>Fecha de Ingreso</Label><p className="text-lg font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
+                            <div><Label>Tiempo en la Empresa</Label><p className="text-md font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+                <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                    <Card className="h-full">
+                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><Award/></motion.div>Evaluaciones</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div><Label>Evaluación de Desempeño</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></div>
+                            <div><Label>Examen Teórico</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.examen_teorico ?? 'N/A'}</p></div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+                <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                    <Card className="h-full">
+                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><Target/></motion.div>Plan de Carrera</CardTitle></CardHeader>
+                        <CardContent>
+                            {reglaAplicable ? (
+                            <ul className="space-y-1 text-sm">
+                                <li className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary"/>Siguiente Puesto: <span className="font-bold">{reglaAplicable.puesto_siguiente}</span></li>
+                                <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary"/>Meses Mínimos: <span className="font-bold">{reglaAplicable.meses_minimos}</span></li>
+                                <li className="flex items-center gap-2"><Award className="h-4 w-4 text-primary"/>Desempeño ≥ <span className="font-bold">{reglaAplicable.min_evaluacion_desempeno}</span></li>
+                                {reglaAplicable.min_examen_teorico && <li className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary"/>Examen ≥ <span className="font-bold">{reglaAplicable.min_examen_teorico}%</span></li>}
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary"/>Cursos ≥ <span className="font-bold">{reglaAplicable.min_cobertura_matriz}%</span></li>
+                            </ul>
+                        ) : (<p className="text-sm text-muted-foreground">No hay plan de carrera definido para este puesto.</p>)}
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            </div>
+            
+            <Card>
+                <CardHeader>
+                     <div className="flex items-center justify-between">
+                        <CardTitle className="text-xl flex items-center gap-2">
+                           <BookOpen/>Matriz de Habilidades
+                        </CardTitle>
+                        {selectedEmpleado.cursosConEstado.length > 0 && (
+                            <Badge variant="secondary" className="text-base">
+                            {selectedEmpleado.cursosConEstado.filter(c => c.estado === 'Aprobado').length} / {selectedEmpleado.cursosConEstado.length}
+                            </Badge>
+                        )}
+                    </div>
+                </CardHeader>
+                <CardContent>
+                   <CursosTable cursos={selectedEmpleado.cursosConEstado} />
+                </CardContent>
+            </Card>
+        </>
       )}
     </div>
   );
