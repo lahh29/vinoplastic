@@ -69,22 +69,48 @@ const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status
 };
 const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-500 text-white', 'En Progreso': 'bg-blue-500 text-white', 'Máxima Categoría': 'bg-purple-500 text-white', 'Requiere Atención': 'bg-orange-500 text-white', 'Pendiente': 'bg-gray-400 text-white', 'No Apto': 'bg-zinc-600 text-white' };
 
+const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
+    return (
+        <ScrollArea className="h-[70vh] rounded-lg border">
+            <Table>
+                <TableHeader className='sticky top-0 bg-background z-10'>
+                    <TableRow>
+                        <TableHead>Curso</TableHead>
+                        <TableHead className="text-center w-32">Calificación</TableHead>
+                        <TableHead className="text-right w-32">Estado</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {cursos.map(({ curso, estado, calificacion }) => (
+                        <TableRow key={curso.id}>
+                            <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
+                            <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
+                            <TableCell className="text-right">
+                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                    {cursos.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
+                </TableBody>
+            </Table>
+        </ScrollArea>
+    );
+};
+
+
 export default function PortalPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const [empleadoPerfil, setEmpleadoPerfil] = useState<EmpleadoPerfil | null>(null);
 
-  // Consulta para obtener el 'id_empleado' basado en el UID del usuario.
   const usuarioInfoRef = useMemoFirebase(() => user ? doc(firestore, 'usuarios', user.uid) : null, [user, firestore]);
   const { data: usuarioData } = useDoc<{ id_empleado?: string }>(usuarioInfoRef);
   
-  // Consulta para obtener los datos del empleado de la 'Plantilla'
-  const empleadoQuery = useMemoFirebase(
-    () => usuarioData?.id_empleado ? query(collection(firestore, 'Plantilla'), where('id_empleado', '==', usuarioData.id_empleado), limit(1)) : null,
+  const empleadoRef = useMemoFirebase(
+    () => usuarioData?.id_empleado ? doc(firestore, 'Plantilla', usuarioData.id_empleado) : null,
     [firestore, usuarioData]
   );
-  const { data: empleadosData, isLoading: loadingEmpleado } = useCollection<Empleado>(empleadoQuery);
-  const empleado = useMemo(() => (empleadosData && empleadosData.length > 0) ? empleadosData[0] : null, [empleadosData]);
+  const { data: empleado, isLoading: loadingEmpleado } = useDoc<Empleado>(empleadoRef);
   
   const historialRef = useMemoFirebase(() => usuarioData?.id_empleado ? doc(firestore, 'historial_capacitacion', usuarioData.id_empleado) : null, [firestore, usuarioData]);
   const promocionRef = useMemoFirebase(() => usuarioData?.id_empleado ? doc(firestore, 'Promociones', usuarioData.id_empleado) : null, [firestore, usuarioData]);
@@ -242,3 +268,4 @@ export default function PortalPage() {
     </motion.div>
   );
 }
+

@@ -66,8 +66,8 @@ service cloud.firestore {
     }
 
     match /historial_capacitacion/{empleadoId} {
-        allow list: if canRead();
         allow get: if canRead() || (isEmpleado() && getUserData().id_empleado == empleadoId);
+        allow list: if canRead();
         allow write: if isAdmin();
     }
     
