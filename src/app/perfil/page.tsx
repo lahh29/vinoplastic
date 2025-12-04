@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { Check, ChevronsUpDown, Loader2, User, Briefcase, BookOpen, CheckCircle2, XCircle, Clock, AlertCircle, Award, Target, CalendarDays } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2, User, Briefcase, BookOpen, CheckCircle2, XCircle, Clock, Award, Target, CalendarDays, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Label } from '@/components/ui/label';
+import { motion } from 'framer-motion';
+
 
 // Interfaces
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
@@ -57,7 +59,7 @@ const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status
     
     return { status: 'Elegible', message: 'Cumple con todos los criterios para ser evaluado para promoción.' };
 };
-const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-500', 'En Progreso': 'bg-blue-500', 'Máxima Categoría': 'bg-indigo-500', 'Requiere Atención': 'bg-orange-500', 'Pendiente': 'bg-gray-400', 'No Apto': 'bg-zinc-600' };
+const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-500', 'En Progreso': 'bg-blue-500', 'Máxima Categoría': 'bg-gradient-to-r from-purple-500 to-indigo-600', 'Requiere Atención': 'bg-orange-500', 'Pendiente': 'bg-gray-400', 'No Apto': 'bg-zinc-600' };
 
 export default function PerfilPage() {
   const firestore = useFirestore();
@@ -169,74 +171,92 @@ export default function PerfilPage() {
             <CardHeader className={cn("p-6", statusColors[statusInfo!.status])}>
                 <CardTitle className="text-2xl text-white flex items-center justify-between">
                     <div>{selectedEmpleado.nombre_completo}</div>
-                    <Badge variant="secondary" className="text-base">{statusInfo?.status}</Badge>
+                    <Badge variant="secondary" className="text-base flex items-center gap-2">
+                        {statusInfo?.status}
+                        {statusInfo?.status === 'Máxima Categoría' && (
+                             <motion.div
+                                animate={{ scale: [1, 1.2, 1], color: ['#fde047', '#facc15', '#eab308', '#facc15', '#fde047'] }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
+                            >
+                                <Sparkles className="h-4 w-4"/>
+                            </motion.div>
+                        )}
+                    </Badge>
                 </CardTitle>
                 <CardDescription className="text-white/80">{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</CardDescription>
             </CardHeader>
 
             <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                     <Card>
-                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><CalendarDays/> Antigüedad</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div><Label>Fecha de Ingreso</Label><p className="text-lg font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
-                            <div><Label>Tiempo en la Empresa</Label><p className="text-md font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
-                        </CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Award/> Evaluaciones</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div><Label>Evaluación de Desempeño</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></div>
-                            <div><Label>Examen Teórico</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.examen_teorico ?? 'N/A'}</p></div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Target/> Plan de Carrera</CardTitle></CardHeader>
-                        <CardContent>
-                            {reglaAplicable ? (
-                            <ul className="space-y-1 text-sm">
-                                <li className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary"/>Siguiente Puesto: <span className="font-bold">{reglaAplicable.puesto_siguiente}</span></li>
-                                <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary"/>Meses Mínimos: <span className="font-bold">{reglaAplicable.meses_minimos}</span></li>
-                                <li className="flex items-center gap-2"><Award className="h-4 w-4 text-primary"/>Desempeño ≥ <span className="font-bold">{reglaAplicable.min_evaluacion_desempeno}</span></li>
-                                {reglaAplicable.min_examen_teorico && <li className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary"/>Examen ≥ <span className="font-bold">{reglaAplicable.min_examen_teorico}%</span></li>}
-                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary"/>Cursos ≥ <span className="font-bold">{reglaAplicable.min_cobertura_matriz}%</span></li>
-                            </ul>
-                        ) : (<p className="text-sm text-muted-foreground">No hay plan de carrera definido para este puesto.</p>)}
-                        </CardContent>
-                    </Card>
+                     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                        <Card className="h-full">
+                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><CalendarDays/></motion.div> Antigüedad</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                                <div><Label>Fecha de Ingreso</Label><p className="text-lg font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
+                                <div><Label>Tiempo en la Empresa</Label><p className="text-md font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
+                            </CardContent>
+                        </Card>
+                     </motion.div>
+                     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                        <Card className="h-full">
+                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><Award/></motion.div>Evaluaciones</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                                <div><Label>Evaluación de Desempeño</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></div>
+                                <div><Label>Examen Teórico</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.examen_teorico ?? 'N/A'}</p></div>
+                            </CardContent>
+                        </Card>
+                     </motion.div>
+                     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                        <Card className="h-full">
+                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><Target/></motion.div>Plan de Carrera</CardTitle></CardHeader>
+                            <CardContent>
+                                {reglaAplicable ? (
+                                <ul className="space-y-1 text-sm">
+                                    <li className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary"/>Siguiente Puesto: <span className="font-bold">{reglaAplicable.puesto_siguiente}</span></li>
+                                    <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary"/>Meses Mínimos: <span className="font-bold">{reglaAplicable.meses_minimos}</span></li>
+                                    <li className="flex items-center gap-2"><Award className="h-4 w-4 text-primary"/>Desempeño ≥ <span className="font-bold">{reglaAplicable.min_evaluacion_desempeno}</span></li>
+                                    {reglaAplicable.min_examen_teorico && <li className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary"/>Examen ≥ <span className="font-bold">{reglaAplicable.min_examen_teorico}%</span></li>}
+                                    <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary"/>Cursos ≥ <span className="font-bold">{reglaAplicable.min_cobertura_matriz}%</span></li>
+                                </ul>
+                            ) : (<p className="text-sm text-muted-foreground">No hay plan de carrera definido para este puesto.</p>)}
+                            </CardContent>
+                        </Card>
+                     </motion.div>
                 </div>
                 
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-lg flex items-center gap-2"><BookOpen/>Matriz de Habilidades</h3>
-                    {selectedEmpleado.cursosConEstado.length > 0 && (
-                      <Badge variant="secondary" className="text-sm">
-                        {selectedEmpleado.cursosConEstado.filter(c => c.estado === 'Aprobado').length} / {selectedEmpleado.cursosConEstado.length}
-                      </Badge>
-                    )}
+                     {selectedEmpleado.cursosConEstado.length > 0 && (
+                        <Badge variant="secondary" className="text-sm">
+                          {selectedEmpleado.cursosConEstado.filter(c => c.estado === 'Aprobado').length} / {selectedEmpleado.cursosConEstado.length}
+                        </Badge>
+                     )}
                   </div>
-                  <div className="border rounded-lg overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Curso</TableHead>
-                          <TableHead className="text-center w-32">Calificación</TableHead>
-                          <TableHead className="text-right w-32">Estado</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {selectedEmpleado.cursosConEstado.map(({ curso, estado, calificacion }) => (
-                          <TableRow key={curso.id}>
-                            <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
-                            <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
-                            <TableCell className="text-right">
-                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                         {selectedEmpleado.cursosConEstado.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
-                      </TableBody>
-                    </Table>
+                  <div className="border rounded-lg overflow-hidden max-h-[50vh]">
+                     <ScrollArea className="h-full">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Curso</TableHead>
+                              <TableHead className="text-center w-32">Calificación</TableHead>
+                              <TableHead className="text-right w-32">Estado</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {selectedEmpleado.cursosConEstado.map(({ curso, estado, calificacion }) => (
+                              <TableRow key={curso.id}>
+                                <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
+                                <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
+                                <TableCell className="text-right">
+                                    <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                             {selectedEmpleado.cursosConEstado.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
+                          </TableBody>
+                        </Table>
+                    </ScrollArea>
                   </div>
                 </div>
             </CardContent>
