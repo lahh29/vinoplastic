@@ -242,7 +242,7 @@ export default function PortalPage() {
                     {cursosPendientes.map(({curso}) => (
                         <div key={curso.id} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
                             <span className="font-medium text-sm">{curso.nombre_oficial}</span>
-                            <Button size="sm" variant="outline"><BookUp className="mr-2 h-4 w-4"/> Ver Material</Button>
+                            <Button size="sm" variant="outline" disabled><BookUp className="mr-2 h-4 w-4"/> Ver Material</Button>
                         </div>
                     ))}
                 </div>
@@ -268,4 +268,3 @@ export default function PortalPage() {
     </motion.div>
   );
 }
-
