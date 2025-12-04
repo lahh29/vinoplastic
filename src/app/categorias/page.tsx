@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -22,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 // Interfaces
 interface Empleado {
@@ -76,12 +78,11 @@ type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Req
 
 const getStatusInfo = (empleado: EmpleadoPromocion, reglasAscenso: ReglaAscenso[]): { status: EstatusPromocion, message: string, color: string } => {
     if (empleado.promocionData?.no_apto) {
-        return { status: 'No Apto', message: 'Marcado manualmente como no apto para promoción.', color: 'bg-zinc-700' };
+        return { status: 'No Apto', message: 'Marcado manualmente como no apto para promoción.', color: 'bg-zinc-500' };
     }
     const puestoActual = empleado.puesto.titulo;
     const esCategoriaA = puestoActual.endsWith(' A');
     
-    // Si la categoría 'A' no es el inicio de otra promoción, es la máxima categoría.
     if (esCategoriaA && !reglasAscenso.some(r => r.puesto_actual === puestoActual)) {
         return { status: 'Máxima Categoría', message: 'El empleado ha alcanzado la categoría más alta en su plan de carrera.', color: 'bg-yellow-500' };
     }
@@ -119,8 +120,7 @@ const getStatusInfo = (empleado: EmpleadoPromocion, reglasAscenso: ReglaAscenso[
         return { status: 'Requiere Atención', message: `Tiempo de espera cumplido, pero requiere ${min_cobertura_matriz}% de cursos y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, color: 'bg-orange-500' };
     }
     
-
-    return { status: 'Elegible', message: `Cumple con el tiempo, cursos y evaluación. ¡Listo para ser evaluado!`, color: 'bg-green-500' };
+    return { status: 'Elegible', message: `Cumple con el tiempo, cursos y evaluación. ¡Listo para ser evaluado!`, color: 'bg-green-600' };
 };
 
 export default function PromocionesPage() {
@@ -239,10 +239,7 @@ export default function PromocionesPage() {
     const promocionDocRef = doc(firestore, 'Promociones', empleadoId);
 
     try {
-      // Actualizar puesto en la plantilla
       await setDoc(plantillaDocRef, { puesto: { ...empleadoAPromover.puesto, titulo: puesto_siguiente } }, { merge: true });
-
-      // Resetear la información de promoción para el nuevo ciclo
       await setDoc(promocionDocRef, {
         puesto_actual: puesto_siguiente,
         fecha_ultimo_cambio: serverTimestamp(),
@@ -317,123 +314,127 @@ export default function PromocionesPage() {
 
   return (
     <div className="flex h-full flex-col lg:flex-row gap-6">
-      <Card className="w-full lg:max-w-xs lg:w-1/4 flex flex-col">
-        <CardHeader className="p-6 border-b">
-          <CardTitle className="flex items-center gap-3 text-xl"><Briefcase className="h-5 w-5 text-primary" /> Áreas de Trabajo</CardTitle>
-          <CardDescription>{areasUnicas.length} áreas encontradas</CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1 p-2 overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="flex flex-col gap-1 p-2">
-                <Button variant={!selectedArea ? 'secondary' : 'ghost'} className="justify-start text-left" onClick={() => setSelectedArea(null)}>Todas las áreas</Button>
-              {areasUnicas.map(area => (
-                <Button key={area} variant={selectedArea === area ? 'secondary' : 'ghost'} className="justify-start text-left h-auto py-2" onClick={() => setSelectedArea(area)}>
-                    <span className="flex-1">{area}</span>
-                    {selectedArea === area && <ChevronRight className="h-4 w-4 opacity-50 ml-2 shrink-0" />}
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+        <Card className="w-full lg:max-w-xs lg:w-1/4 flex flex-col h-full">
+            <CardHeader className="p-6 border-b">
+            <CardTitle className="flex items-center gap-3 text-xl"><Briefcase className="h-5 w-5 text-primary" /> Áreas de Trabajo</CardTitle>
+            <CardDescription>{areasUnicas.length} áreas encontradas</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 p-2 overflow-hidden">
+            <ScrollArea className="h-full">
+                <div className="flex flex-col gap-1 p-2">
+                    <Button variant={!selectedArea ? 'secondary' : 'ghost'} className="justify-start text-left" onClick={() => setSelectedArea(null)}>Todas las áreas</Button>
+                {areasUnicas.map(area => (
+                    <Button key={area} variant={selectedArea === area ? 'secondary' : 'ghost'} className="justify-start text-left h-auto py-2" onClick={() => setSelectedArea(area)}>
+                        <span className="flex-1">{area}</span>
+                        {selectedArea === area && <ChevronRight className="h-4 w-4 opacity-50 ml-2 shrink-0" />}
+                    </Button>
+                ))}
+                </div>
+            </ScrollArea>
+            </CardContent>
+        </Card>
+      </motion.div>
 
-      <Card className="flex-1">
-        <CardHeader>
-          <CardTitle>Gestión de Promoción por Categorías</CardTitle>
-          <CardDescription>Visualiza y actualiza el estado de los empleados en el área seleccionada.</CardDescription>
-           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Buscar por ID o Nombre..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+      <motion.div className="flex-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
+        <Card>
+            <CardHeader>
+            <CardTitle>Gestión de Promoción por Categorías</CardTitle>
+            <CardDescription>Visualiza y actualiza el estado de los empleados en el área seleccionada.</CardDescription>
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Buscar por ID o Nombre..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 rounded-full" />
+                </div>
+                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as any)}>
+                <SelectTrigger className="w-full sm:w-[240px] rounded-full"><SelectValue placeholder="Filtrar por estatus..." /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="todos">Todos los estatus</SelectItem>
+                    <SelectItem value="Elegible">Elegible</SelectItem>
+                    <SelectItem value="En Progreso">En Progreso</SelectItem>
+                    <SelectItem value="Requiere Atención">Requiere Atención</SelectItem>
+                    <SelectItem value="Máxima Categoría">Máxima Categoría</SelectItem>
+                    <SelectItem value="No Apto">No Apto</SelectItem>
+                    <SelectItem value="Pendiente">Pendiente</SelectItem>
+                </SelectContent>
+                </Select>
             </div>
-            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as any)}>
-              <SelectTrigger className="w-full sm:w-[240px]"><SelectValue placeholder="Filtrar por estatus..." /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos los estatus</SelectItem>
-                <SelectItem value="Elegible">Elegible</SelectItem>
-                <SelectItem value="En Progreso">En Progreso</SelectItem>
-                <SelectItem value="Requiere Atención">Requiere Atención</SelectItem>
-                <SelectItem value="Máxima Categoría">Máxima Categoría</SelectItem>
-                <SelectItem value="No Apto">No Apto</SelectItem>
-                <SelectItem value="Pendiente">Pendiente</SelectItem>
-              </SelectContent>
-            </Select>
-           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-lg border">
-            <TooltipProvider delayDuration={0}>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Colaborador</TableHead>
-                  <TableHead>Estatus</TableHead>
-                  <TableHead>Criterios</TableHead>
-                  <TableHead>Cursos</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading || !reglasAscenso ? (
-                    <TableRow><TableCell colSpan={5} className="h-24 text-center">Cargando...</TableCell></TableRow>
-                ) : filteredEmpleados.map(emp => {
-                  const statusInfo = getStatusInfo(emp, reglasAscenso);
-                  const puedePromover = statusInfo.status !== 'Máxima Categoría' && statusInfo.status !== 'Pendiente' && statusInfo.status !== 'No Apto';
-                  const regla = reglasAscenso.find(r => r.puesto_actual === emp.puesto.titulo);
-                  const desempeñoStatus = regla ? getCriterioStatus(emp, regla, 'desempeno') : null;
-                  const teoricoStatus = regla ? getCriterioStatus(emp, regla, 'teorico') : null;
+            </CardHeader>
+            <CardContent>
+            <div className="rounded-lg border">
+                <TooltipProvider delayDuration={0}>
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead>Colaborador</TableHead>
+                    <TableHead>Estatus</TableHead>
+                    <TableHead>Criterios</TableHead>
+                    <TableHead>Cursos</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {isLoading || !reglasAscenso ? (
+                        <TableRow><TableCell colSpan={5} className="h-24 text-center">Cargando...</TableCell></TableRow>
+                    ) : filteredEmpleados.map(emp => {
+                    const statusInfo = getStatusInfo(emp, reglasAscenso);
+                    const puedePromover = statusInfo.status !== 'Máxima Categoría' && statusInfo.status !== 'Pendiente' && statusInfo.status !== 'No Apto';
+                    const regla = reglasAscenso.find(r => r.puesto_actual === emp.puesto.titulo);
+                    const desempeñoStatus = regla ? getCriterioStatus(emp, regla, 'desempeno') : null;
+                    const teoricoStatus = regla ? getCriterioStatus(emp, regla, 'teorico') : null;
 
-                  return(
-                  <TableRow key={emp.id}>
-                    <TableCell className="font-medium">
-                        <div className="text-sm font-semibold">{emp.nombre_completo}</div>
-                        <div className="text-xs text-muted-foreground">ID: {emp.id_empleado}</div>
-                        <div className="text-xs text-muted-foreground">Puesto: {emp.puesto.titulo}</div>
-                        <div className="text-xs text-muted-foreground">Ingreso: {formatDate(emp.fecha_ingreso)}</div>
-                    </TableCell>
-                    <TableCell>
-                      <Tooltip><TooltipTrigger asChild><Badge className={cn('text-white', statusInfo.color)}>{statusInfo.status}</Badge></TooltipTrigger><TooltipContent><p>{statusInfo.message}</p></TooltipContent></Tooltip>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {desempeñoStatus && (<Tooltip><TooltipTrigger><desempeñoStatus.Icon className={cn('h-5 w-5', desempeñoStatus.color)} /></TooltipTrigger><TooltipContent>{desempeñoStatus.tooltip}</TooltipContent></Tooltip>)}
-                        {teoricoStatus && ( <Tooltip><TooltipTrigger><teoricoStatus.Icon className={cn('h-5 w-5', teoricoStatus.color)} /></TooltipTrigger><TooltipContent>{teoricoStatus.tooltip}</TooltipContent></Tooltip> )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
+                    return(
+                    <motion.tr key={emp.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ scale: 1.01, zIndex: 10}} className="hover:bg-accent/50 transition-colors">
+                        <TableCell className="font-medium">
+                            <div className="text-sm font-semibold">{emp.nombre_completo}</div>
+                            <div className="text-xs text-muted-foreground">ID: {emp.id_empleado}</div>
+                            <div className="text-xs text-muted-foreground">Puesto: {emp.puesto.titulo}</div>
+                            <div className="text-xs text-muted-foreground">Ingreso: {formatDate(emp.fecha_ingreso)}</div>
+                        </TableCell>
+                        <TableCell>
+                        <Tooltip><TooltipTrigger asChild><Badge className={cn('text-white', statusInfo.color)}>{statusInfo.status}</Badge></TooltipTrigger><TooltipContent><p>{statusInfo.message}</p></TooltipContent></Tooltip>
+                        </TableCell>
+                        <TableCell>
                         <div className="flex items-center gap-2">
-                            <Progress value={emp.coberturaCursos} className="w-20 h-2" />
-                            <span className="text-xs font-semibold">{emp.coberturaCursos.toFixed(0)}%</span>
+                            {desempeñoStatus && (<Tooltip><TooltipTrigger><desempeñoStatus.Icon className={cn('h-5 w-5', desempeñoStatus.color)} /></TooltipTrigger><TooltipContent>{desempeñoStatus.tooltip}</TooltipContent></Tooltip>)}
+                            {teoricoStatus && ( <Tooltip><TooltipTrigger><teoricoStatus.Icon className={cn('h-5 w-5', teoricoStatus.color)} /></TooltipTrigger><TooltipContent>{teoricoStatus.tooltip}</TooltipContent></Tooltip> )}
                         </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                        <Button variant="outline" size="sm" onClick={() => setSelectedEmpleado(emp)}><ClipboardEdit className="h-4 w-4 mr-2" /> Evaluar</Button>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" onClick={() => setEmpleadoNoApto(emp)}>
-                                    <UserX className={cn("h-4 w-4", emp.promocionData?.no_apto ? "text-red-500" : "text-gray-400")} />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent><p>{emp.promocionData?.no_apto ? 'Marcar como Apto' : 'Marcar como No Apto'}</p></TooltipContent>
-                        </Tooltip>
-                        {puedePromover && (
-                          <Button variant="default" size="sm" className="ml-2 bg-green-600 hover:bg-green-700" onClick={() => setEmpleadoAPromover(emp)}>
-                              <Award className="h-4 w-4 mr-2" /> Promover
-                          </Button>
-                        )}
-                    </TableCell>
-                  </TableRow>
-                )})}
-              </TableBody>
-            </Table>
-            </TooltipProvider>
-          </div>
-        </CardContent>
-      </Card>
+                        </TableCell>
+                        <TableCell>
+                            <div className="flex items-center gap-2">
+                                <Progress value={emp.coberturaCursos} className="w-20 h-2" />
+                                <span className="text-xs font-semibold">{emp.coberturaCursos.toFixed(0)}%</span>
+                            </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                            <Button variant="outline" size="sm" onClick={() => setSelectedEmpleado(emp)}><ClipboardEdit className="h-4 w-4 mr-2" /> Evaluar</Button>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" onClick={() => setEmpleadoNoApto(emp)}>
+                                        <UserX className={cn("h-4 w-4", emp.promocionData?.no_apto ? "text-red-500" : "text-gray-400")} />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent><p>{emp.promocionData?.no_apto ? 'Marcar como Apto' : 'Marcar como No Apto'}</p></TooltipContent>
+                            </Tooltip>
+                            {puedePromover && (
+                            <Button variant="default" size="sm" className="ml-2 bg-green-600 hover:bg-green-700" onClick={() => setEmpleadoAPromover(emp)}>
+                                <Award className="h-4 w-4 mr-2" /> Promover
+                            </Button>
+                            )}
+                        </TableCell>
+                    </motion.tr>
+                    )})}
+                </TableBody>
+                </Table>
+                </TooltipProvider>
+            </div>
+            </CardContent>
+        </Card>
+      </motion.div>
       
       {selectedEmpleado && (
         <Dialog open={!!selectedEmpleado} onOpenChange={() => setSelectedEmpleado(null)}>
-            <DialogContent>
+            <DialogContent className="rounded-2xl">
                 <DialogHeader>
                     <DialogTitle>Evaluar a: {selectedEmpleado.nombre_completo}</DialogTitle>
                     <DialogDescription>Puesto: {selectedEmpleado.puesto.titulo}</DialogDescription>
@@ -461,7 +462,7 @@ export default function PromocionesPage() {
       )}
 
       <AlertDialog open={!!empleadoAPromover} onOpenChange={() => setEmpleadoAPromover(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-2xl">
             <AlertDialogHeader>
                 <AlertDialogTitle>Confirmar Promoción</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -492,7 +493,7 @@ export default function PromocionesPage() {
       </AlertDialog>
 
       <AlertDialog open={!!empleadoNoApto} onOpenChange={() => setEmpleadoNoApto(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-2xl">
             <AlertDialogHeader>
                 <AlertDialogTitle>Confirmar Cambio de Estado</AlertDialogTitle>
                 <AlertDialogDescription>
