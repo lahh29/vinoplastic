@@ -37,6 +37,7 @@ import { format, addDays, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { AnimatedUserIcon } from '@/components/ui/animated-user-icon';
 import { motion, AnimatePresence } from 'framer-motion';
+import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 
 const navItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
@@ -91,7 +92,7 @@ function Notifications() {
   const { data: contratos } = useCollection<Contrato>(contratosRef);
   const [isOpen, setIsOpen] = React.useState(false);
   
-  const [notifications, setNotifications] = React.useState({ expiringContracts: [], dueEvaluations: [] });
+  const [notifications, setNotifications] = React.useState<{ expiringContracts: any[], dueEvaluations: any[] }>({ expiringContracts: [], dueEvaluations: [] });
   const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
@@ -254,8 +255,9 @@ export default function InicioLayout({
   }
   
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-muted/40">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm md:px-6">
+    <div className="relative flex min-h-screen w-full flex-col bg-transparent">
+        <StarsBackground starColor='#fff' speed={0.5} className="absolute inset-0 z-[-1]"/>
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
             <Link href="/inicio" className="flex items-center gap-2 font-semibold">
               <Logo />
               <span className='font-bold'>Recursos Humanos</span>

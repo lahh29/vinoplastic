@@ -9,9 +9,9 @@ import { Label } from '@/components/ui/label';
 import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { Card } from '@/components/ui/card';
-import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
+import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,14 +33,11 @@ export default function LoginPage() {
     if (!isUserLoading && user) {
       router.push('/inicio');
     }
-    // Si hay un error de autenticación (no manejado por `initiate...` pero bueno tenerlo)
-    // podríamos necesitar un listener de errores para poner `setIsLoading(false)`.
-    // Por ahora, el redirect es suficiente.
   }, [user, isUserLoading, router]);
 
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black">
         <StarsBackground starColor="#fff" speed={0.5} className="absolute inset-0 z-0"/>
         <div className="relative z-10 flex flex-col items-center text-center text-white p-4">
             <motion.div
@@ -102,4 +99,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
