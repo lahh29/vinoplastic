@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -18,7 +18,6 @@ import { es } from 'date-fns/locale';
 import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
 
-
 // Interfaces
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
 interface PerfilPuesto { id: string; nombre_puesto: string; cursos_obligatorios: string[]; }
@@ -26,7 +25,17 @@ interface Historial { id: string; id_empleado: string; cursos: { id_curso: strin
 interface CursoCatalogo { id: string; id_curso: string; nombre_oficial: string; }
 interface Promocion { id: string; fecha_ultimo_cambio?: { toDate: () => Date }; examen_teorico?: number; evaluacion_desempeno?: number; no_apto?: boolean; }
 interface ReglaAscenso { id: string; puesto_actual: string; puesto_siguiente: string; meses_minimos: number; min_evaluacion_desempeno: number; min_examen_teorico?: number; min_cobertura_matriz: number;}
-interface EmpleadoPerfil extends Empleado { promocionData?: Promocion; coberturaCursos: number; cursosConEstado: { curso: CursoCatalogo; estado: 'Aprobado' | 'Reprobado' | 'Pendiente'; calificacion?: number; }[]; }
+
+interface CursoConEstado {
+    curso: CursoCatalogo;
+    estado: 'Aprobado' | 'Reprobado' | 'Pendiente';
+    calificacion?: number;
+}
+interface EmpleadoPerfil extends Empleado { 
+    promocionData?: Promocion;
+    coberturaCursos: number; 
+    cursosConEstado: CursoConEstado[];
+}
 type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Requiere Atención' | 'Pendiente' | 'No Apto';
 
 // Helpers
@@ -60,6 +69,37 @@ const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status
     return { status: 'Elegible', message: 'Cumple con todos los criterios para ser evaluado para promoción.' };
 };
 const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-500', 'En Progreso': 'bg-blue-500', 'Máxima Categoría': 'bg-gradient-to-r from-purple-500 to-indigo-600', 'Requiere Atención': 'bg-orange-500', 'Pendiente': 'bg-gray-400', 'No Apto': 'bg-zinc-600' };
+
+const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
+    return (
+        <div className="border rounded-lg overflow-hidden">
+            <ScrollArea className="max-h-[50vh]">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Curso</TableHead>
+                            <TableHead className="text-center w-32">Calificación</TableHead>
+                            <TableHead className="text-right w-32">Estado</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {cursos.map(({ curso, estado, calificacion }) => (
+                            <TableRow key={curso.id}>
+                                <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
+                                <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
+                                <TableCell className="text-right">
+                                    <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {cursos.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
+                    </TableBody>
+                </Table>
+            </ScrollArea>
+        </div>
+    );
+};
+
 
 export default function PerfilPage() {
   const firestore = useFirestore();
@@ -186,8 +226,8 @@ export default function PerfilPage() {
                 <CardDescription className="text-white/80">{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</CardDescription>
             </CardHeader>
 
-            <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <CardContent className="p-6 space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                      <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
                         <Card className="h-full">
                             <CardHeader><CardTitle className="text-lg flex items-center gap-2"><motion.div whileHover={{color: 'hsl(var(--primary))'}}><CalendarDays/></motion.div> Antigüedad</CardTitle></CardHeader>
@@ -233,31 +273,7 @@ export default function PerfilPage() {
                         </Badge>
                      )}
                   </div>
-                  <div className="border rounded-lg overflow-hidden max-h-[50vh]">
-                     <ScrollArea className="h-full">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Curso</TableHead>
-                              <TableHead className="text-center w-32">Calificación</TableHead>
-                              <TableHead className="text-right w-32">Estado</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {selectedEmpleado.cursosConEstado.map(({ curso, estado, calificacion }) => (
-                              <TableRow key={curso.id}>
-                                <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
-                                <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
-                                <TableCell className="text-right">
-                                    <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                             {selectedEmpleado.cursosConEstado.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
-                          </TableBody>
-                        </Table>
-                    </ScrollArea>
-                  </div>
+                  <CursosTable cursos={selectedEmpleado.cursosConEstado} />
                 </div>
             </CardContent>
         </Card>
@@ -265,3 +281,4 @@ export default function PerfilPage() {
     </div>
   );
 }
+
