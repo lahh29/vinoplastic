@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,10 +19,12 @@ export default function LoginPage() {
   const { user, isUserLoading } = useUser();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (auth && email && password) {
+      setIsLoading(true);
       initiateEmailSignIn(auth, email, password);
     }
   };
@@ -30,6 +33,9 @@ export default function LoginPage() {
     if (!isUserLoading && user) {
       router.push('/inicio');
     }
+    // Si hay un error de autenticación (no manejado por `initiate...` pero bueno tenerlo)
+    // podríamos necesitar un listener de errores para poner `setIsLoading(false)`.
+    // Por ahora, el redirect es suficiente.
   }, [user, isUserLoading, router]);
 
 
@@ -57,44 +63,43 @@ export default function LoginPage() {
                 transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
                 className="w-full max-w-sm"
             >
-                <Card className="w-full bg-black/30 border-white/20 text-white shadow-2xl backdrop-blur-lg">
-                    <CardHeader>
-                        <CardTitle className="text-2xl font-bold text-white">Control de Acceso</CardTitle>
-                        <CardDescription className="text-slate-300 mt-1">Ingresa tus credenciales</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleLogin} className="space-y-6">
-                            <div className="grid gap-2 text-left">
-                                <Label htmlFor="email" className="text-slate-300">Correo Electrónico</Label>
-                                <Input 
-                                    id="email" 
-                                    type="email" 
-                                    placeholder="usuario@vinoplastic.com"
-                                    required 
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 focus:ring-primary rounded-md"
-                                />
-                            </div>
-                            <div className="grid gap-2 text-left">
-                                <Label htmlFor="password" className="text-slate-300">Contraseña</Label>
-                                <Input 
-                                    id="password" 
-                                    type="password" 
-                                    required 
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 focus:ring-primary rounded-md"
-                                />
-                            </div>
-                            <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md">
-                                Ingresar
-                            </Button>
-                        </form>
-                    </CardContent>
+                <Card className="w-full bg-black/30 border-white/20 text-white shadow-2xl backdrop-blur-lg p-6 sm:p-8">
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white">Control de Acceso</h2>
+                    <p className="text-slate-300 mt-1">Ingresa tus credenciales</p>
+                  </div>
+                  <form onSubmit={handleLogin} className="space-y-6">
+                      <div className="grid gap-2 text-left">
+                          <Label htmlFor="email" className="text-slate-300">Correo Electrónico</Label>
+                          <Input 
+                              id="email" 
+                              type="email" 
+                              placeholder="usuario@vinoplastic.com"
+                              required 
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 focus:ring-primary rounded-md"
+                          />
+                      </div>
+                      <div className="grid gap-2 text-left">
+                          <Label htmlFor="password" className="text-slate-300">Contraseña</Label>
+                          <Input 
+                              id="password" 
+                              type="password" 
+                              required 
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 focus:ring-primary rounded-md"
+                          />
+                      </div>
+                      <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md" disabled={isLoading}>
+                          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Ingresar'}
+                      </Button>
+                  </form>
                 </Card>
             </motion.div>
         </div>
     </div>
   );
 }
+
