@@ -1,9 +1,9 @@
-import InicioLayout from "../inicio/layout";
+import MainUILayout from "@/components/ui/main-ui-layout";
 
 export default function ContratosLayout({
     children,
   }: {
     children: React.ReactNode;
   }) {
-    return <InicioLayout>{children}</InicioLayout>
+    return <MainUILayout>{children}</MainUILayout>
 }
