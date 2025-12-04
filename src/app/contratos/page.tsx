@@ -40,6 +40,7 @@ import { useRoleCheck } from '@/hooks/use-role-check';
 import { motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 
 interface ContratoFechas {
@@ -73,6 +74,7 @@ interface Contrato {
 const getDate = (timestamp: any): Date | null => {
     if (!timestamp) return null;
     if (timestamp.toDate) return timestamp.toDate();
+    // Handle cases where the date might be a string or number from older data structures
     const date = new Date(timestamp);
     return isValid(date) ? date : null;
 };
@@ -80,7 +82,7 @@ const getDate = (timestamp: any): Date | null => {
 const formatDate = (timestamp: any): string => {
   if (!timestamp) return 'N/A';
   const date = getDate(timestamp);
-  if (!date || !isValid(date)) return 'Fecha inválida';
+  if (!date || !isValid(date)) return 'N/A'; // Changed from 'Fecha inválida' to 'N/A'
   return format(date, 'dd/MMM/yy', { locale: es });
 };
 
@@ -136,16 +138,23 @@ export default function ContratosPage() {
     setDueEvaluations(evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones?.primera?.fecha_programada) ?? new Date(0)).getTime() - (getDate(b.contrato.evaluaciones?.primera?.fecha_programada) ?? new Date(0)).getTime()));
   }, [contratos]);
 
-  const filteredContratos = useMemo(() => {
-    if (!contratos) return [];
-    return contratos.filter((contrato: Contrato) => {
-      if (!contrato.id_empleado || !contrato.nombre_completo) return false;
-      const search = searchTerm.toLowerCase();
-      return (
-        contrato.id_empleado.toLowerCase().includes(search) ||
-        contrato.nombre_completo.toLowerCase().includes(search)
-      );
+  const { determinados, indeterminados } = useMemo(() => {
+    if (!contratos) return { determinados: [], indeterminados: [] };
+
+    const search = searchTerm.toLowerCase();
+    const filtered = contratos.filter((contrato: Contrato) => {
+        if (!contrato.id_empleado || !contrato.nombre_completo) return false;
+        return (
+            contrato.id_empleado.toLowerCase().includes(search) ||
+            contrato.nombre_completo.toLowerCase().includes(search)
+        );
     });
+
+    return {
+      determinados: filtered.filter(c => !c.indeterminado),
+      indeterminados: filtered.filter(c => c.indeterminado),
+    };
+
   }, [contratos, searchTerm]);
   
   const handleRowClick = (contrato: Contrato) => {
@@ -245,7 +254,7 @@ export default function ContratosPage() {
                         {expiringContracts.map(c => (
                             <motion.div whileHover={{ scale: 1.02}} key={c.id} className="p-3 bg-card/60 border-l-4 border-destructive rounded-r-lg shadow-sm">
                                 <p className="font-semibold text-sm">{c.nombre_completo}</p>
-                                <p className="text-xs text-muted-foreground">Vence el: {formatDate(c.fechas_contrato?.termino)}</p>
+                                <p className="text-xs text-destructive">Vence el: {formatDate(c.fechas_contrato?.termino)}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -268,7 +277,7 @@ export default function ContratosPage() {
                         {dueEvaluations.map(item => (
                              <motion.div whileHover={{ scale: 1.02}} key={item.contrato.id + item.tipo} className="p-3 bg-card/60 border-l-4 border-primary rounded-r-lg shadow-sm">
                                 <p className="font-semibold text-sm">{item.contrato.nombre_completo}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-primary">
                                    {item.tipo} evaluación antes del: {item.fecha}
                                 </p>
                             </motion.div>
@@ -299,38 +308,45 @@ export default function ContratosPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-semibold">ID</TableHead>
-                  <TableHead className="font-semibold">Nombre</TableHead>
-                  <TableHead className="font-semibold">Ingreso</TableHead>
-                  <TableHead className="font-semibold">Vencimiento</TableHead>
-                  <TableHead className="font-semibold">Tipo De Contrato</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredContratos.map((contrato: Contrato) => (
-                  <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent transition-colors">
-                    <TableCell>{contrato.id_empleado}</TableCell>
-                    <TableCell className="font-medium">{contrato.nombre_completo}</TableCell>
-                    <TableCell>{formatDate(contrato.fechas_contrato?.ingreso)}</TableCell>
-                    <TableCell className={cn(contrato.indeterminado && "opacity-50")}>
-                        {formatDate(contrato.fechas_contrato?.termino)}
-                    </TableCell>
-                    <TableCell>
-                      {contrato.indeterminado ? (
-                          <Badge variant="default" className="bg-primary/80">Indeterminado</Badge>
-                      ) : (
-                          <Badge variant="secondary">Determinado</Badge>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+            <Tabs defaultValue="determinados">
+              <TabsList>
+                <TabsTrigger value="determinados">Determinados ({determinados.length})</TabsTrigger>
+                <TabsTrigger value="indeterminados">Indeterminados ({indeterminados.length})</TabsTrigger>
+              </TabsList>
+              <TabsContent value="determinados" className="mt-4">
+                <div className="overflow-x-auto rounded-lg border">
+                    <Table>
+                    <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nombre</TableHead><TableHead>Ingreso</TableHead><TableHead>Vencimiento</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {determinados.map((contrato) => (
+                        <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent transition-colors">
+                            <TableCell>{contrato.id_empleado}</TableCell>
+                            <TableCell className="font-medium">{contrato.nombre_completo}</TableCell>
+                            <TableCell>{formatDate(contrato.fechas_contrato?.ingreso)}</TableCell>
+                            <TableCell>{formatDate(contrato.fechas_contrato?.termino)}</TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                </div>
+              </TabsContent>
+              <TabsContent value="indeterminados" className="mt-4">
+                <div className="overflow-x-auto rounded-lg border">
+                    <Table>
+                    <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nombre</TableHead><TableHead>Ingreso</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {indeterminados.map((contrato) => (
+                        <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent transition-colors">
+                            <TableCell>{contrato.id_empleado}</TableCell>
+                            <TableCell className="font-medium">{contrato.nombre_completo}</TableCell>
+                            <TableCell>{formatDate(contrato.fechas_contrato?.ingreso)}</TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                </div>
+              </TabsContent>
+            </Tabs>
         </CardContent>
       </Card>
 
@@ -415,4 +431,3 @@ export default function ContratosPage() {
     </motion.div>
   );
 }
-
