@@ -8,13 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { Check, ChevronsUpDown, Loader2, User, Briefcase, BookOpen, CheckCircle2, XCircle, Clock, AlertCircle, Award, Target } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2, User, Briefcase, BookOpen, CheckCircle2, XCircle, Clock, AlertCircle, Award, Target, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { format, differenceInMonths, isValid } from 'date-fns';
+import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Label } from '@/components/ui/label';
 
@@ -115,6 +115,16 @@ export default function PerfilPage() {
   
   const reglaAplicable = reglasAscenso?.find(r => r.puesto_actual === selectedEmpleado?.puesto.titulo);
   const statusInfo = selectedEmpleado ? getStatusInfo(selectedEmpleado, reglaAplicable) : null;
+  
+  const antiguedad = useMemo(() => {
+    if (!selectedEmpleado?.fecha_ingreso) return null;
+    const fechaIngreso = parseDate(selectedEmpleado.fecha_ingreso);
+    if (!fechaIngreso) return null;
+    
+    const duracion = intervalToDuration({ start: fechaIngreso, end: new Date() });
+    return `${duracion.years} años, ${duracion.months} meses y ${duracion.days} días`;
+  }, [selectedEmpleado]);
+
 
   return (
     <div className="space-y-8">
@@ -171,7 +181,7 @@ export default function PerfilPage() {
                 <Card className="lg:col-span-2">
                     <CardHeader><CardTitle className="flex items-center gap-2"><BookOpen/>Matriz de Habilidades</CardTitle></CardHeader>
                     <CardContent>
-                       <ScrollArea className="h-96">
+                       <ScrollArea className="h-[50vh]">
                         <Table>
                           <TableHeader>
                             <TableRow><TableHead>Curso</TableHead><TableHead className="text-center w-32">Calificación</TableHead><TableHead className="text-right w-32">Estado</TableHead></TableRow>
@@ -193,6 +203,13 @@ export default function PerfilPage() {
                     </CardContent>
                 </Card>
                 <div className="space-y-6">
+                    <Card>
+                        <CardHeader><CardTitle className="flex items-center gap-2"><CalendarDays/>Antigüedad</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div><Label>Fecha de Ingreso</Label><p className="text-2xl font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
+                            <div><Label>Tiempo en la Empresa</Label><p className="text-lg font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
+                        </CardContent>
+                    </Card>
                     <Card>
                         <CardHeader><CardTitle className="flex items-center gap-2"><Award/>Evaluaciones</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
@@ -221,3 +238,4 @@ export default function PerfilPage() {
     </div>
   );
 }
+
