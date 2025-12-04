@@ -73,7 +73,7 @@ const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-5
 
 const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
     return (
-        <ScrollArea className="h-[50vh] rounded-lg border">
+        <ScrollArea className="h-[70vh] rounded-lg border">
             <Table>
                 <TableHeader className='sticky top-0 bg-background z-10'>
                     <TableRow>
@@ -162,7 +162,13 @@ export default function PerfilPage() {
     if (!fechaIngreso) return null;
     
     const duracion = intervalToDuration({ start: fechaIngreso, end: new Date() });
-    return `${duracion.years} años, ${duracion.months} meses y ${duracion.days} días`;
+    
+    const parts = [];
+    if (duracion.years && duracion.years > 0) parts.push(`${duracion.years} años`);
+    if (duracion.months && duracion.months > 0) parts.push(`${duracion.months} meses`);
+    if (duracion.days && duracion.days > 0) parts.push(`${duracion.days} días`);
+
+    return parts.join(', ');
   }, [selectedEmpleado]);
 
 
@@ -295,3 +301,4 @@ export default function PerfilPage() {
     </div>
   );
 }
+
