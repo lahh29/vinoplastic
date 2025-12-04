@@ -114,6 +114,31 @@
             "role": { "type": "string", "enum": ["admin", "lector"] }
         },
         "required": ["email", "role"]
+    },
+    "Vacacion": {
+      "title": "Vacación",
+      "description": "Represents a single vacation or leave entry for an employee.",
+      "type": "object",
+      "properties": {
+        "id_empleado": { "type": "string" },
+        "nombre_empleado": { "type": "string" },
+        "fecha_inicio": { "type": "string", "format": "date-time" },
+        "fecha_fin": { "type": "string", "format": "date-time" },
+        "tipo": { "type": "string", "enum": ["Vacaciones", "Permiso", "Incapacidad", "Falta"] },
+        "comentarios": { "type": "string" },
+        "creado_el": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id_empleado", "nombre_empleado", "fecha_inicio", "fecha_fin", "tipo"]
+    },
+    "DiaFestivo": {
+      "title": "Día Festivo",
+      "description": "Represents an official non-working day.",
+      "type": "object",
+      "properties": {
+        "fecha": { "type": "string", "format": "date-time" },
+        "nombre": { "type": "string" }
+      },
+      "required": ["fecha", "nombre"]
     }
   },
   "auth": {
@@ -173,6 +198,24 @@
           "schema": { "$ref": "#/entities/Usuario" },
           "description": "Stores platform user roles for dynamic access control.",
           "params": [{ "name": "usuarioId", "description": "The user's UID from Firebase Authentication." }]
+        }
+      },
+       {
+        "path": "/vacaciones/{vacacionId}",
+        "definition": {
+          "entityName": "Vacacion",
+          "schema": { "$ref": "#/entities/Vacacion" },
+          "description": "Stores individual leave records for all employees.",
+          "params": [{ "name": "vacacionId", "description": "A unique ID for the leave record." }]
+        }
+      },
+      {
+        "path": "/dias_festivos/{diaId}",
+        "definition": {
+          "entityName": "DiaFestivo",
+          "schema": { "$ref": "#/entities/DiaFestivo" },
+          "description": "Stores official non-working days for the year.",
+          "params": [{ "name": "diaId", "description": "A unique ID for the holiday, e.g., 'ano_nuevo_2024'." }]
         }
       }
     ]

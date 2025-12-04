@@ -50,6 +50,19 @@ export default function InicioPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <Link href="/vacaciones" className="block hover:no-underline group">
+            <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-primary/50">
+                <CardHeader className="p-6">
+                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
+                        <CalendarClock className="h-6 w-6 text-primary"/>
+                        Gestión de Vacaciones
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 pt-0">
+                    <CardDescription>Visualiza el calendario de ausencias y programa las vacaciones del personal.</CardDescription>
+                </CardContent>
+            </Card>
+        </Link>
         <Link href="/diagnostico/puestos" className="block hover:no-underline group">
             <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-primary/50">
                 <CardHeader className="p-6">
@@ -99,19 +112,6 @@ export default function InicioPage() {
                 </CardHeader>
                 <CardContent className="p-6 pt-0">
                     <CardDescription>Visualiza la lógica y requisitos para los cambios de categoría en cada puesto.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-        <Link href="/reportes" className="block hover:no-underline group">
-            <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-primary/50">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <FileDown className="h-6 w-6 text-primary"/>
-                        Generar Reportes
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Exporta datos clave de personal, capacitación y cumplimiento a archivos CSV.</CardDescription>
                 </CardContent>
             </Card>
         </Link>
