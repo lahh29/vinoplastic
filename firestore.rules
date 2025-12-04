@@ -21,8 +21,8 @@ service cloud.firestore {
         return isSignedIn() && getUserRole() == 'lector';
     }
     
-    function isEmpleado() {
-      return isSignedIn() && getUserRole() == 'empleado' && request.auth.uid == resource.id;
+    function isEmpleado(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
     function canRead() {
@@ -31,7 +31,7 @@ service cloud.firestore {
     
     match /usuarios/{userId} {
       allow list: if canRead();
-      allow get: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
+      allow get: if canRead() || isEmpleado(userId);
       allow write, delete: if isAdmin();
     }
     
@@ -41,7 +41,8 @@ service cloud.firestore {
     }
 
     match /Plantilla/{empleadoId} {
-        allow read: if canRead();
+        allow list: if canRead();
+        allow get: if canRead() || get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.id_empleado == empleadoId;
         allow write: if isAdmin();
     }
 
@@ -61,12 +62,12 @@ service cloud.firestore {
     }
 
     match /historial_capacitacion/{empleadoId} {
-        allow read: if canRead();
+        allow read: if canRead() || get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.id_empleado == empleadoId;
         allow write: if isAdmin();
     }
     
     match /Promociones/{empleadoId} {
-      allow read: if canRead();
+      allow read: if canRead() || get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.id_empleado == empleadoId;
       allow write: if isAdmin();
     }
 
