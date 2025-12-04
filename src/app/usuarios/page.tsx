@@ -120,11 +120,13 @@ export default function UsuariosPage() {
 
         try {
             const userDocRef = doc(firestore, 'usuarios', selectedUser.id);
-            await setDocumentNonBlocking(userDocRef, {
+            const dataToSave = {
                 nombre: selectedUser.nombre || '',
                 role: selectedUser.role || 'lector',
                 id_empleado: selectedUser.id_empleado || ''
-            }, { merge: true });
+            };
+            
+            await setDoc(userDocRef, dataToSave, { merge: true });
 
             toast({
                 title: 'Éxito',
@@ -166,7 +168,7 @@ export default function UsuariosPage() {
         setIsSubmitting(true);
         try {
             const userDocRef = doc(firestore, 'usuarios', userToDelete.id);
-            await deleteDocumentNonBlocking(userDocRef);
+            await deleteDoc(userDocRef);
             toast({
                 title: 'Usuario Eliminado',
                 description: `El rol del usuario ${userToDelete.email} ha sido eliminado. La cuenta de autenticación aún existe.`,
