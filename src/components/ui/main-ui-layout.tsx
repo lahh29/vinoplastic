@@ -37,7 +37,7 @@ import { es } from 'date-fns/locale';
 import { AnimatedUserIcon } from '@/components/ui/animated-user-icon';
 import { motion } from 'framer-motion';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
 const navItems = [
@@ -133,8 +133,8 @@ function Notifications() {
   const notificationCount = notifications.expiringContracts.length + notifications.dueEvaluations.length;
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Dialog>
+      <DialogTrigger asChild>
         <DockIcon>
           <Bell className="h-5 w-5 text-muted-foreground" />
           {notificationCount > 0 && (
@@ -144,15 +144,15 @@ function Notifications() {
             </span>
           )}
         </DockIcon>
-      </SheetTrigger>
-      <SheetContent className="w-[400px] sm:w-[540px] p-0 flex flex-col">
-        <SheetHeader className="p-6 border-b">
-          <SheetTitle className="text-xl">Notificaciones</SheetTitle>
-          <SheetDescription>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-xl">Notificaciones</DialogTitle>
+          <DialogDescription>
             Alertas importantes sobre contratos y evaluaciones del personal.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="flex-1 overflow-y-auto space-y-6 p-6">
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-6 py-4">
           <div>
             <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2 mb-3">
               <AlertTriangle className="h-4 w-4 text-destructive"/> Contratos por Vencer
@@ -187,9 +187,9 @@ function Notifications() {
             </div>
           </div>
         </div>
-      {notificationCount === 0 && <p className="p-8 text-center text-sm text-muted-foreground">¡Sin notificaciones pendientes!</p>}
-      </SheetContent>
-    </Sheet>
+      {notificationCount === 0 && <p className="py-8 text-center text-sm text-muted-foreground">¡Sin notificaciones pendientes!</p>}
+      </DialogContent>
+    </Dialog>
   )
 }
 
