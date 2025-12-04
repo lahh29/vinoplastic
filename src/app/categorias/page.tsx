@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, UserCheck, ShieldCheck, ClipboardEdit, Calendar as CalendarIcon, Percent, BookOpen, Clock, Award, AlertCircle, Users, Briefcase, ChevronRight, ArrowRight, Loader2, CheckCircle2, XCircle, MinusCircle, UserX, UserRound, Sparkles } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -40,7 +40,7 @@ interface Empleado {
 }
 interface PerfilPuesto { id: string; nombre_puesto: string; cursos_obligatorios: string[]; }
 interface Historial { id: string; id_empleado: string; cursos: { id_curso: string; calificacion: number; }[]; }
-interface CursoCatalogo { id: string; nombre_oficial: string; }
+interface CursoCatalogo { id: string; id_curso: string; nombre_oficial: string; }
 interface Promocion { id: string; fecha_ultimo_cambio?: { toDate: () => Date }; examen_teorico?: number; evaluacion_desempeno?: number; no_apto?: boolean; }
 interface ReglaAscenso {
     id: string; // puesto_actual slug
@@ -79,22 +79,36 @@ type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Req
 const getStatusInfo = (empleado: EmpleadoPromocion, reglasAscenso: ReglaAscenso[]): { status: EstatusPromocion, message: string, color: string } => {
     if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto para promoción.', color: 'bg-zinc-500' };
     const puestoActual = empleado.puesto.titulo;
-    const esCategoriaA = puestoActual.endsWith(' A');
-    if (esCategoriaA && !reglasAscenso.some(r => r.puesto_actual === puestoActual)) return { status: 'Máxima Categoría', message: 'El empleado ha alcanzado la categoría más alta en su plan de carrera.', color: 'bg-yellow-500' };
     const regla = reglasAscenso.find(r => r.puesto_actual === puestoActual);
-    if (!regla) return { status: 'Pendiente', message: 'Puesto no aplica para plan de carrera o es la categoría inicial sin regla de ascenso.', color: 'bg-gray-400' };
+    if (!regla) {
+        // Si no hay regla, verificamos si existe una regla donde este puesto sea el "siguiente"
+        const esPuestoFinal = !reglasAscenso.some(r => r.puesto_siguiente === puestoActual);
+        const tieneCategoria = /[A-E]$/.test(puestoActual); // Verifica si el puesto termina en una letra de categoría
+        
+        if (tieneCategoria && esPuestoFinal) {
+             return { status: 'Máxima Categoría', message: 'El empleado ha alcanzado la categoría más alta en su plan de carrera.', color: 'bg-yellow-500' };
+        }
+        return { status: 'Pendiente', message: 'Este puesto no forma parte de un plan de carrera o es la categoría inicial.', color: 'bg-gray-400' };
+    }
+
+    const { meses_minimos, min_cobertura_matriz, min_evaluacion_desempeno, min_examen_teorico } = regla;
     const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : parseDate(empleado.fecha_ingreso);
     if (!fechaCambio) return { status: 'Pendiente', message: 'Se necesita registrar la fecha del último cambio o de ingreso para evaluar.', color: 'bg-gray-400' };
+    
     const mesesDesdeCambio = differenceInMonths(new Date(), fechaCambio);
-    const { meses_minimos, min_cobertura_matriz, min_evaluacion_desempeno, min_examen_teorico } = regla;
+
     if (mesesDesdeCambio < meses_minimos) return { status: 'En Progreso', message: `En período de espera. Necesita ${meses_minimos} meses, actualmente tiene ${mesesDesdeCambio}.`, color: 'bg-blue-500' };
+    
     const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
-    if (evaluacionDesempeno !== undefined && evaluacionDesempeno !== null && evaluacionDesempeno < min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Evaluación de desempeño inferior a ${min_evaluacion_desempeno} (actual: ${evaluacionDesempeno}).`, color: 'bg-orange-500' };
+    if (evaluacionDesempeno === undefined || evaluacionDesempeno === null || evaluacionDesempeno < min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Evaluación de desempeño pendiente o inferior a ${min_evaluacion_desempeno} (actual: ${evaluacionDesempeno ?? 'N/A'}).`, color: 'bg-orange-500' };
+
     const examenTeorico = empleado.promocionData?.examen_teorico;
     if (min_examen_teorico !== undefined && min_examen_teorico > 0) {
         if(examenTeorico === undefined || examenTeorico === null || examenTeorico < min_examen_teorico) return { status: 'Requiere Atención', message: `Examen teórico pendiente o inferior a ${min_examen_teorico}. Calificación actual: ${examenTeorico ?? 'N/A'}.`, color: 'bg-orange-500' };
     }
+    
     if (empleado.coberturaCursos < min_cobertura_matriz) return { status: 'Requiere Atención', message: `Tiempo de espera cumplido, pero requiere ${min_cobertura_matriz}% de cursos y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, color: 'bg-orange-500' };
+    
     return { status: 'Elegible', message: `Cumple con el tiempo, cursos y evaluación. ¡Listo para ser evaluado!`, color: 'bg-green-600' };
 };
 
@@ -384,30 +398,30 @@ export default function PromocionesPage() {
                             <AccordionTrigger className="px-4 py-3 text-lg font-medium"><div className="flex items-center gap-3"><ClipboardEdit/>Evaluaciones</div></AccordionTrigger>
                             <AccordionContent className="p-4 space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2"><Label htmlFor="eval_desempeno">Eval. Desempeño</Label><Input id="eval_desempeno" type="number" placeholder="0-100" value={evalDesempeno} onChange={e => setEvalDesempeno(e.target.value)} /></div>
-                                    <div className="space-y-2"><Label htmlFor="examen_teorico">Examen Teórico</Label><Input id="examen_teorico" type="number" placeholder="0-100" value={examenTeorico} onChange={e => setExamenTeorico(e.target.value)} /></div>
+                                    <div className="space-y-2"><Label htmlFor="eval_desempeno">Eval. Desempeño</Label><Input id="eval_desempeno" type="number" placeholder="0-100" value={evalDesempeno} onChange={e => setEvalDesempeno(e.target.value)} disabled={!isAdmin} /></div>
+                                    <div className="space-y-2"><Label htmlFor="examen_teorico">Examen Teórico</Label><Input id="examen_teorico" type="number" placeholder="0-100" value={examenTeorico} onChange={e => setExamenTeorico(e.target.value)} disabled={!isAdmin} /></div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="fecha_cambio">Fecha de Último Cambio/Ingreso</Label>
-                                    <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !fechaCambio && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4"/>{fechaCambio ? format(fechaCambio, "PPP", { locale: es }) : <span>Selecciona fecha</span>}</Button></PopoverTrigger>
+                                    <Popover><PopoverTrigger asChild><Button variant="outline" disabled={!isAdmin} className={cn("w-full justify-start text-left font-normal", !fechaCambio && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4"/>{fechaCambio ? format(fechaCambio, "PPP", { locale: es }) : <span>Selecciona fecha</span>}</Button></PopoverTrigger>
                                     <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={fechaCambio} onSelect={setFechaCambio} initialFocus /></PopoverContent></Popover>
                                 </div>
-                                <div className="flex justify-end"><Button onClick={handleSave} disabled={isSubmitting}>{isSubmitting ? <Loader2 className="animate-spin mr-2"/> : null}Guardar Evaluaciones</Button></div>
+                                {isAdmin && <div className="flex justify-end"><Button onClick={handleSave} disabled={isSubmitting}>{isSubmitting ? <Loader2 className="animate-spin mr-2"/> : null}Guardar Evaluaciones</Button></div>}
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="cursos" className="border rounded-lg">
                             <AccordionTrigger className="px-4 py-3 text-lg font-medium"><div className="flex items-center gap-3"><BookOpen/>Matriz de Habilidades</div></AccordionTrigger>
                             <AccordionContent className="p-4 space-y-4 max-h-80 overflow-y-auto">
                                 <h4 className="font-semibold text-red-500">Pendientes ({selectedEmpleado.cursosPendientes.length})</h4>
-                                <ul className="list-disc list-inside space-y-1 text-sm">{selectedEmpleado.cursosPendientes.map(c => <li key={c.id}>{c.nombre_oficial}</li>)}</ul>
+                                <ul className="list-disc list-inside space-y-1 text-sm">{selectedEmpleado.cursosPendientes.length > 0 ? selectedEmpleado.cursosPendientes.map(c => <li key={c.id}>{c.nombre_oficial}</li>) : <li className="list-none text-muted-foreground">¡Ninguno!</li>}</ul>
                                 <h4 className="font-semibold text-green-500 pt-4">Completados ({selectedEmpleado.cursosCompletados.length})</h4>
-                                <ul className="list-disc list-inside space-y-1 text-sm">{selectedEmpleado.cursosCompletados.map(c => <li key={c.id}>{c.nombre_oficial}</li>)}</ul>
+                                <ul className="list-disc list-inside space-y-1 text-sm">{selectedEmpleado.cursosCompletados.length > 0 ? selectedEmpleado.cursosCompletados.map(c => <li key={c.id}>{c.nombre_oficial}</li>) : <li className="list-none text-muted-foreground">Ninguno aún.</li>}</ul>
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
                 </div>
                 </ScrollArea>
-                <SheetFooter className="p-6 border-t gap-2">
+                {isAdmin && <SheetFooter className="p-6 border-t gap-2">
                      <Button variant="outline" onClick={() => setEmpleadoNoApto(selectedEmpleado)} className={selectedEmpleado.promocionData?.no_apto ? "border-green-500 text-green-500" : "border-red-500 text-red-500"}>
                         {selectedEmpleado.promocionData?.no_apto ? <UserCheck className="h-4 w-4 mr-2"/> : <UserX className="h-4 w-4 mr-2"/>}
                         {selectedEmpleado.promocionData?.no_apto ? "Marcar como Apto" : "Marcar como No Apto"}
@@ -415,7 +429,7 @@ export default function PromocionesPage() {
                      <Button onClick={() => setEmpleadoAPromover(selectedEmpleado)} className="bg-green-600 hover:bg-green-700" disabled={getStatusInfo(selectedEmpleado, reglasAscenso || []).status !== 'Elegible'}>
                         <Award className="h-4 w-4 mr-2"/>Promover
                      </Button>
-                </SheetFooter>
+                </SheetFooter>}
             </SheetContent>
         </Sheet>
       )}
@@ -443,4 +457,3 @@ export default function PromocionesPage() {
     </div>
   );
 }
-
