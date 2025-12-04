@@ -86,28 +86,28 @@ export default function PortalPage() {
   const { data: empleadosData, isLoading: loadingEmpleado } = useCollection<Empleado>(empleadoQuery);
   const empleado = useMemo(() => (empleadosData && empleadosData.length > 0) ? empleadosData[0] : null, [empleadosData]);
   
+  const historialRef = useMemoFirebase(() => usuarioData?.id_empleado ? doc(firestore, 'historial_capacitacion', usuarioData.id_empleado) : null, [firestore, usuarioData]);
+  const promocionRef = useMemoFirebase(() => usuarioData?.id_empleado ? doc(firestore, 'Promociones', usuarioData.id_empleado) : null, [firestore, usuarioData]);
+
+  const { data: historial, isLoading: l3 } = useDoc<Historial>(historialRef);
+  const { data: promocionData, isLoading: l4 } = useDoc<Promocion>(promocionRef);
+
   const perfilesRef = useMemoFirebase(() => collection(firestore, 'perfiles_puesto'), [firestore]);
-  const historialRef = useMemoFirebase(() => collection(firestore, 'historial_capacitacion'), [firestore]);
-  const promocionesRef = useMemoFirebase(() => collection(firestore, 'Promociones'), [firestore]);
   const reglasAscensoRef = useMemoFirebase(() => collection(firestore, 'reglas_ascenso'), [firestore]);
   const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
 
   const { data: perfiles, isLoading: l2 } = useCollection<PerfilPuesto>(perfilesRef);
-  const { data: historiales, isLoading: l3 } = useCollection<Historial>(historialRef);
-  const { data: promociones, isLoading: l4 } = useCollection<Promocion>(promocionesRef);
   const { data: reglasAscenso, isLoading: l5 } = useCollection<ReglaAscenso>(reglasAscensoRef);
   const { data: catalogoCursos, isLoading: l6 } = useCollection<CursoCatalogo>(catalogoCursosRef);
 
   const isLoading = isUserLoading || loadingEmpleado || l2 || l3 || l4 || l5 || l6;
 
   useEffect(() => {
-    if (isLoading || !empleado || !perfiles || !historiales || !promociones || !catalogoCursos) {
+    if (isLoading || !empleado || !perfiles || !catalogoCursos) {
         return;
     }
     
     const perfil = perfiles.find(p => p.nombre_puesto === empleado.puesto.titulo);
-    const historial = historiales.find(h => h.id_empleado === empleado.id_empleado);
-    const promocionData = promociones.find(p => p.id === empleado.id_empleado);
     const catalogoMap = new Map(catalogoCursos.map(c => [c.id_curso, c]));
     
     let cursosConEstado: EmpleadoPerfil['cursosConEstado'] = [];
@@ -129,9 +129,9 @@ export default function PortalPage() {
         coberturaCursos = perfil.cursos_obligatorios.length > 0 ? (aprobados / perfil.cursos_obligatorios.length) * 100 : 100;
     }
     
-    setEmpleadoPerfil({ ...empleado, promocionData, coberturaCursos, cursosConEstado });
+    setEmpleadoPerfil({ ...empleado, promocionData: promocionData ?? undefined, coberturaCursos, cursosConEstado });
     
-  }, [isLoading, empleado, perfiles, historiales, promociones, catalogoCursos]);
+  }, [isLoading, empleado, perfiles, historial, promocionData, catalogoCursos]);
   
   const antiguedad = useMemo(() => {
     if (!empleadoPerfil?.fecha_ingreso) return null;

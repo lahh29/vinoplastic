@@ -66,12 +66,14 @@ service cloud.firestore {
     }
 
     match /historial_capacitacion/{empleadoId} {
-        allow read: if canRead() || (isEmpleado() && getUserData().id_empleado == empleadoId);
+        allow list: if canRead();
+        allow get: if canRead() || (isEmpleado() && getUserData().id_empleado == empleadoId);
         allow write: if isAdmin();
     }
     
     match /Promociones/{empleadoId} {
-      allow read: if canRead() || (isEmpleado() && getUserData().id_empleado == empleadoId);
+      allow list: if canRead();
+      allow get: if canRead() || (isEmpleado() && getUserData().id_empleado == empleadoId);
       allow write: if isAdmin();
     }
 
