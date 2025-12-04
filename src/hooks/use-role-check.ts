@@ -8,13 +8,13 @@ import { useToast } from '@/hooks/use-toast';
 import { ShieldAlert } from 'lucide-react';
 
 interface UserData {
-    role: 'admin' | 'lector';
+    role: 'admin' | 'lector' | 'empleado';
 }
 
 /**
  * Hook personalizado para verificar el rol del usuario y gestionar permisos.
  * @param {boolean} showToast - Si es true, muestra una notificación toast cuando un no-admin intenta una acción.
- * @returns {{ isAdmin: boolean, checkAdminAndExecute: (action: () => void) => void }}
+ * @returns {{ isAdmin: boolean, isLector: boolean, checkAdminAndExecute: (action: () => void) => void }}
  */
 export function useRoleCheck(showToast = true) {
   const { user } = useUser();
@@ -28,6 +28,8 @@ export function useRoleCheck(showToast = true) {
   const { data: currentUserData } = useDoc<UserData>(currentUserInfoRef);
 
   const isAdmin = useMemo(() => currentUserData?.role === 'admin', [currentUserData]);
+  const isLector = useMemo(() => currentUserData?.role === 'lector', [currentUserData]);
+
 
   const checkAdminAndExecute = (action: () => void) => {
     if (isAdmin) {
@@ -35,11 +37,11 @@ export function useRoleCheck(showToast = true) {
     } else if (showToast) {
       toast({
         title: "Acción no permitida",
-        description: "Tu rol de 'lector' no tiene permiso para realizar esta acción.",
+        description: "No tienes permisos de administrador para realizar esta acción.",
         variant: 'destructive',
       });
     }
   };
 
-  return { isAdmin, checkAdminAndExecute };
+  return { isAdmin, isLector, checkAdminAndExecute };
 }

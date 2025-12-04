@@ -21,7 +21,7 @@ interface UserData {
     id: string; // Corresponds to UID
     email: string;
     nombre?: string;
-    role: 'admin' | 'lector';
+    role: 'admin' | 'lector' | 'empleado';
 }
 
 const navLinks = [
@@ -45,7 +45,7 @@ export default function InicioPage() {
     
     useEffect(() => {
         if (!isUserLoading && !isRoleLoading && currentUserData) {
-            if (currentUserData.role === 'lector') {
+            if (currentUserData.role === 'empleado') {
                 router.replace('/portal');
             }
         }
@@ -55,7 +55,7 @@ export default function InicioPage() {
         return currentUserData?.nombre || user?.displayName || 'Usuario';
     }, [currentUserData, user]);
 
-    if (isUserLoading || isRoleLoading || currentUserData?.role === 'lector') {
+    if (isUserLoading || isRoleLoading || currentUserData?.role === 'empleado') {
         return (
             <div className="flex h-full w-full items-center justify-center">
                 <div className="flex flex-col items-center gap-2">
@@ -105,4 +105,3 @@ export default function InicioPage() {
     </div>
   );
 }
-

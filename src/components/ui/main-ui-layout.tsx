@@ -51,6 +51,15 @@ const adminNavItems = [
   { href: '/formacion', icon: GraduationCap, label: 'Formación' },
 ];
 
+const lectorNavItems = [
+  { href: '/inicio', icon: Home, label: 'Inicio' },
+  { href: '/contratos', icon: FileText, label: 'Contratos' },
+  { href: '/empleados', icon: Users, label: 'Empleados' },
+  { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
+  { href: '/categorias', icon: Shapes, label: 'Categorías' },
+  { href: '/formacion', icon: GraduationCap, label: 'Formación' },
+];
+
 const employeeNavItems = [
   { href: '/portal', icon: Home, label: 'Mi Portal' },
 ];
@@ -74,7 +83,7 @@ interface UserData {
     id: string;
     email: string;
     nombre?: string;
-    role: 'admin' | 'lector';
+    role: 'admin' | 'lector' | 'empleado';
 }
 
 const getDate = (timestamp: any): Date | null => {
@@ -244,8 +253,8 @@ export default function MainUILayout({
     );
   }
   
-  const isAdmin = currentUserData?.role === 'admin';
-  const navItems = isAdmin ? adminNavItems : employeeNavItems;
+  const userRole = currentUserData?.role;
+  const navItems = userRole === 'admin' ? adminNavItems : userRole === 'lector' ? lectorNavItems : employeeNavItems;
 
   const isActive = (href: string) => {
     if (href === '/inicio' || href === '/portal') {
@@ -289,7 +298,7 @@ export default function MainUILayout({
                         </Tooltip>
                     ))}
 
-                    {isAdmin && (
+                    {(userRole === 'admin' || userRole === 'lector') && (
                         <>
                             <div className="border-l h-full mx-2 border-border/60" />
                             <Tooltip>
@@ -321,7 +330,7 @@ export default function MainUILayout({
                                       </div>
                                   </DropdownMenuLabel>
                                   <DropdownMenuSeparator />
-                                  {isAdmin && (
+                                  {userRole === 'admin' && (
                                     <DropdownMenuItem asChild>
                                         <Link href="/usuarios">
                                         <Users className="mr-2 h-4 w-4" />

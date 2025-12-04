@@ -111,7 +111,7 @@
         "properties": {
             "nombre": { "type": "string" },
             "email": { "type": "string", "format": "email" },
-            "role": { "type": "string", "enum": ["admin", "lector"] }
+            "role": { "type": "string", "enum": ["admin", "lector", "empleado"] }
         },
         "required": ["email", "role"]
     },
