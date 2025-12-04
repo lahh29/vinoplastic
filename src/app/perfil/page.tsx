@@ -180,8 +180,8 @@ export default function PerfilPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="lg:col-span-2">
                     <CardHeader><CardTitle className="flex items-center gap-2"><BookOpen/>Matriz de Habilidades</CardTitle></CardHeader>
-                    <CardContent>
-                       <ScrollArea className="max-h-[50vh]">
+                    <CardContent className="p-0">
+                       <ScrollArea className="max-h-[50vh] p-6 pt-0">
                         <Table>
                           <TableHeader>
                             <TableRow><TableHead>Curso</TableHead><TableHead className="text-center w-32">Calificación</TableHead><TableHead className="text-right w-32">Estado</TableHead></TableRow>
