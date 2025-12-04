@@ -40,10 +40,10 @@ const badgeColors: Record<Vacacion['tipo'], string> = {
 
 const DayWithEvents = ({ date, events }: { date: Date, events: (Vacacion | DiaFestivo)[] }) => {
     return (
-        <div className="relative h-full w-full">
+        <div className="relative h-full w-full flex items-center justify-center">
             <span>{date.getDate()}</span>
             {events.length > 0 && (
-                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-0.5">
                     {events.slice(0, 3).map((event, index) => (
                         <div key={index} className={cn(
                             "h-1.5 w-1.5 rounded-full",
@@ -124,7 +124,7 @@ export default function VacacionesPage() {
                 <CardContent className="flex justify-center">
                     <Calendar
                         mode="single"
-                        className="p-0"
+                        className="p-0 w-full"
                         locale={es}
                         numberOfMonths={2}
                         components={{
@@ -146,7 +146,7 @@ export default function VacacionesPage() {
                         }}
                         modifiersClassNames={{
                             festivo: 'text-orange-500 font-bold',
-                            vacaciones: 'bg-blue-100 dark:bg-blue-900/50'
+                            vacaciones: 'bg-blue-100/10 dark:bg-blue-900/30'
                         }}
                     />
                 </CardContent>
