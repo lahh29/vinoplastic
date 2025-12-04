@@ -47,7 +47,7 @@ export default function LoginPage() {
                 className="mb-8"
             >
                 <h1 className="text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400">
-                    VinoPlastic
+                    VIÑOPLASTIC
                 </h1>
                 <p className="mt-2 text-lg text-slate-300">
                     Portal de Recursos Humanos
