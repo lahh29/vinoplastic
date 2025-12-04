@@ -12,7 +12,6 @@ import { Check, ChevronsUpDown, Loader2, User, Briefcase, BookOpen, CheckCircle2
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -166,74 +165,69 @@ export default function PerfilPage() {
       {isLoading && selectedEmpleado && <Loader2 className="mx-auto h-8 w-8 animate-spin" />}
       
       {selectedEmpleado && !isLoading && (
-        <div className="space-y-6">
-            <Card className="overflow-hidden">
-                <CardHeader className={cn("p-6", statusColors[statusInfo!.status])}>
-                    <CardTitle className="text-2xl text-white flex items-center justify-between">
-                        <div>{selectedEmpleado.nombre_completo}</div>
-                        <Badge variant="secondary" className="text-base">{statusInfo?.status}</Badge>
-                    </CardTitle>
-                    <CardDescription className="text-white/80">{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</CardDescription>
-                </CardHeader>
-            </Card>
+        <Card className="overflow-hidden">
+            <CardHeader className={cn("p-6", statusColors[statusInfo!.status])}>
+                <CardTitle className="text-2xl text-white flex items-center justify-between">
+                    <div>{selectedEmpleado.nombre_completo}</div>
+                    <Badge variant="secondary" className="text-base">{statusInfo?.status}</Badge>
+                </CardTitle>
+                <CardDescription className="text-white/80">{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</CardDescription>
+            </CardHeader>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="lg:col-span-2">
-                    <CardHeader><CardTitle className="flex items-center gap-2"><BookOpen/>Matriz de Habilidades</CardTitle></CardHeader>
-                    <CardContent className="p-0">
-                       <ScrollArea className="max-h-[50vh] p-6 pt-0">
-                        <Table>
-                          <TableHeader>
-                            <TableRow><TableHead>Curso</TableHead><TableHead className="text-center w-32">Calificación</TableHead><TableHead className="text-right w-32">Estado</TableHead></TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {selectedEmpleado.cursosConEstado.map(({ curso, estado, calificacion }) => (
-                              <TableRow key={curso.id}>
-                                <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
-                                <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
-                                <TableCell className="text-right">
-                                    <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                             {selectedEmpleado.cursosConEstado.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24">No hay cursos asignados a este puesto.</TableCell></TableRow>}
-                          </TableBody>
-                        </Table>
-                       </ScrollArea>
-                    </CardContent>
-                </Card>
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader><CardTitle className="flex items-center gap-2"><CalendarDays/>Antigüedad</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div><Label>Fecha de Ingreso</Label><p className="text-2xl font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
-                            <div><Label>Tiempo en la Empresa</Label><p className="text-lg font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader><CardTitle className="flex items-center gap-2"><Award/>Evaluaciones</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div><Label>Evaluación de Desempeño</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></div>
-                            <div><Label>Examen Teórico</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.examen_teorico ?? 'N/A'}</p></div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader><CardTitle className="flex items-center gap-2"><Target/>Plan de Carrera</CardTitle></CardHeader>
-                        <CardContent>
-                            {reglaAplicable ? (
-                                <ul className="space-y-2 text-sm">
-                                    <li className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary"/>Siguiente Puesto: <span className="font-bold">{reglaAplicable.puesto_siguiente}</span></li>
-                                    <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary"/>Meses Mínimos: <span className="font-bold">{reglaAplicable.meses_minimos}</span></li>
-                                    <li className="flex items-center gap-2"><Award className="h-4 w-4 text-primary"/>Desempeño ≥ <span className="font-bold">{reglaAplicable.min_evaluacion_desempeno}</span></li>
-                                    {reglaAplicable.min_examen_teorico && <li className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary"/>Examen ≥ <span className="font-bold">{reglaAplicable.min_examen_teorico}%</span></li>}
-                                    <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary"/>Cursos ≥ <span className="font-bold">{reglaAplicable.min_cobertura_matriz}%</span></li>
-                                </ul>
-                            ) : (<p className="text-sm text-muted-foreground">No hay plan de carrera definido para este puesto.</p>)}
-                        </CardContent>
-                    </Card>
+            <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="space-y-4">
+                        <h3 className="font-semibold text-lg flex items-center gap-2"><CalendarDays/> Antigüedad</h3>
+                        <div><Label>Fecha de Ingreso</Label><p className="text-lg font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
+                        <div><Label>Tiempo en la Empresa</Label><p className="text-md font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
+                    </div>
+                    <div className="space-y-4">
+                        <h3 className="font-semibold text-lg flex items-center gap-2"><Award/> Evaluaciones</h3>
+                        <div><Label>Evaluación de Desempeño</Label><p className="text-lg font-bold">{selectedEmpleado.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></div>
+                        <div><Label>Examen Teórico</Label><p className="text-lg font-bold">{selectedEmpleado.promocionData?.examen_teorico ?? 'N/A'}</p></div>
+                    </div>
+                    <div className="space-y-4">
+                        <h3 className="font-semibold text-lg flex items-center gap-2"><Target/> Plan de Carrera</h3>
+                        {reglaAplicable ? (
+                            <ul className="space-y-1 text-sm">
+                                <li className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary"/>Siguiente Puesto: <span className="font-bold">{reglaAplicable.puesto_siguiente}</span></li>
+                                <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary"/>Meses Mínimos: <span className="font-bold">{reglaAplicable.meses_minimos}</span></li>
+                                <li className="flex items-center gap-2"><Award className="h-4 w-4 text-primary"/>Desempeño ≥ <span className="font-bold">{reglaAplicable.min_evaluacion_desempeno}</span></li>
+                                {reglaAplicable.min_examen_teorico && <li className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary"/>Examen ≥ <span className="font-bold">{reglaAplicable.min_examen_teorico}%</span></li>}
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary"/>Cursos ≥ <span className="font-bold">{reglaAplicable.min_cobertura_matriz}%</span></li>
+                            </ul>
+                        ) : (<p className="text-sm text-muted-foreground">No hay plan de carrera definido para este puesto.</p>)}
+                    </div>
                 </div>
-            </div>
-        </div>
+                
+                <div>
+                  <h3 className="font-semibold text-lg flex items-center gap-2 mb-4"><BookOpen/>Matriz de Habilidades</h3>
+                  <div className="border rounded-lg overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Curso</TableHead>
+                          <TableHead className="text-center w-32">Calificación</TableHead>
+                          <TableHead className="text-right w-32">Estado</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {selectedEmpleado.cursosConEstado.map(({ curso, estado, calificacion }) => (
+                          <TableRow key={curso.id}>
+                            <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
+                            <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
+                            <TableCell className="text-right">
+                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                         {selectedEmpleado.cursosConEstado.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+            </CardContent>
+        </Card>
       )}
     </div>
   );
