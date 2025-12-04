@@ -88,7 +88,7 @@ const formatDate = (timestamp: any): string => {
 function Notifications() {
   const firestore = useFirestore();
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
-  const { data: contratos } = useCollection<Contrato>(contratosRef);
+  const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
   const [isOpen, setIsOpen] = React.useState(false);
   
   const [notifications, setNotifications] = React.useState<{ expiringContracts: any[], dueEvaluations: any[] }>({ expiringContracts: [], dueEvaluations: [] });
@@ -99,7 +99,7 @@ function Notifications() {
   }, []);
 
   React.useEffect(() => {
-    if (!contratos || !isClient) return;
+    if (!contratos || !isClient || isLoading) return;
 
     const today = new Date();
     const fifteenDaysFromNow = addDays(today, 15);
@@ -133,7 +133,7 @@ function Notifications() {
       expiringContracts: expiring.sort((a,b) => (getDate(a.fechas_contrato.termino)?.getTime() ?? 0) - (getDate(b.fechas_contrato.termino)?.getTime() ?? 0)),
       dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0))
     });
-  }, [contratos, isClient]);
+  }, [contratos, isClient, isLoading]);
 
   const notificationCount = notifications.expiringContracts.length + notifications.dueEvaluations.length;
   
@@ -253,6 +253,13 @@ export default function InicioLayout({
     );
   }
   
+  const isActive = (href: string) => {
+    if (href === '/inicio') {
+        return pathname === href;
+    }
+    return pathname.startsWith(href);
+  }
+
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-transparent">
         <StarsBackground starColor='#fff' speed={0.5} className="absolute inset-0 z-[-1]"/>
@@ -279,7 +286,7 @@ export default function InicioLayout({
                         <Tooltip key={item.label}>
                             <TooltipTrigger asChild>
                                 <Link href={item.href}>
-                                    <DockIcon className={pathname.startsWith(item.href) ? 'bg-primary/10 text-primary' : ''}>
+                                    <DockIcon className={isActive(item.href) ? 'bg-primary/10 text-primary' : ''}>
                                         <item.icon className="h-6 w-6" />
                                     </DockIcon>
                                 </Link>
