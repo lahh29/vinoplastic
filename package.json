@@ -11,7 +11,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "upload:cursos": "node subir_cursos_firebase.js",
-    "upload:fechas": "node src/scripts/actualizar_fechas_ingreso.js"
+    "upload:fechas": "node src/scripts/actualizar_fechas_ingreso.js",
+    "upload:festivos": "node src/scripts/subir_dias_festivos.js"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.20.0",
