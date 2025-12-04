@@ -86,11 +86,12 @@ export default function UsuariosPage() {
                                     <TableHead>Usuario</TableHead>
                                     <TableHead>Rol Asignado</TableHead>
                                     <TableHead>Email</TableHead>
+                                    <TableHead>ID Empleado</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {loadingUsers ? (
-                                    <TableRow><TableCell colSpan={3} className="h-24 text-center">Cargando datos de usuarios...</TableCell></TableRow>
+                                    <TableRow><TableCell colSpan={4} className="h-24 text-center">Cargando datos de usuarios...</TableCell></TableRow>
                                 ) : filteredUsers.map((user) => (
                                     <TableRow key={user.id}>
                                         <TableCell className="font-medium">
@@ -103,6 +104,9 @@ export default function UsuariosPage() {
                                         </TableCell>
                                         <TableCell className="text-muted-foreground">
                                             {user.email}
+                                        </TableCell>
+                                        <TableCell className="font-mono text-xs text-muted-foreground">
+                                            {user.id_empleado || 'No asignado'}
                                         </TableCell>
                                     </TableRow>
                                 ))}
