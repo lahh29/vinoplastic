@@ -14,6 +14,8 @@ import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fn
 import { es } from 'date-fns/locale';
 import { Progress } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Interfaces
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
