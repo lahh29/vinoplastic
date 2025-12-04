@@ -17,7 +17,7 @@ import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fn
 import { es } from 'date-fns/locale';
 import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 // Interfaces
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
@@ -218,10 +218,9 @@ export default function PerfilPage() {
                 <CardHeader>
                     <CardTitle className="text-2xl text-white flex items-center justify-between">
                         <div>{selectedEmpleado.nombre_completo}</div>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                                <Badge variant="secondary" className="text-base flex items-center gap-2 cursor-help">
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                 <Badge variant="secondary" className="text-base flex items-center gap-2 cursor-pointer">
                                     {statusInfo?.status}
                                     {statusInfo?.status === 'Máxima Categoría' && (
                                         <motion.div
@@ -232,12 +231,14 @@ export default function PerfilPage() {
                                         </motion.div>
                                     )}
                                 </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{statusInfo?.message}</p>
-                            </TooltipContent>
-                           </Tooltip>
-                        </TooltipProvider>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Detalle del Estatus: {statusInfo?.status}</DialogTitle>
+                                    <DialogDescription className="pt-2">{statusInfo?.message}</DialogDescription>
+                                </DialogHeader>
+                            </DialogContent>
+                        </Dialog>
                     </CardTitle>
                     <CardDescription className="text-white/80">{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</CardDescription>
                 </CardHeader>
@@ -293,8 +294,8 @@ export default function PerfilPage() {
                         )}
                     </div>
                 </CardHeader>
-                <CardContent className="pt-0">
-                   <CursosTable cursos={selectedEmpleado.cursosConEstado} />
+                <CardContent>
+                    <CursosTable cursos={selectedEmpleado.cursosConEstado} />
                 </CardContent>
             </Card>
         </motion.div>
