@@ -181,7 +181,7 @@ export default function PerfilPage() {
                 <Card className="lg:col-span-2">
                     <CardHeader><CardTitle className="flex items-center gap-2"><BookOpen/>Matriz de Habilidades</CardTitle></CardHeader>
                     <CardContent>
-                       <ScrollArea className="h-[50vh]">
+                       <ScrollArea className="max-h-[50vh]">
                         <Table>
                           <TableHeader>
                             <TableRow><TableHead>Curso</TableHead><TableHead className="text-center w-32">Calificación</TableHead><TableHead className="text-right w-32">Estado</TableHead></TableRow>
@@ -238,4 +238,3 @@ export default function PerfilPage() {
     </div>
   );
 }
-
