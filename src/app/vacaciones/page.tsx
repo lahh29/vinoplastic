@@ -10,7 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, Timestamp } from 'firebase/firestore';
 import { es } from 'date-fns/locale';
-import { addDays, isWithinInterval, startOfDay } from 'date-fns';
+import { addDays, isWithinInterval, startOfDay, format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
