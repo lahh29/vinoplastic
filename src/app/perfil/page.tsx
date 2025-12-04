@@ -220,7 +220,7 @@ export default function PerfilPage() {
                         <div>{selectedEmpleado.nombre_completo}</div>
                         <TooltipProvider>
                           <Tooltip>
-                            <TooltipTrigger asChild>
+                            <TooltipTrigger>
                                 <Badge variant="secondary" className="text-base flex items-center gap-2 cursor-help">
                                     {statusInfo?.status}
                                     {statusInfo?.status === 'Máxima Categoría' && (
@@ -293,7 +293,7 @@ export default function PerfilPage() {
                         )}
                     </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-0">
                    <CursosTable cursos={selectedEmpleado.cursosConEstado} />
                 </CardContent>
             </Card>
@@ -302,4 +302,3 @@ export default function PerfilPage() {
     </div>
   );
 }
-
