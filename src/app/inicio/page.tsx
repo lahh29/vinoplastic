@@ -50,10 +50,8 @@ export default function InicioPage() {
     const { data: currentUserData } = useDoc<UserData>(currentUserInfoRef);
     
     const userName = useMemo(() => {
-        if(currentUserData?.nombre) return currentUserData.nombre;
-        if(user?.displayName) return user.displayName;
-        return 'Usuario'
-    }, [currentUserData, user]);
+        return currentUserData?.nombre || 'Usuario';
+    }, [currentUserData]);
 
 
   return (
