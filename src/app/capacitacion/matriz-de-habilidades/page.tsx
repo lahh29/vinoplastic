@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -19,6 +20,8 @@ import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { useRoleCheck } from '@/hooks/use-role-check';
+
 
 interface Puesto {
   id: string;
@@ -40,6 +43,7 @@ interface PerfilPuesto {
 export default function MatrizDeHabilidadesPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { isAdmin, checkAdminAndExecute } = useRoleCheck();
 
   const plantillaRef = useMemoFirebase(() => collection(firestore, 'Plantilla'), [firestore]);
   const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
@@ -92,92 +96,98 @@ export default function MatrizDeHabilidadesPage() {
   }, [catalogoCursos, searchTerm]);
 
   const handleCursoToggle = (cursoId: string) => {
-    setSelectedCursos(prev => {
-      const newSelection = new Set(prev);
-      if (newSelection.has(cursoId)) {
-        newSelection.delete(cursoId);
-      } else {
-        newSelection.add(cursoId);
-      }
-      return newSelection;
+    checkAdminAndExecute(() => {
+        setSelectedCursos(prev => {
+        const newSelection = new Set(prev);
+        if (newSelection.has(cursoId)) {
+            newSelection.delete(cursoId);
+        } else {
+            newSelection.add(cursoId);
+        }
+        return newSelection;
+        });
     });
   };
 
   const handleSave = async () => {
-    if (!selectedPuesto || !firestore) return;
-    setIsSaving(true);
-    
-    const docId = selectedPuesto.id;
-    const docRef = doc(firestore, 'perfiles_puesto', docId);
+    checkAdminAndExecute(async () => {
+        if (!selectedPuesto || !firestore) return;
+        setIsSaving(true);
+        
+        const docId = selectedPuesto.id;
+        const docRef = doc(firestore, 'perfiles_puesto', docId);
 
-    const dataToSave = {
-        nombre_puesto: selectedPuesto.nombre,
-        cursos_obligatorios: Array.from(selectedCursos),
-        fecha_actualizacion: serverTimestamp()
-    };
-    
-    try {
-        await setDoc(docRef, dataToSave, { merge: true });
-        toast({
-            title: "¡Guardado con éxito!",
-            description: `Se han actualizado los cursos para el puesto de ${selectedPuesto.nombre}.`,
-            className: "bg-green-100 text-green-800 border-green-300",
-        });
-    } catch (error) {
-        console.error("Error saving profile:", error)
-        toast({
-            variant: "destructive",
-            title: "Error al guardar",
-            description: "No se pudieron guardar los cambios. Revisa los permisos e inténtalo de nuevo.",
-        });
-    } finally {
-        setIsSaving(false);
-    }
+        const dataToSave = {
+            nombre_puesto: selectedPuesto.nombre,
+            cursos_obligatorios: Array.from(selectedCursos),
+            fecha_actualizacion: serverTimestamp()
+        };
+        
+        try {
+            await setDoc(docRef, dataToSave, { merge: true });
+            toast({
+                title: "¡Guardado con éxito!",
+                description: `Se han actualizado los cursos para el puesto de ${selectedPuesto.nombre}.`,
+                className: "bg-green-100 text-green-800 border-green-300",
+            });
+        } catch (error) {
+            console.error("Error saving profile:", error)
+            toast({
+                variant: "destructive",
+                title: "Error al guardar",
+                description: "No se pudieron guardar los cambios. Revisa los permisos e inténtalo de nuevo.",
+            });
+        } finally {
+            setIsSaving(false);
+        }
+    });
   };
 
   const handleSaveNewCurso = async () => {
-    if (!newCursoName.trim() || !firestore) return;
-    setIsSavingCurso(true);
+    checkAdminAndExecute(async () => {
+        if (!newCursoName.trim() || !firestore) return;
+        setIsSavingCurso(true);
 
-    const id_curso = newCursoName.toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, '')
-      .trim()
-      .replace(/\s+/g, '_')
-      .replace(/-+/g, '_');
-      
-    if (!id_curso) {
-        toast({ variant: 'destructive', title: 'Nombre de curso inválido' });
-        setIsSavingCurso(false);
-        return;
-    }
-    
-    const docRef = doc(firestore, 'catalogo_cursos', id_curso);
+        const id_curso = newCursoName.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '_')
+        .replace(/-+/g, '_');
+        
+        if (!id_curso) {
+            toast({ variant: 'destructive', title: 'Nombre de curso inválido' });
+            setIsSavingCurso(false);
+            return;
+        }
+        
+        const docRef = doc(firestore, 'catalogo_cursos', id_curso);
 
-    const newCursoData = {
-      id_curso: id_curso,
-      nombre_oficial: newCursoName.trim()
-    };
+        const newCursoData = {
+        id_curso: id_curso,
+        nombre_oficial: newCursoName.trim()
+        };
 
-    try {
-      await setDoc(docRef, newCursoData, {merge: false});
-      toast({
-        title: "Curso creado",
-        description: `El curso "${newCursoName.trim()}" ha sido añadido al catálogo.`,
-        className: "bg-green-100 text-green-800 border-green-300",
-      });
-      setNewCursoName('');
-      setIsCursoDialogOpen(false);
-    } catch (error) {
-        console.error("Error creating course:", error);
+        try {
+        await setDoc(docRef, newCursoData, {merge: false});
         toast({
-            variant: "destructive",
-            title: "Error al crear curso",
-            description: "No se pudo guardar el nuevo curso. Es posible que ya exista.",
+            title: "Curso creado",
+            description: `El curso "${newCursoName.trim()}" ha sido añadido al catálogo.`,
+            className: "bg-green-100 text-green-800 border-green-300",
         });
-    } finally {
-      setIsSavingCurso(false);
-    }
+        setNewCursoName('');
+        setIsCursoDialogOpen(false);
+        } catch (error) {
+            console.error("Error creating course:", error);
+            toast({
+                variant: "destructive",
+                title: "Error al crear curso",
+                description: "No se pudo guardar el nuevo curso. Es posible que ya exista.",
+            });
+        } finally {
+        setIsSavingCurso(false);
+        }
+    });
   };
 
   const isLoading = isLoadingPlantilla || isLoadingCursos || isLoadingPerfiles;
@@ -221,12 +231,12 @@ export default function MatrizDeHabilidadesPage() {
               </CardDescription>
             </div>
             <div className='flex gap-2'>
-              <Button onClick={() => setIsCursoDialogOpen(true)} variant="outline">
+              <Button onClick={() => checkAdminAndExecute(() => setIsCursoDialogOpen(true))} variant="outline">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Crear Curso
               </Button>
               {selectedPuesto && (
-                <Button onClick={handleSave} disabled={isSaving}>
+                <Button onClick={handleSave} disabled={isSaving || !isAdmin}>
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   Guardar Cambios
                 </Button>
@@ -259,6 +269,7 @@ export default function MatrizDeHabilidadesPage() {
                                 id={curso.id}
                                 checked={selectedCursos.has(curso.id_curso)}
                                 onCheckedChange={() => handleCursoToggle(curso.id_curso)}
+                                disabled={!isAdmin}
                             />
                             <Label htmlFor={curso.id} className="text-sm font-normal cursor-pointer leading-tight">
                                 {curso.nombre_oficial}

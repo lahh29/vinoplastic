@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/select"
 import { addDays } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useRoleCheck } from '@/hooks/use-role-check';
 
 interface EmpleadoPuesto {
   departamento: string;
@@ -78,6 +79,7 @@ const initialEmpleadoState: Omit<Empleado, 'id'> = {
 
 export default function EmpleadosPage() {
   const firestore = useFirestore();
+  const { isAdmin, checkAdminAndExecute } = useRoleCheck();
   const plantillaRef = useMemoFirebase(() => firestore ? collection(firestore, 'Plantilla') : null, [firestore]);
   const { data: empleados, isLoading } = useCollection<Empleado>(plantillaRef);
 
@@ -89,6 +91,7 @@ export default function EmpleadosPage() {
   const filteredEmpleados = useMemo(() => {
     if (!empleados) return [];
     return empleados.filter((empleado: Empleado) => {
+      if (!empleado.id_empleado || !empleado.nombre_completo) return false;
       const search = searchTerm.toLowerCase();
       return (
         empleado.id_empleado.toLowerCase().includes(search) ||
@@ -124,14 +127,16 @@ export default function EmpleadosPage() {
   }, [empleados]);
 
   const handleOpenDialog = (empleado: Empleado | null) => {
-    if (empleado) {
-      const { id, ...empleadoData } = empleado;
-      setSelectedEmpleado(empleadoData);
-      setIsNewEmpleado(false);
-    } else {
-      setSelectedEmpleado(initialEmpleadoState);
-      setIsNewEmpleado(true);
-    }
+      checkAdminAndExecute(() => {
+        if (empleado) {
+          const { id, ...empleadoData } = empleado;
+          setSelectedEmpleado(empleadoData);
+          setIsNewEmpleado(false);
+        } else {
+          setSelectedEmpleado(initialEmpleadoState);
+          setIsNewEmpleado(true);
+        }
+      });
   };
 
   const handleCloseDialog = () => {
@@ -140,75 +145,81 @@ export default function EmpleadosPage() {
   };
   
   const handleSave = () => {
-    if (!selectedEmpleado || !firestore) return;
+    checkAdminAndExecute(() => {
+        if (!selectedEmpleado || !firestore) return;
 
-    const docId = selectedEmpleado.id_empleado;
-    if (!docId) {
-        alert('El ID de empleado es obligatorio.');
-        return;
-    }
+        const docId = selectedEmpleado.id_empleado;
+        if (!docId) {
+            alert('El ID de empleado es obligatorio.');
+            return;
+        }
 
-    const empleadoDocRef = doc(firestore, 'Plantilla', docId);
-    
-    // Guardar datos del empleado
-    setDocumentNonBlocking(empleadoDocRef, selectedEmpleado, { merge: !isNewEmpleado });
-
-    // Si es un empleado nuevo, crear su contrato
-    if (isNewEmpleado) {
-        const contratoDocRef = doc(firestore, 'Contratos', docId);
-        const ingresoDate = new Date();
+        const empleadoDocRef = doc(firestore, 'Plantilla', docId);
         
-        const newContractData = {
-            id_empleado: docId,
-            nombre_completo: selectedEmpleado.nombre_completo,
-            departamento: selectedEmpleado.puesto.departamento,
-            indeterminado: false,
-            fechas_contrato: {
-                ingreso: ingresoDate,
-                termino: addDays(ingresoDate, 89)
-            },
-            evaluaciones: {
-                primera: {
-                    fecha_programada: addDays(ingresoDate, 30),
-                    calificacion_texto: 'Pendiente',
-                    calificacion_valor: null,
-                    estatus: 'Pendiente'
-                },
-                segunda: {
-                    fecha_programada: addDays(ingresoDate, 60),
-                    calificacion_texto: 'Pendiente',
-                    calificacion_valor: null,
-                    estatus: 'Pendiente'
-                },
-                tercera: {
-                    fecha_programada: addDays(ingresoDate, 80),
-                    calificacion_texto: 'Pendiente',
-                    calificacion_valor: null,
-                    estatus: 'Pendiente'
-                }
-            }
-        };
-        setDocumentNonBlocking(contratoDocRef, newContractData, { merge: false });
-    }
+        // Guardar datos del empleado
+        setDocumentNonBlocking(empleadoDocRef, selectedEmpleado, { merge: !isNewEmpleado });
 
-    handleCloseDialog();
+        // Si es un empleado nuevo, crear su contrato
+        if (isNewEmpleado) {
+            const contratoDocRef = doc(firestore, 'Contratos', docId);
+            const ingresoDate = new Date();
+            
+            const newContractData = {
+                id_empleado: docId,
+                nombre_completo: selectedEmpleado.nombre_completo,
+                departamento: selectedEmpleado.puesto.departamento,
+                indeterminado: false,
+                fechas_contrato: {
+                    ingreso: ingresoDate,
+                    termino: addDays(ingresoDate, 89)
+                },
+                evaluaciones: {
+                    primera: {
+                        fecha_programada: addDays(ingresoDate, 30),
+                        calificacion_texto: 'Pendiente',
+                        calificacion_valor: null,
+                        estatus: 'Pendiente'
+                    },
+                    segunda: {
+                        fecha_programada: addDays(ingresoDate, 60),
+                        calificacion_texto: 'Pendiente',
+                        calificacion_valor: null,
+                        estatus: 'Pendiente'
+                    },
+                    tercera: {
+                        fecha_programada: addDays(ingresoDate, 80),
+                        calificacion_texto: 'Pendiente',
+                        calificacion_valor: null,
+                        estatus: 'Pendiente'
+                    }
+                }
+            };
+            setDocumentNonBlocking(contratoDocRef, newContractData, { merge: false });
+        }
+
+        handleCloseDialog();
+    });
   };
 
 
   const handleDelete = (empleado: Empleado) => {
-    setEmpleadoToDelete(empleado);
+    checkAdminAndExecute(() => {
+        setEmpleadoToDelete(empleado);
+    });
   };
 
   const confirmDelete = () => {
-    if (!empleadoToDelete || !firestore) return;
-    const docRef = doc(firestore, 'Plantilla', empleadoToDelete.id);
-    deleteDocumentNonBlocking(docRef);
-    
-    // Opcional: eliminar también el contrato asociado
-    const contratoRef = doc(firestore, 'Contratos', empleadoToDelete.id);
-    deleteDocumentNonBlocking(contratoRef);
+    checkAdminAndExecute(() => {
+        if (!empleadoToDelete || !firestore) return;
+        const docRef = doc(firestore, 'Plantilla', empleadoToDelete.id);
+        deleteDocumentNonBlocking(docRef);
+        
+        // Opcional: eliminar también el contrato asociado
+        const contratoRef = doc(firestore, 'Contratos', empleadoToDelete.id);
+        deleteDocumentNonBlocking(contratoRef);
 
-    setEmpleadoToDelete(null);
+        setEmpleadoToDelete(null);
+    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

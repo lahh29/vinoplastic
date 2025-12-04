@@ -45,6 +45,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { collection, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { useRoleCheck } from '@/hooks/use-role-check';
 
 
 interface UserData {
@@ -58,6 +59,7 @@ export default function UsuariosPage() {
     const { user: currentUser } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { isAdmin, checkAdminAndExecute } = useRoleCheck();
 
     const usuariosRef = useMemoFirebase(() => collection(firestore, 'usuarios'), [firestore]);
     const { data: users, isLoading } = useCollection<UserData>(usuariosRef);
@@ -72,7 +74,6 @@ export default function UsuariosPage() {
     const [selectedUser, setSelectedUser] = useState<Partial<UserData> | null>(null);
     const [userToDelete, setUserToDelete] = useState<UserData | null>(null);
 
-    const isAdmin = currentUserData?.role === 'admin';
 
     const filteredUsers = useMemo(() => {
         if (!users) return [];
@@ -84,8 +85,10 @@ export default function UsuariosPage() {
     }, [users, searchTerm]);
     
     const openEditDialog = (user: UserData) => {
-        setSelectedUser({ ...user });
-        setIsEditing(true);
+        checkAdminAndExecute(() => {
+            setSelectedUser({ ...user });
+            setIsEditing(true);
+        });
     };
 
     const closeDialogs = () => {
@@ -94,6 +97,7 @@ export default function UsuariosPage() {
     };
 
     const handleSave = async () => {
+      checkAdminAndExecute(async () => {
         if (!selectedUser || !selectedUser.id || !firestore) return;
         setIsSubmitting(true);
 
@@ -121,21 +125,25 @@ export default function UsuariosPage() {
         } finally {
             setIsSubmitting(false);
         }
+      });
     };
 
     const handleDelete = (user: UserData) => {
-        if (user.id === currentUser?.uid) {
-            toast({
-                variant: 'destructive',
-                title: 'Acción no permitida',
-                description: 'No puedes eliminar tu propia cuenta de usuario.',
-            });
-            return;
-        }
-        setUserToDelete(user);
+        checkAdminAndExecute(() => {
+            if (user.id === currentUser?.uid) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Acción no permitida',
+                    description: 'No puedes eliminar tu propia cuenta de usuario.',
+                });
+                return;
+            }
+            setUserToDelete(user);
+        });
     };
 
     const confirmDelete = async () => {
+      checkAdminAndExecute(async () => {
         if (!userToDelete || !firestore) return;
         setIsSubmitting(true);
         try {
@@ -156,6 +164,7 @@ export default function UsuariosPage() {
         } finally {
             setIsSubmitting(false);
         }
+      });
     };
 
 

@@ -26,6 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useRoleCheck } from '@/hooks/use-role-check';
 
 
 // Interfaces
@@ -57,6 +58,7 @@ const formSchema = z.object({
 export default function ProgramarVacacionesPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { checkAdminAndExecute } = useRoleCheck();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEmpleadoPopoverOpen, setIsEmpleadoPopoverOpen] = useState(false);
@@ -75,43 +77,47 @@ export default function ProgramarVacacionesPage() {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
-    if(!firestore) return;
+    checkAdminAndExecute(async () => {
+      setIsSubmitting(true);
+      if(!firestore) return;
 
-    try {
-      const colRef = collection(firestore, 'vacaciones');
-      await addDoc(colRef, {
-        id_empleado: values.empleado.id,
-        nombre_empleado: values.empleado.nombre,
-        fecha_inicio: values.dateRange.from,
-        fecha_fin: values.dateRange.to,
-        tipo: values.tipo,
-        comentarios: values.comentarios || '',
-        creado_el: serverTimestamp(),
-      });
-      toast({
-        title: "Registro Exitoso",
-        description: `Se han programado las ausencias para ${values.empleado.nombre}.`,
-        className: "bg-green-100 text-green-800 border-green-300",
-      });
-      form.reset({ comentarios: '' });
-    } catch (error) {
-      console.error("Error al guardar:", error);
-      toast({ variant: "destructive", title: "Error", description: "No se pudo guardar el registro." });
-    } finally {
-      setIsSubmitting(false);
-    }
+      try {
+        const colRef = collection(firestore, 'vacaciones');
+        await addDoc(colRef, {
+          id_empleado: values.empleado.id,
+          nombre_empleado: values.empleado.nombre,
+          fecha_inicio: values.dateRange.from,
+          fecha_fin: values.dateRange.to,
+          tipo: values.tipo,
+          comentarios: values.comentarios || '',
+          creado_el: serverTimestamp(),
+        });
+        toast({
+          title: "Registro Exitoso",
+          description: `Se han programado las ausencias para ${values.empleado.nombre}.`,
+          className: "bg-green-100 text-green-800 border-green-300",
+        });
+        form.reset({ comentarios: '' });
+      } catch (error) {
+        console.error("Error al guardar:", error);
+        toast({ variant: "destructive", title: "Error", description: "No se pudo guardar el registro." });
+      } finally {
+        setIsSubmitting(false);
+      }
+    });
   };
 
   const handleDelete = async (vacacionId: string) => {
-    if(!firestore) return;
-    const docRef = doc(firestore, 'vacaciones', vacacionId);
-    try {
-        await deleteDoc(docRef);
-        toast({ title: "Registro eliminado", description: "La ausencia ha sido eliminada del historial."});
-    } catch(error) {
-        toast({ variant: 'destructive', title: "Error", description: "No se pudo eliminar el registro."});
-    }
+    checkAdminAndExecute(async () => {
+        if(!firestore) return;
+        const docRef = doc(firestore, 'vacaciones', vacacionId);
+        try {
+            await deleteDoc(docRef);
+            toast({ title: "Registro eliminado", description: "La ausencia ha sido eliminada del historial."});
+        } catch(error) {
+            toast({ variant: 'destructive', title: "Error", description: "No se pudo eliminar el registro."});
+        }
+    });
   };
   
    const sortedEmpleados = useMemo(() => {
@@ -128,9 +134,9 @@ export default function ProgramarVacacionesPage() {
 
   return (
     <div className="space-y-8">
-        <Link href="/inicio" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+        <Link href="/vacaciones" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a Inicio
+            Volver al Calendario
         </Link>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
             <div className="lg:col-span-2">
@@ -310,7 +316,12 @@ export default function ProgramarVacacionesPage() {
                                 <TableCell className="text-right">
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
-                                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive/70" /></Button>
+                                            <Button variant="ghost" size="icon" onClick={(e) => {
+                                                if (!isAdmin) {
+                                                    e.preventDefault();
+                                                    checkAdminAndExecute(() => {});
+                                                }
+                                            }}><Trash2 className="h-4 w-4 text-destructive/70" /></Button>
                                         </AlertDialogTrigger>
                                         <AlertDialogContent>
                                             <AlertDialogHeader>

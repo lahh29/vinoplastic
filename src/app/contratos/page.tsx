@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -35,6 +36,7 @@ import { useCollection, useFirestore, useMemoFirebase, setDocumentNonBlocking } 
 import { collection, doc, Timestamp } from 'firebase/firestore';
 import { format, addDays, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useRoleCheck } from '@/hooks/use-role-check';
 
 interface ContratoFechas {
   ingreso: Timestamp;
@@ -91,6 +93,7 @@ const formatDate = (timestamp: any): string => {
 
 export default function ContratosPage() {
   const firestore = useFirestore();
+  const { checkAdminAndExecute } = useRoleCheck();
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
   const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
 
@@ -167,53 +170,57 @@ export default function ContratosPage() {
   
 
   const handleRowClick = (contrato: Contrato) => {
-    setSelectedContract(contrato);
-    setEvaluations({
-        eval1: contrato.evaluaciones?.primera?.calificacion_texto || 'Pendiente',
-        eval2: contrato.evaluaciones?.segunda?.calificacion_texto || 'Pendiente',
-        eval3: contrato.evaluaciones?.tercera?.calificacion_texto || 'Pendiente',
-    });
-    setIsIndeterminate(contrato.indeterminado || false);
-
-    const ingresoDate = getDate(contrato.fechas_contrato.ingreso);
-    if(ingresoDate) {
-        setCalculatedDates({
-            eval1: addDays(ingresoDate, 30),
-            eval2: addDays(ingresoDate, 60),
-            eval3: addDays(ingresoDate, 80),
-            termino: addDays(ingresoDate, 89)
+    checkAdminAndExecute(() => {
+        setSelectedContract(contrato);
+        setEvaluations({
+            eval1: contrato.evaluaciones?.primera?.calificacion_texto || 'Pendiente',
+            eval2: contrato.evaluaciones?.segunda?.calificacion_texto || 'Pendiente',
+            eval3: contrato.evaluaciones?.tercera?.calificacion_texto || 'Pendiente',
         });
-    }
+        setIsIndeterminate(contrato.indeterminado || false);
+
+        const ingresoDate = getDate(contrato.fechas_contrato.ingreso);
+        if(ingresoDate) {
+            setCalculatedDates({
+                eval1: addDays(ingresoDate, 30),
+                eval2: addDays(ingresoDate, 60),
+                eval3: addDays(ingresoDate, 80),
+                termino: addDays(ingresoDate, 89)
+            });
+        }
+    });
   };
 
   const handleSave = () => {
-    if (!selectedContract || !firestore) return;
+    checkAdminAndExecute(() => {
+        if (!selectedContract || !firestore) return;
 
-    const docRef = doc(firestore, 'Contratos', selectedContract.id);
-    
-    const updatedData = JSON.parse(JSON.stringify(selectedContract));
+        const docRef = doc(firestore, 'Contratos', selectedContract.id);
+        
+        const updatedData = JSON.parse(JSON.stringify(selectedContract));
 
-    updatedData.evaluaciones.primera.calificacion_texto = evaluations.eval1;
-    updatedData.evaluaciones.primera.estatus = (evaluations.eval1 === 'Pendiente' || evaluations.eval1 === '') ? 'Pendiente' : 'Evaluado';
-    
-    updatedData.evaluaciones.segunda.calificacion_texto = evaluations.eval2;
-    updatedData.evaluaciones.segunda.estatus = (evaluations.eval2 === 'Pendiente' || evaluations.eval2 === '') ? 'Pendiente' : 'Evaluado';
+        updatedData.evaluaciones.primera.calificacion_texto = evaluations.eval1;
+        updatedData.evaluaciones.primera.estatus = (evaluations.eval1 === 'Pendiente' || evaluations.eval1 === '') ? 'Pendiente' : 'Evaluado';
+        
+        updatedData.evaluaciones.segunda.calificacion_texto = evaluations.eval2;
+        updatedData.evaluaciones.segunda.estatus = (evaluations.eval2 === 'Pendiente' || evaluations.eval2 === '') ? 'Pendiente' : 'Evaluado';
 
-    updatedData.evaluaciones.tercera.calificacion_texto = evaluations.eval3;
-    updatedData.evaluaciones.tercera.estatus = (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado';
-    
-    updatedData.indeterminado = isIndeterminate;
+        updatedData.evaluaciones.tercera.calificacion_texto = evaluations.eval3;
+        updatedData.evaluaciones.tercera.estatus = (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado';
+        
+        updatedData.indeterminado = isIndeterminate;
 
-    updatedData.fechas_contrato.termino = calculatedDates.termino;
-    updatedData.evaluaciones.primera.fecha_programada = calculatedDates.eval1;
-    updatedData.evaluaciones.segunda.fecha_programada = calculatedDates.eval2;
-    updatedData.evaluaciones.tercera.fecha_programada = calculatedDates.eval3;
+        updatedData.fechas_contrato.termino = calculatedDates.termino;
+        updatedData.evaluaciones.primera.fecha_programada = calculatedDates.eval1;
+        updatedData.evaluaciones.segunda.fecha_programada = calculatedDates.eval2;
+        updatedData.evaluaciones.tercera.fecha_programada = calculatedDates.eval3;
 
 
-    delete updatedData.id;
+        delete updatedData.id;
 
-    setDocumentNonBlocking(docRef, updatedData, { merge: true });
-    setSelectedContract(null);
+        setDocumentNonBlocking(docRef, updatedData, { merge: true });
+        setSelectedContract(null);
+    });
   };
   
   return (
