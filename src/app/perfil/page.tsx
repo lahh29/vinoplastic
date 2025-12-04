@@ -17,6 +17,7 @@ import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fn
 import { es } from 'date-fns/locale';
 import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // Interfaces
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
@@ -72,7 +73,7 @@ const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-5
 
 const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
     return (
-        <ScrollArea className="h-[70vh] rounded-lg border">
+        <ScrollArea className="h-[50vh] rounded-lg border">
             <Table>
                 <TableHeader className='sticky top-0 bg-background z-10'>
                     <TableRow>
@@ -210,17 +211,26 @@ export default function PerfilPage() {
                 <CardHeader>
                     <CardTitle className="text-2xl text-white flex items-center justify-between">
                         <div>{selectedEmpleado.nombre_completo}</div>
-                        <Badge variant="secondary" className="text-base flex items-center gap-2">
-                            {statusInfo?.status}
-                            {statusInfo?.status === 'Máxima Categoría' && (
-                                 <motion.div
-                                    animate={{ scale: [1, 1.2, 1], color: ['#fde047', '#facc15', '#eab308', '#facc15', '#fde047'] }}
-                                    transition={{ duration: 1.5, repeat: Infinity }}
-                                >
-                                    <Sparkles className="h-4 w-4"/>
-                                </motion.div>
-                            )}
-                        </Badge>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="text-base flex items-center gap-2 cursor-help">
+                                    {statusInfo?.status}
+                                    {statusInfo?.status === 'Máxima Categoría' && (
+                                        <motion.div
+                                            animate={{ scale: [1, 1.2, 1], color: ['#fde047', '#facc15', '#eab308', '#facc15', '#fde047'] }}
+                                            transition={{ duration: 1.5, repeat: Infinity }}
+                                        >
+                                            <Sparkles className="h-4 w-4"/>
+                                        </motion.div>
+                                    )}
+                                </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{statusInfo?.message}</p>
+                            </TooltipContent>
+                           </Tooltip>
+                        </TooltipProvider>
                     </CardTitle>
                     <CardDescription className="text-white/80">{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</CardDescription>
                 </CardHeader>
