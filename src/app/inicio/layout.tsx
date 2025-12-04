@@ -90,9 +90,16 @@ function Notifications() {
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
   const { data: contratos } = useCollection<Contrato>(contratosRef);
   const [isOpen, setIsOpen] = React.useState(false);
+  
+  const [notifications, setNotifications] = React.useState({ expiringContracts: [], dueEvaluations: [] });
+  const [isClient, setIsClient] = React.useState(false);
 
-  const { expiringContracts, dueEvaluations } = React.useMemo(() => {
-    if (!contratos) return { expiringContracts: [], dueEvaluations: [] };
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (!contratos || !isClient) return;
 
     const today = new Date();
     const fifteenDaysFromNow = addDays(today, 15);
@@ -122,13 +129,13 @@ function Notifications() {
         }
     });
 
-    return {
+    setNotifications({
       expiringContracts: expiring.sort((a,b) => (getDate(a.fechas_contrato.termino)?.getTime() ?? 0) - (getDate(b.fechas_contrato.termino)?.getTime() ?? 0)),
       dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0))
-    };
-  }, [contratos]);
+    });
+  }, [contratos, isClient]);
 
-  const notificationCount = expiringContracts.length + dueEvaluations.length;
+  const notificationCount = notifications.expiringContracts.length + notifications.dueEvaluations.length;
   
   const contentVariants = {
     hidden: { opacity: 0, scale: 0.95, y: -10 },
@@ -141,7 +148,7 @@ function Notifications() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full">
           <Bell className="h-5 w-5 text-muted-foreground" />
-          {notificationCount > 0 && (
+          {isClient && notificationCount > 0 && (
             <span className="absolute top-2 right-2 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
@@ -171,8 +178,8 @@ function Notifications() {
                       <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2 mb-2">
                         <AlertTriangle className="h-4 w-4 text-destructive"/> Contratos por Vencer
                       </h4>
-                      {expiringContracts.length > 0 ? (
-                        expiringContracts.map(c => (
+                      {notifications.expiringContracts.length > 0 ? (
+                        notifications.expiringContracts.map(c => (
                           <div key={c.id} className="p-2.5 rounded-lg hover:bg-accent/50">
                             <p className="font-medium text-sm">{c.nombre_completo}</p>
                             <p className="text-xs text-destructive">Vence: {formatDate(c.fechas_contrato.termino)}</p>
@@ -185,8 +192,8 @@ function Notifications() {
                       <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2 mb-2">
                         <FileClock className="h-4 w-4 text-primary"/> Evaluaciones Próximas
                       </h4>
-                      {dueEvaluations.length > 0 ? (
-                        dueEvaluations.map(item => (
+                      {notifications.dueEvaluations.length > 0 ? (
+                        notifications.dueEvaluations.map((item: any) => (
                           <div key={item.contrato.id + item.tipo} className="p-2.5 rounded-lg hover:bg-accent/50">
                             <p className="font-medium text-sm">{item.contrato.nombre_completo}</p>
                             <p className="text-xs text-primary">
