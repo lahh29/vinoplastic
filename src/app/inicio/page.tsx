@@ -13,6 +13,7 @@ import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarCl
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import React, { useMemo } from 'react';
 import { doc } from 'firebase/firestore';
+import { motion } from 'framer-motion';
 
 
 // Interfaces
@@ -22,6 +23,15 @@ interface UserData {
     nombre?: string;
     role: 'admin' | 'lector';
 }
+
+const navLinks = [
+    { href: "/vacaciones", icon: CalendarClock, title: "Gestión de Vacaciones", description: "Visualiza el calendario de ausencias y programa las vacaciones del personal." },
+    { href: "/diagnostico/puestos", icon: ClipboardList, title: "Diagnóstico de Puestos", description: "Ver un listado de todos los puestos de trabajo únicos registrados en la plantilla." },
+    { href: "/diagnostico/cursos", icon: BookCopy, title: "Catálogo de Cursos", description: "Consulta todos los cursos disponibles en el sistema para la asignación de capacitaciones." },
+    { href: "/diagnostico/matriz-faltante", icon: AlertTriangle, title: "Puestos sin Matriz", description: "Identifica los puestos que aún no tienen una matriz de habilidades asignada." },
+    { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto." }
+];
+
 
 export default function InicioPage() {
     const { user } = useUser();
@@ -50,72 +60,30 @@ export default function InicioPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <Link href="/vacaciones" className="block hover:no-underline group">
-            <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-primary/50">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <CalendarClock className="h-6 w-6 text-primary"/>
-                        Gestión de Vacaciones
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Visualiza el calendario de ausencias y programa las vacaciones del personal.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-        <Link href="/diagnostico/puestos" className="block hover:no-underline group">
-            <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-primary/50">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <ClipboardList className="h-6 w-6 text-primary"/>
-                        Diagnóstico de Puestos
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Ver un listado de todos los puestos de trabajo únicos registrados en la plantilla.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-         <Link href="/diagnostico/cursos" className="block hover:no-underline group">
-            <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-primary/50">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <BookCopy className="h-6 w-6 text-primary"/>
-                        Catálogo de Cursos
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Consulta todos los cursos disponibles en el sistema para la asignación de capacitaciones.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-        <Link href="/diagnostico/matriz-faltante" className="block hover:no-underline group">
-            <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-amber-500/50">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <AlertTriangle className="h-6 w-6 text-amber-400"/>
-                        Puestos sin Matriz
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Identifica los puestos que aún no tienen una matriz de habilidades asignada.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-        <Link href="/inicio/plan-de-carrera" className="block hover:no-underline group">
-            <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-primary/50">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <GitBranch className="h-6 w-6 text-primary"/>
-                        Plan de Carrera
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Visualiza la lógica y requisitos para los cambios de categoría en cada puesto.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
+        {navLinks.map((item) => (
+             <Link key={item.href} href={item.href} className="block hover:no-underline group">
+                <motion.div
+                    whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="h-full"
+                >
+                    <Card className="h-full flex flex-col items-center justify-center text-center p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 bg-card/60 border-border/50 hover:border-primary/50 backdrop-blur-sm">
+                        <motion.div
+                            whileHover={{ rotateY: 180, transition: { duration: 0.5 } }}
+                            className="text-primary mb-4"
+                            style={{ perspective: 800 }}
+                        >
+                            <item.icon className="h-12 w-12" />
+                        </motion.div>
+                        <CardTitle className="text-xl font-semibold">
+                            {item.title}
+                        </CardTitle>
+                    </Card>
+                </motion.div>
+            </Link>
+        ))}
        </div>
     </div>
   );
 }
+
