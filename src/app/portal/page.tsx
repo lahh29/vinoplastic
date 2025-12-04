@@ -13,9 +13,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Progress } from '@/components/ui/progress';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
 
 // Interfaces
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
@@ -68,6 +69,16 @@ const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status
     return { status: 'Elegible', message: 'Cumple con todos los criterios para ser evaluado para promoción.' };
 };
 const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-500 text-white', 'En Progreso': 'bg-blue-500 text-white', 'Máxima Categoría': 'bg-purple-500 text-white', 'Requiere Atención': 'bg-orange-500 text-white', 'Pendiente': 'bg-gray-400 text-white', 'No Apto': 'bg-zinc-600 text-white' };
+
+// Componentes Animados
+const AnimatedIcon = ({ children }: { children: React.ReactNode }) => (
+    <motion.div
+        animate={{ color: ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--primary))"]}}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+    >
+        {children}
+    </motion.div>
+);
 
 const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
     return (
@@ -189,31 +200,47 @@ export default function PortalPage() {
   const cursosPendientes = empleadoPerfil.cursosConEstado.filter(c => c.estado === 'Pendiente');
   const cursosCompletados = empleadoPerfil.cursosConEstado.filter(c => c.estado !== 'Pendiente');
 
+  const containerVariants: Variants = {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.1 }
+      }
+  };
+  
+  const itemVariants: Variants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  };
+  
   return (
-    <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="space-y-8">
-      <h1 className="text-4xl font-bold tracking-tight">Bienvenido a tu Portal</h1>
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-2xl flex items-center gap-3"><User/>{empleadoPerfil.nombre_completo}</CardTitle>
-              <CardDescription>Tu perfil y puesto actual</CardDescription>
-            </div>
-            <Badge variant="secondary" className="text-sm">ID: {empleadoPerfil.id_empleado}</Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <p><span className="font-semibold text-muted-foreground">Puesto:</span> {empleadoPerfil.puesto.titulo}</p>
-          <p><span className="font-semibold text-muted-foreground">Departamento:</span> {empleadoPerfil.puesto.departamento}</p>
-        </CardContent>
-      </Card>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card><CardHeader><CardTitle className="text-lg flex items-center gap-2"><CalendarDays/>Antigüedad</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{antiguedad || 'N/A'}</p></CardContent></Card>
-        <Card>
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
+      <motion.h1 variants={itemVariants} className="text-4xl font-bold tracking-tight">Bienvenido a tu Portal</motion.h1>
+      <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
+          <Card className='bg-card/30 backdrop-blur-lg border-white/10'>
             <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2"><Target/>Plan de Carrera</CardTitle>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-2xl flex items-center gap-3">{empleadoPerfil.nombre_completo}</CardTitle>
+                  <CardDescription>Tu perfil y puesto actual</CardDescription>
+                </div>
+                <Badge variant="secondary" className="text-sm">ID: {empleadoPerfil.id_empleado}</Badge>
+              </div>
             </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <p><span className="font-semibold text-muted-foreground">Puesto:</span> {empleadoPerfil.puesto.titulo}</p>
+              <p><span className="font-semibold text-muted-foreground">Departamento:</span> {empleadoPerfil.puesto.departamento}</p>
+            </CardContent>
+          </Card>
+      </motion.div>
+      
+      <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
+          <Card className="h-full bg-card/30 backdrop-blur-lg border-white/10"><CardHeader><CardTitle className="text-lg flex items-center gap-2"><AnimatedIcon><CalendarDays/></AnimatedIcon> Antigüedad</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{antiguedad || 'N/A'}</p></CardContent></Card>
+        </motion.div>
+        <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
+          <Card className="h-full bg-card/30 backdrop-blur-lg border-white/10">
+            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AnimatedIcon><Target/></AnimatedIcon>Plan de Carrera</CardTitle></CardHeader>
             <CardContent>
                 <div className="flex items-center justify-between">
                     <p className="text-2xl font-bold">{statusInfo?.status}</p>
@@ -221,50 +248,57 @@ export default function PortalPage() {
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">{statusInfo?.message}</p>
             </CardContent>
-        </Card>
-        <Card><CardHeader><CardTitle className="text-lg flex items-center gap-2"><BookOpen/>Capacitación</CardTitle></CardHeader>
-            <CardContent>
-                <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-muted-foreground">Progreso de Cursos</span>
-                    <span className="text-sm font-bold">{empleadoPerfil.coberturaCursos.toFixed(0)}%</span>
-                </div>
-                <Progress value={empleadoPerfil.coberturaCursos} />
-            </CardContent>
-        </Card>
-      </div>
+          </Card>
+        </motion.div>
+        <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
+            <Card className="h-full bg-card/30 backdrop-blur-lg border-white/10"><CardHeader><CardTitle className="text-lg flex items-center gap-2"><AnimatedIcon><BookOpen/></AnimatedIcon>Capacitación</CardTitle></CardHeader>
+                <CardContent>
+                    <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm text-muted-foreground">Progreso de Cursos</span>
+                        <span className="text-sm font-bold">{empleadoPerfil.coberturaCursos.toFixed(0)}%</span>
+                    </div>
+                    <Progress value={empleadoPerfil.coberturaCursos} />
+                </CardContent>
+            </Card>
+        </motion.div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader><CardTitle className="text-xl flex items-center gap-3"><Clock className="text-red-500" />Cursos Pendientes</CardTitle></CardHeader>
-          <CardContent>
-            {cursosPendientes.length > 0 ? (
-                <div className="space-y-3">
-                    {cursosPendientes.map(({curso}) => (
-                        <div key={curso.id} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                            <span className="font-medium text-sm">{curso.nombre_oficial}</span>
-                            <Button size="sm" variant="outline" disabled><BookUp className="mr-2 h-4 w-4"/> Ver Material</Button>
-                        </div>
-                    ))}
-                </div>
-            ) : <p className="text-center text-muted-foreground py-10">¡Felicidades! No tienes cursos pendientes.</p>}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-xl flex items-center gap-3"><CheckCircle2 className="text-green-500" />Historial de Cursos</CardTitle></CardHeader>
-          <CardContent>
-            <ScrollArea className="h-72">
-                <Table>
-                    <TableHeader><TableRow><TableHead>Curso</TableHead><TableHead className="text-right">Calificación</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {cursosCompletados.length > 0 ? cursosCompletados.map(({curso, calificacion}) => (
-                            <TableRow key={curso.id}><TableCell className="font-medium">{curso.nombre_oficial}</TableCell><TableCell className="text-right font-mono">{calificacion}</TableCell></TableRow>
-                        )) : <TableRow><TableCell colSpan={2} className="text-center h-24 text-muted-foreground">No has completado cursos.</TableCell></TableRow>}
-                    </TableBody>
-                </Table>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      </div>
+      <motion.div variants={containerVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
+            <Card className='bg-card/30 backdrop-blur-lg border-white/10 h-full'>
+              <CardHeader><CardTitle className="text-xl flex items-center gap-3"><Clock className="text-red-500" />Cursos Pendientes</CardTitle></CardHeader>
+              <CardContent>
+                {cursosPendientes.length > 0 ? (
+                    <div className="space-y-3">
+                        {cursosPendientes.map(({curso}) => (
+                            <div key={curso.id} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+                                <span className="font-medium text-sm">{curso.nombre_oficial}</span>
+                                <Button size="sm" variant="outline" disabled><BookUp className="mr-2 h-4 w-4"/> Ver Material</Button>
+                            </div>
+                        ))}
+                    </div>
+                ) : <p className="text-center text-muted-foreground py-10">¡Felicidades! No tienes cursos pendientes.</p>}
+              </CardContent>
+            </Card>
+        </motion.div>
+         <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
+            <Card className='bg-card/30 backdrop-blur-lg border-white/10 h-full'>
+              <CardHeader><CardTitle className="text-xl flex items-center gap-3"><CheckCircle2 className="text-green-500" />Historial de Cursos</CardTitle></CardHeader>
+              <CardContent>
+                <ScrollArea className="h-72">
+                    <Table>
+                        <TableHeader><TableRow><TableHead>Curso</TableHead><TableHead className="text-right">Calificación</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                            {cursosCompletados.length > 0 ? cursosCompletados.map(({curso, calificacion}) => (
+                                <TableRow key={curso.id}><TableCell className="font-medium">{curso.nombre_oficial}</TableCell><TableCell className="text-right font-mono">{calificacion}</TableCell></TableRow>
+                            )) : <TableRow><TableCell colSpan={2} className="text-center h-24 text-muted-foreground">No has completado cursos.</TableCell></TableRow>}
+                        </TableBody>
+                    </Table>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+        </motion.div>
+      </motion.div>
     </motion.div>
   );
 }
