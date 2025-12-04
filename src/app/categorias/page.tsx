@@ -4,12 +4,11 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, UserCheck, ShieldCheck, ClipboardEdit, Calendar as CalendarIcon, Percent, BookOpen, Clock, Award, AlertCircle, Users, Briefcase, ChevronRight, ArrowRight, Loader2, CheckCircle2, XCircle, MinusCircle, UserX } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Search, UserCheck, ShieldCheck, ClipboardEdit, Calendar as CalendarIcon, Percent, BookOpen, Clock, Award, AlertCircle, Users, Briefcase, ChevronRight, ArrowRight, Loader2, CheckCircle2, XCircle, MinusCircle, UserX, UserRound, Sparkles } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
@@ -24,6 +23,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+import { useRoleCheck } from '@/hooks/use-role-check';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 // Interfaces
 interface Empleado {
@@ -39,6 +40,7 @@ interface Empleado {
 }
 interface PerfilPuesto { id: string; nombre_puesto: string; cursos_obligatorios: string[]; }
 interface Historial { id: string; id_empleado: string; cursos: { id_curso: string; calificacion: number; }[]; }
+interface CursoCatalogo { id: string; nombre_oficial: string; }
 interface Promocion { id: string; fecha_ultimo_cambio?: { toDate: () => Date }; examen_teorico?: number; evaluacion_desempeno?: number; no_apto?: boolean; }
 interface ReglaAscenso {
     id: string; // puesto_actual slug
@@ -49,10 +51,11 @@ interface ReglaAscenso {
     min_examen_teorico?: number;
     min_cobertura_matriz: number;
 }
-
 interface EmpleadoPromocion extends Empleado {
   promocionData?: Promocion;
   coberturaCursos: number;
+  cursosCompletados: CursoCatalogo[];
+  cursosPendientes: CursoCatalogo[];
 }
 
 const parseDate = (date: any): Date | null => {
@@ -64,7 +67,6 @@ const parseDate = (date: any): Date | null => {
   }
   return null;
 };
-
 const formatDate = (date: any): string => {
     if (!date) return 'N/A';
     const d = parseDate(date);
@@ -72,60 +74,63 @@ const formatDate = (date: any): string => {
     return format(d, 'dd/MMM/yy', { locale: es });
 }
 
-// Nueva lógica de estatus
 type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Requiere Atención' | 'Pendiente' | 'No Apto';
 
-
 const getStatusInfo = (empleado: EmpleadoPromocion, reglasAscenso: ReglaAscenso[]): { status: EstatusPromocion, message: string, color: string } => {
-    if (empleado.promocionData?.no_apto) {
-        return { status: 'No Apto', message: 'Marcado manualmente como no apto para promoción.', color: 'bg-zinc-500' };
-    }
+    if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto para promoción.', color: 'bg-zinc-500' };
     const puestoActual = empleado.puesto.titulo;
     const esCategoriaA = puestoActual.endsWith(' A');
-    
-    if (esCategoriaA && !reglasAscenso.some(r => r.puesto_actual === puestoActual)) {
-        return { status: 'Máxima Categoría', message: 'El empleado ha alcanzado la categoría más alta en su plan de carrera.', color: 'bg-yellow-500' };
-    }
-    
+    if (esCategoriaA && !reglasAscenso.some(r => r.puesto_actual === puestoActual)) return { status: 'Máxima Categoría', message: 'El empleado ha alcanzado la categoría más alta en su plan de carrera.', color: 'bg-yellow-500' };
     const regla = reglasAscenso.find(r => r.puesto_actual === puestoActual);
-    
-    if (!regla) {
-        return { status: 'Pendiente', message: 'Puesto no aplica para plan de carrera o es la categoría inicial sin regla de ascenso.', color: 'bg-gray-400' };
-    }
-    
-    const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio 
-      ? parseDate(empleado.promocionData.fecha_ultimo_cambio) 
-      : parseDate(empleado.fecha_ingreso);
-      
+    if (!regla) return { status: 'Pendiente', message: 'Puesto no aplica para plan de carrera o es la categoría inicial sin regla de ascenso.', color: 'bg-gray-400' };
+    const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : parseDate(empleado.fecha_ingreso);
     if (!fechaCambio) return { status: 'Pendiente', message: 'Se necesita registrar la fecha del último cambio o de ingreso para evaluar.', color: 'bg-gray-400' };
-    
     const mesesDesdeCambio = differenceInMonths(new Date(), fechaCambio);
     const { meses_minimos, min_cobertura_matriz, min_evaluacion_desempeno, min_examen_teorico } = regla;
-
     if (mesesDesdeCambio < meses_minimos) return { status: 'En Progreso', message: `En período de espera. Necesita ${meses_minimos} meses, actualmente tiene ${mesesDesdeCambio}.`, color: 'bg-blue-500' };
-    
     const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
-    if (evaluacionDesempeno !== undefined && evaluacionDesempeno !== null && evaluacionDesempeno < min_evaluacion_desempeno) {
-        return { status: 'Requiere Atención', message: `Evaluación de desempeño inferior a ${min_evaluacion_desempeno} (actual: ${evaluacionDesempeno}).`, color: 'bg-orange-500' };
-    }
-    
+    if (evaluacionDesempeno !== undefined && evaluacionDesempeno !== null && evaluacionDesempeno < min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Evaluación de desempeño inferior a ${min_evaluacion_desempeno} (actual: ${evaluacionDesempeno}).`, color: 'bg-orange-500' };
     const examenTeorico = empleado.promocionData?.examen_teorico;
     if (min_examen_teorico !== undefined && min_examen_teorico > 0) {
-        if(examenTeorico === undefined || examenTeorico === null || examenTeorico < min_examen_teorico) {
-            return { status: 'Requiere Atención', message: `Examen teórico pendiente o inferior a ${min_examen_teorico}. Calificación actual: ${examenTeorico ?? 'N/A'}.`, color: 'bg-orange-500' };
-        }
+        if(examenTeorico === undefined || examenTeorico === null || examenTeorico < min_examen_teorico) return { status: 'Requiere Atención', message: `Examen teórico pendiente o inferior a ${min_examen_teorico}. Calificación actual: ${examenTeorico ?? 'N/A'}.`, color: 'bg-orange-500' };
     }
-
-    if (empleado.coberturaCursos < min_cobertura_matriz) {
-        return { status: 'Requiere Atención', message: `Tiempo de espera cumplido, pero requiere ${min_cobertura_matriz}% de cursos y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, color: 'bg-orange-500' };
-    }
-    
+    if (empleado.coberturaCursos < min_cobertura_matriz) return { status: 'Requiere Atención', message: `Tiempo de espera cumplido, pero requiere ${min_cobertura_matriz}% de cursos y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, color: 'bg-orange-500' };
     return { status: 'Elegible', message: `Cumple con el tiempo, cursos y evaluación. ¡Listo para ser evaluado!`, color: 'bg-green-600' };
 };
+
+const getCriterioStatus = (empleado: EmpleadoPromocion, regla: ReglaAscenso, criterio: 'tiempo' | 'desempeno' | 'teorico' | 'cursos') => {
+    const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : parseDate(empleado.fecha_ingreso);
+    if (criterio === 'tiempo') {
+        if (!fechaCambio) return { Icon: MinusCircle, color: 'text-muted-foreground', tooltip: 'Fecha de ingreso/cambio no disponible.'};
+        const mesesDesdeCambio = differenceInMonths(new Date(), fechaCambio);
+        if (mesesDesdeCambio >= regla.meses_minimos) return { Icon: CheckCircle2, color: 'text-green-500', tooltip: `Permanencia OK (${mesesDesdeCambio} de ${regla.meses_minimos} meses)` };
+        return { Icon: XCircle, color: 'text-red-500', tooltip: `Permanencia insuficiente (${mesesDesdeCambio} de ${regla.meses_minimos} meses)` };
+    }
+    if (criterio === 'desempeno') {
+        const evalScore = empleado.promocionData?.evaluacion_desempeno;
+        if (evalScore === undefined || evalScore === null) return { Icon: MinusCircle, color: 'text-muted-foreground', tooltip: 'Evaluación pendiente.' };
+        if (evalScore >= regla.min_evaluacion_desempeno) return { Icon: CheckCircle2, color: 'text-green-500', tooltip: `Desempeño OK (${evalScore} >= ${regla.min_evaluacion_desempeno})` };
+        return { Icon: XCircle, color: 'text-red-500', tooltip: `Desempeño bajo (${evalScore} < ${regla.min_evaluacion_desempeno})` };
+    }
+    if (criterio === 'teorico') {
+        if (!regla.min_examen_teorico || regla.min_examen_teorico === 0) return { Icon: MinusCircle, color: 'text-muted-foreground', tooltip: 'No aplica examen teórico.' };
+        const examenScore = empleado.promocionData?.examen_teorico;
+        if (examenScore === undefined || examenScore === null) return { Icon: MinusCircle, color: 'text-muted-foreground', tooltip: 'Examen pendiente.' };
+        if (examenScore >= regla.min_examen_teorico) return { Icon: CheckCircle2, color: 'text-green-500', tooltip: `Examen OK (${examenScore} >= ${regla.min_examen_teorico})` };
+        return { Icon: XCircle, color: 'text-red-500', tooltip: `Examen reprobado (${examenScore} < ${regla.min_examen_teorico})` };
+    }
+    if (criterio === 'cursos') {
+        if (empleado.coberturaCursos >= regla.min_cobertura_matriz) return { Icon: CheckCircle2, color: 'text-green-500', tooltip: `Cursos OK (${empleado.coberturaCursos.toFixed(0)}% >= ${regla.min_cobertura_matriz}%)` };
+        return { Icon: XCircle, color: 'text-red-500', tooltip: `Cursos insuficientes (${empleado.coberturaCursos.toFixed(0)}% < ${regla.min_cobertura_matriz}%)` };
+    }
+    return { Icon: MinusCircle, color: 'text-muted-foreground', tooltip: 'Criterio no definido.' };
+}
+
 
 export default function PromocionesPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { isAdmin, checkAdminAndExecute } = useRoleCheck();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<EstatusPromocion | 'todos'>('todos');
   const [selectedEmpleado, setSelectedEmpleado] = useState<EmpleadoPromocion | null>(null);
@@ -139,44 +144,52 @@ export default function PromocionesPage() {
   const [evalDesempeno, setEvalDesempeno] = useState<string>('');
   const [examenTeorico, setExamenTeorico] = useState<string>('');
   
-  // Data fetching
   const plantillaRef = useMemoFirebase(() => collection(firestore, 'Plantilla'), [firestore]);
   const perfilesRef = useMemoFirebase(() => collection(firestore, 'perfiles_puesto'), [firestore]);
   const historialRef = useMemoFirebase(() => collection(firestore, 'historial_capacitacion'), [firestore]);
   const promocionesRef = useMemoFirebase(() => collection(firestore, 'Promociones'), [firestore]);
   const reglasAscensoRef = useMemoFirebase(() => collection(firestore, 'reglas_ascenso'), [firestore]);
+  const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
 
   const { data: empleados, isLoading: l1 } = useCollection<Empleado>(plantillaRef);
   const { data: perfiles, isLoading: l2 } = useCollection<PerfilPuesto>(perfilesRef);
   const { data: historiales, isLoading: l3 } = useCollection<Historial>(historialRef);
   const { data: promociones, isLoading: l4 } = useCollection<Promocion>(promocionesRef);
   const { data: reglasAscenso, isLoading: l5 } = useCollection<ReglaAscenso>(reglasAscensoRef);
+  const { data: catalogoCursos, isLoading: l6 } = useCollection<CursoCatalogo>(catalogoCursosRef);
   
-  const isLoading = l1 || l2 || l3 || l4 || l5;
+  const isLoading = l1 || l2 || l3 || l4 || l5 || l6;
 
-  const areasUnicas = useMemo(() => {
-    if (!empleados) return [];
-    return Array.from(new Set(empleados.map(e => e.puesto.area).filter(Boolean))).sort();
-  }, [empleados]);
+  const areasUnicas = useMemo(() => Array.from(new Set((empleados || []).map(e => e.puesto.area).filter(Boolean))).sort(), [empleados]);
 
   const empleadosElegibles = useMemo<EmpleadoPromocion[]>(() => {
-    if (isLoading || !empleados || !perfiles || !historiales || !promociones) return [];
+    if (isLoading || !empleados || !perfiles || !historiales || !promociones || !catalogoCursos) return [];
     
     const historialesMap = new Map(historiales.map(h => [h.id_empleado, new Set(h.cursos.filter(c => c.calificacion >= 70).map(c => c.id_curso))]));
     const promocionesMap = new Map(promociones.map(p => [p.id, p]));
+    const catalogoMap = new Map(catalogoCursos.map(c => [c.id_curso, c]));
 
     return empleados.map(emp => {
         const perfil = perfiles.find(p => p.nombre_puesto === emp.puesto.titulo);
         let coberturaCursos = 0;
+        let cursosCompletados: CursoCatalogo[] = [];
+        let cursosPendientes: CursoCatalogo[] = [];
+
         if (perfil) {
             const cursosCompletadosIds = historialesMap.get(emp.id_empleado) || new Set();
             const cursosObligatoriosIds = new Set(perfil.cursos_obligatorios);
-            const completados = Array.from(cursosCompletadosIds).filter(id => cursosObligatoriosIds.has(id));
-            coberturaCursos = cursosObligatoriosIds.size > 0 ? (completados.length / cursosObligatoriosIds.size) * 100 : 100;
+            
+            const completadosIds = Array.from(cursosCompletadosIds).filter(id => cursosObligatoriosIds.has(id));
+            cursosCompletados = completadosIds.map(id => catalogoMap.get(id)!).filter(Boolean);
+
+            const pendientesIds = perfil.cursos_obligatorios.filter(id => !cursosCompletadosIds.has(id));
+            cursosPendientes = pendientesIds.map(id => catalogoMap.get(id)!).filter(Boolean);
+
+            coberturaCursos = cursosObligatoriosIds.size > 0 ? (completadosIds.length / cursosObligatoriosIds.size) * 100 : 100;
         }
-        return { ...emp, coberturaCursos, promocionData: promocionesMap.get(emp.id_empleado) };
+        return { ...emp, coberturaCursos, promocionData: promocionesMap.get(emp.id_empleado), cursosCompletados, cursosPendientes };
     });
-  }, [isLoading, empleados, perfiles, historiales, promociones]);
+  }, [isLoading, empleados, perfiles, historiales, promociones, catalogoCursos]);
 
   const filteredEmpleados = useMemo(() => {
     if(!reglasAscenso) return [];
@@ -186,11 +199,7 @@ export default function PromocionesPage() {
                             emp.id_empleado.toLowerCase().includes(searchTerm.toLowerCase());
         const statusMatch = statusFilter === 'todos' || getStatusInfo(emp, reglasAscenso).status === statusFilter;
         return searchMatch && statusMatch;
-    }).sort((a,b) => {
-        const deptComparison = (a.puesto.departamento || '').localeCompare(b.puesto.departamento || '');
-        if (deptComparison !== 0) return deptComparison;
-        return a.nombre_completo.localeCompare(b.nombre_completo);
-      });
+    }).sort((a,b) => a.puesto.departamento.localeCompare(b.puesto.departamento) || a.nombre_completo.localeCompare(b.nombre_completo));
   }, [empleadosElegibles, searchTerm, statusFilter, reglasAscenso, selectedArea]);
 
   useEffect(() => {
@@ -199,137 +208,89 @@ export default function PromocionesPage() {
       setFechaCambio(data.fecha_ultimo_cambio ? parseDate(data.fecha_ultimo_cambio) : undefined);
       setEvalDesempeno(data.evaluacion_desempeno?.toString() || '');
       setExamenTeorico(data.examen_teorico?.toString() || '');
-    } else {
-      setFechaCambio(undefined);
+    } else if (selectedEmpleado) { // Si hay empleado pero no promocionData
+      setFechaCambio(selectedEmpleado.fecha_ingreso ? parseDate(selectedEmpleado.fecha_ingreso) : undefined);
       setEvalDesempeno('');
       setExamenTeorico('');
     }
   }, [selectedEmpleado]);
 
-  const handleSave = async () => {
-    if (!selectedEmpleado || !firestore) return;
-    const docRef = doc(firestore, 'Promociones', selectedEmpleado.id_empleado);
-    
-    const dataToSave: any = { 'metadata.actualizado_el': serverTimestamp() };
-    if (fechaCambio) dataToSave.fecha_ultimo_cambio = fechaCambio;
-    const evalScore = parseInt(evalDesempeno, 10);
-    if (!isNaN(evalScore)) { dataToSave.evaluacion_desempeno = evalScore; } else if (evalDesempeno === '') { dataToSave.evaluacion_desempeno = null; }
-    const examenScore = parseInt(examenTeorico, 10);
-    if (!isNaN(examenScore)) { dataToSave.examen_teorico = examenScore; } else if (examenTeorico === '') { dataToSave.examen_teorico = null; }
-    
-    await setDoc(docRef, dataToSave, { merge: true });
-    setSelectedEmpleado(null);
+  const handleSave = () => {
+    checkAdminAndExecute(async () => {
+      if (!selectedEmpleado || !firestore) return;
+      setIsSubmitting(true);
+      const docRef = doc(firestore, 'Promociones', selectedEmpleado.id_empleado);
+      
+      const dataToSave: any = { 'metadata.actualizado_el': serverTimestamp() };
+      if (fechaCambio) dataToSave.fecha_ultimo_cambio = fechaCambio;
+      const evalScore = parseInt(evalDesempeno, 10);
+      dataToSave.evaluacion_desempeno = !isNaN(evalScore) ? evalScore : null;
+      const examenScore = parseInt(examenTeorico, 10);
+      dataToSave.examen_teorico = !isNaN(examenScore) ? examenScore : null;
+      
+      await setDoc(docRef, dataToSave, { merge: true });
+      setIsSubmitting(false);
+      setSelectedEmpleado(null);
+      toast({ title: 'Éxito', description: 'Se han guardado las evaluaciones.' });
+    });
   };
   
-    const handlePromocion = async () => {
-    if (!empleadoAPromover || !reglasAscenso || !firestore) return;
-    setIsSubmitting(true);
-
-    const regla = reglasAscenso.find(r => r.puesto_actual === empleadoAPromover.puesto.titulo);
-    if (!regla) {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se encontró una regla de ascenso para este puesto.' });
-      setIsSubmitting(false);
-      return;
-    }
-
-    const { puesto_siguiente } = regla;
-    const empleadoId = empleadoAPromover.id_empleado;
-
-    const plantillaDocRef = doc(firestore, 'Plantilla', empleadoId);
-    const promocionDocRef = doc(firestore, 'Promociones', empleadoId);
-
-    try {
-      await setDoc(plantillaDocRef, { puesto: { ...empleadoAPromover.puesto, titulo: puesto_siguiente } }, { merge: true });
-      await setDoc(promocionDocRef, {
-        puesto_actual: puesto_siguiente,
-        fecha_ultimo_cambio: serverTimestamp(),
-        evaluacion_desempeno: null,
-        examen_teorico: null,
-        'metadata.actualizado_el': serverTimestamp(),
-      }, { merge: true });
-
-      toast({
-        title: "¡Promoción Exitosa!",
-        description: `${empleadoAPromover.nombre_completo} ha sido promovido a ${puesto_siguiente}.`,
-        className: "bg-green-100 text-green-800 border-green-300",
+    const handlePromocion = () => {
+      checkAdminAndExecute(async () => {
+        if (!empleadoAPromover || !reglasAscenso || !firestore) return;
+        setIsSubmitting(true);
+        const regla = reglasAscenso.find(r => r.puesto_actual === empleadoAPromover.puesto.titulo);
+        if (!regla) {
+          toast({ variant: 'destructive', title: 'Error', description: 'No se encontró una regla de ascenso.' });
+          setIsSubmitting(false);
+          return;
+        }
+        const { puesto_siguiente } = regla;
+        await setDoc(doc(firestore, 'Plantilla', empleadoAPromover.id_empleado), { puesto: { ...empleadoAPromover.puesto, titulo: puesto_siguiente } }, { merge: true });
+        await setDoc(doc(firestore, 'Promociones', empleadoAPromover.id_empleado), {
+            puesto_actual: puesto_siguiente,
+            fecha_ultimo_cambio: serverTimestamp(),
+            evaluacion_desempeno: null,
+            examen_teorico: null,
+            no_apto: false,
+            'metadata.actualizado_el': serverTimestamp(),
+        }, { merge: true });
+        toast({ title: "¡Promoción Exitosa!", description: `${empleadoAPromover.nombre_completo} ha sido promovido a ${puesto_siguiente}.`, className: "bg-green-100 text-green-800 border-green-300" });
+        setIsSubmitting(false);
+        setEmpleadoAPromover(null);
+        setSelectedEmpleado(null);
       });
-
-    } catch (error) {
-      console.error("Error en la promoción:", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Ocurrió un error al procesar la promoción.' });
-    } finally {
-      setIsSubmitting(false);
-      setEmpleadoAPromover(null);
-    }
   };
 
-  const handleToggleNoApto = async () => {
-    if (!empleadoNoApto || !firestore) return;
-    setIsSubmitting(true);
-    
-    const docRef = doc(firestore, 'Promociones', empleadoNoApto.id_empleado);
-    const nuevoEstado = !(empleadoNoApto.promocionData?.no_apto || false);
-
-    try {
-        await setDoc(docRef, {
-            no_apto: nuevoEstado,
-            'metadata.actualizado_el': serverTimestamp()
-        }, { merge: true });
-        
-        toast({
-            title: 'Estado Actualizado',
-            description: `${empleadoNoApto.nombre_completo} ha sido marcado como ${nuevoEstado ? 'No Apto' : 'Apto'} para promoción.`,
-        });
-
-    } catch (error) {
-        console.error("Error al actualizar estado 'No Apto':", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo actualizar el estado del empleado.' });
-    } finally {
-        setIsSubmitting(false);
-        setEmpleadoNoApto(null);
-    }
+  const handleToggleNoApto = () => {
+    checkAdminAndExecute(async () => {
+      if (!empleadoNoApto || !firestore) return;
+      setIsSubmitting(true);
+      const docRef = doc(firestore, 'Promociones', empleadoNoApto.id_empleado);
+      const nuevoEstado = !(empleadoNoApto.promocionData?.no_apto || false);
+      await setDoc(docRef, { no_apto: nuevoEstado, 'metadata.actualizado_el': serverTimestamp() }, { merge: true });
+      toast({ title: 'Estado Actualizado', description: `${empleadoNoApto.nombre_completo} fue marcado como ${nuevoEstado ? 'No Apto' : 'Apto'}.` });
+      setIsSubmitting(false);
+      setEmpleadoNoApto(null);
+      setSelectedEmpleado(null);
+    });
   }
 
   const getPuestoSiguiente = (puestoActual: string) => {
     const regla = reglasAscenso?.find(r => r.puesto_actual === puestoActual);
     return regla ? regla.puesto_siguiente : 'N/A';
   };
-  
-  const getCriterioStatus = (empleado: EmpleadoPromocion, regla: ReglaAscenso, criterio: 'desempeno' | 'teorico') => {
-      if (criterio === 'desempeno') {
-          const evalScore = empleado.promocionData?.evaluacion_desempeno;
-          if (evalScore === undefined || evalScore === null) return { Icon: MinusCircle, color: 'text-gray-400', tooltip: 'Evaluación de desempeño pendiente.' };
-          if (evalScore >= regla.min_evaluacion_desempeno) return { Icon: CheckCircle2, color: 'text-green-500', tooltip: `Desempeño OK (${evalScore} >= ${regla.min_evaluacion_desempeno})` };
-          return { Icon: XCircle, color: 'text-red-500', tooltip: `Desempeño bajo (${evalScore} < ${regla.min_evaluacion_desempeno})` };
-      }
-      if (criterio === 'teorico') {
-          if (regla.min_examen_teorico === undefined || regla.min_examen_teorico === null || regla.min_examen_teorico === 0) return { Icon: MinusCircle, color: 'text-gray-400', tooltip: 'No aplica examen teórico.' };
-          const examenScore = empleado.promocionData?.examen_teorico;
-          if (examenScore === undefined || examenScore === null) return { Icon: MinusCircle, color: 'text-gray-400', tooltip: 'Examen teórico pendiente.' };
-          if (examenScore >= regla.min_examen_teorico) return { Icon: CheckCircle2, color: 'text-green-500', tooltip: `Examen OK (${examenScore} >= ${regla.min_examen_teorico})` };
-          return { Icon: XCircle, color: 'text-red-500', tooltip: `Examen reprobado (${examenScore} < ${regla.min_examen_teorico})` };
-      }
-      return { Icon: MinusCircle, color: 'text-gray-400', tooltip: 'Criterio no definido.' };
-  }
 
   return (
     <div className="flex h-full flex-col lg:flex-row gap-6">
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="w-full lg:max-w-xs lg:w-1/4 h-full">
-        <Card className="flex flex-col h-full">
-            <CardHeader className="p-6 border-b">
-            <CardTitle className="flex items-center gap-3 text-xl"><Briefcase className="h-5 w-5 text-primary" /> Áreas de Trabajo</CardTitle>
-            <CardDescription>{areasUnicas.length} áreas encontradas</CardDescription>
-            </CardHeader>
+        <Card className="flex flex-col h-full rounded-2xl shadow-lg border-border/50">
+            <CardHeader className="p-6 border-b"><CardTitle className="flex items-center gap-3 text-xl"><Briefcase className="h-5 w-5 text-primary" /> Áreas de Trabajo</CardTitle><CardDescription>{areasUnicas.length} áreas encontradas</CardDescription></CardHeader>
             <CardContent className="flex-1 p-2 overflow-hidden">
             <ScrollArea className="h-full">
                 <div className="flex flex-col gap-1 p-2">
                     <Button variant={!selectedArea ? 'secondary' : 'ghost'} className="justify-start text-left" onClick={() => setSelectedArea(null)}>Todas las áreas</Button>
-                {areasUnicas.map(area => (
-                    <Button key={area} variant={selectedArea === area ? 'secondary' : 'ghost'} className="justify-start text-left h-auto py-2" onClick={() => setSelectedArea(area)}>
-                        <span className="flex-1">{area}</span>
-                        {selectedArea === area && <ChevronRight className="h-4 w-4 opacity-50 ml-2 shrink-0" />}
-                    </Button>
-                ))}
+                {areasUnicas.map(area => (<Button key={area} variant={selectedArea === area ? 'secondary' : 'ghost'} className="justify-start text-left h-auto py-2" onClick={() => setSelectedArea(area)}><span className="flex-1">{area}</span>{selectedArea === area && <ChevronRight className="h-4 w-4 opacity-50 ml-2 shrink-0" />}</Button>))}
                 </div>
             </ScrollArea>
             </CardContent>
@@ -337,186 +298,149 @@ export default function PromocionesPage() {
       </motion.div>
 
       <motion.div className="flex-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
-        <Card>
-            <CardHeader>
-            <CardTitle>Gestión de Promoción por Categorías</CardTitle>
-            <CardDescription>Visualiza y actualiza el estado de los empleados en el área seleccionada.</CardDescription>
+        <Card className="rounded-2xl shadow-lg border-border/50">
+            <CardHeader><CardTitle>Expediente de Talento</CardTitle><CardDescription>Visualiza y gestiona el progreso de promoción del personal.</CardDescription>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Buscar por ID o Nombre..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 rounded-full" />
-                </div>
-                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as any)}>
-                <SelectTrigger className="w-full sm:w-[240px] rounded-full"><SelectValue placeholder="Filtrar por estatus..." /></SelectTrigger>
+                <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar por ID o Nombre..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 rounded-full" /></div>
+                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as any)}><SelectTrigger className="w-full sm:w-[240px] rounded-full"><SelectValue placeholder="Filtrar por estatus..." /></SelectTrigger>
                 <SelectContent>
                     <SelectItem value="todos">Todos los estatus</SelectItem>
-                    <SelectItem value="Elegible">Elegible</SelectItem>
-                    <SelectItem value="En Progreso">En Progreso</SelectItem>
-                    <SelectItem value="Requiere Atención">Requiere Atención</SelectItem>
-                    <SelectItem value="Máxima Categoría">Máxima Categoría</SelectItem>
-                    <SelectItem value="No Apto">No Apto</SelectItem>
-                    <SelectItem value="Pendiente">Pendiente</SelectItem>
+                    <SelectItem value="Elegible">Elegible</SelectItem><SelectItem value="En Progreso">En Progreso</SelectItem>
+                    <SelectItem value="Requiere Atención">Requiere Atención</SelectItem><SelectItem value="Máxima Categoría">Máxima Categoría</SelectItem>
+                    <SelectItem value="No Apto">No Apto</SelectItem><SelectItem value="Pendiente">Pendiente</SelectItem>
                 </SelectContent>
                 </Select>
             </div>
             </CardHeader>
-            <CardContent>
-            <div className="rounded-lg border">
-                <TooltipProvider delayDuration={0}>
-                <Table>
-                <TableHeader>
-                    <TableRow>
-                    <TableHead>Colaborador</TableHead>
-                    <TableHead>Estatus</TableHead>
-                    <TableHead>Criterios</TableHead>
-                    <TableHead>Cursos</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
+            <CardContent className="p-0">
+            <ScrollArea className="h-[calc(100vh-20rem)]">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 p-6">
                     {isLoading || !reglasAscenso ? (
-                        <TableRow><TableCell colSpan={5} className="h-24 text-center">Cargando...</TableCell></TableRow>
+                        Array.from({length: 8}).map((_, i) => <Card key={i} className="p-4 space-y-3 animate-pulse"><div className="h-6 w-3/4 rounded bg-muted"></div><div className="h-4 w-1/2 rounded bg-muted"></div><div className="h-8 w-full rounded bg-muted"></div></Card>)
                     ) : filteredEmpleados.map(emp => {
                     const statusInfo = getStatusInfo(emp, reglasAscenso);
-                    const puedePromover = statusInfo.status !== 'Máxima Categoría' && statusInfo.status !== 'Pendiente' && statusInfo.status !== 'No Apto';
-                    const regla = reglasAscenso.find(r => r.puesto_actual === emp.puesto.titulo);
-                    const desempeñoStatus = regla ? getCriterioStatus(emp, regla, 'desempeno') : null;
-                    const teoricoStatus = regla ? getCriterioStatus(emp, regla, 'teorico') : null;
-
                     return(
-                    <motion.tr key={emp.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ scale: 1.01, zIndex: 10}} className="hover:bg-accent/50 transition-colors">
-                        <TableCell className="font-medium">
-                            <div className="text-sm font-semibold">{emp.nombre_completo}</div>
-                            <div className="text-xs text-muted-foreground">ID: {emp.id_empleado}</div>
-                            <div className="text-xs text-muted-foreground">Puesto: {emp.puesto.titulo}</div>
-                            <div className="text-xs text-muted-foreground">Ingreso: {formatDate(emp.fecha_ingreso)}</div>
-                        </TableCell>
-                        <TableCell>
-                        <Tooltip><TooltipTrigger asChild><Badge className={cn('text-white', statusInfo.color)}>{statusInfo.status}</Badge></TooltipTrigger><TooltipContent><p>{statusInfo.message}</p></TooltipContent></Tooltip>
-                        </TableCell>
-                        <TableCell>
-                        <div className="flex items-center gap-2">
-                            {desempeñoStatus && (<Tooltip><TooltipTrigger><desempeñoStatus.Icon className={cn('h-5 w-5', desempeñoStatus.color)} /></TooltipTrigger><TooltipContent>{desempeñoStatus.tooltip}</TooltipContent></Tooltip>)}
-                            {teoricoStatus && ( <Tooltip><TooltipTrigger><teoricoStatus.Icon className={cn('h-5 w-5', teoricoStatus.color)} /></TooltipTrigger><TooltipContent>{teoricoStatus.tooltip}</TooltipContent></Tooltip> )}
-                        </div>
-                        </TableCell>
-                        <TableCell>
-                            <div className="flex items-center gap-2">
-                                <Progress value={emp.coberturaCursos} className="w-20 h-2" />
-                                <span className="text-xs font-semibold">{emp.coberturaCursos.toFixed(0)}%</span>
-                            </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                            <Button variant="outline" size="sm" onClick={() => setSelectedEmpleado(emp)}><ClipboardEdit className="h-4 w-4 mr-2" /> Evaluar</Button>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" onClick={() => setEmpleadoNoApto(emp)}>
-                                        <UserX className={cn("h-4 w-4", emp.promocionData?.no_apto ? "text-red-500" : "text-gray-400")} />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent><p>{emp.promocionData?.no_apto ? 'Marcar como Apto' : 'Marcar como No Apto'}</p></TooltipContent>
-                            </Tooltip>
-                            {puedePromover && (
-                            <Button variant="default" size="sm" className="ml-2 bg-green-600 hover:bg-green-700" onClick={() => setEmpleadoAPromover(emp)}>
-                                <Award className="h-4 w-4 mr-2" /> Promover
-                            </Button>
-                            )}
-                        </TableCell>
-                    </motion.tr>
+                    <motion.div layout key={emp.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }} className="h-full">
+                        <Card className="flex flex-col h-full hover:shadow-lg hover:-translate-y-1 transition-transform duration-200 cursor-pointer" onClick={() => setSelectedEmpleado(emp)}>
+                            <CardHeader className="flex-row gap-4 items-center p-4">
+                                <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center font-bold text-lg text-primary">{emp.nombre_completo.charAt(0)}</div>
+                                <div className="flex-1">
+                                    <p className="font-semibold text-base leading-tight truncate">{emp.nombre_completo}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{emp.puesto.titulo}</p>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-4 pt-0 flex-1">
+                                <TooltipProvider><Tooltip><TooltipTrigger className="w-full text-left">
+                                <Badge className={cn('text-white text-xs', statusInfo.color)}>{statusInfo.status}</Badge>
+                                </TooltipTrigger><TooltipContent><p>{statusInfo.message}</p></TooltipContent></Tooltip></TooltipProvider>
+                                <div className="mt-4 space-y-2">
+                                    <Label className="text-xs">Cobertura de Cursos</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Progress value={emp.coberturaCursos} className="h-2" />
+                                        <span className="text-xs font-bold">{emp.coberturaCursos.toFixed(0)}%</span>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
                     )})}
-                </TableBody>
-                </Table>
-                </TooltipProvider>
-            </div>
+                </div>
+            </ScrollArea>
             </CardContent>
         </Card>
       </motion.div>
       
       {selectedEmpleado && (
-        <Dialog open={!!selectedEmpleado} onOpenChange={() => setSelectedEmpleado(null)}>
-            <DialogContent className="rounded-2xl">
-                <DialogHeader>
-                    <DialogTitle>Evaluar a: {selectedEmpleado.nombre_completo}</DialogTitle>
-                    <DialogDescription>Puesto: {selectedEmpleado.puesto.titulo}</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-6 py-4">
-                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label htmlFor="eval_desempeno" className="flex items-center gap-2"><UserCheck/> Eval. Desempeño</Label><Input id="eval_desempeno" type="number" placeholder="0-100" value={evalDesempeno} onChange={e => setEvalDesempeno(e.target.value)} /></div>
-                        <div className="space-y-2"><Label htmlFor="examen_teorico" className="flex items-center gap-2"><BookOpen/> Examen Teórico</Label><Input id="examen_teorico" type="number" placeholder="0-100" value={examenTeorico} onChange={e => setExamenTeorico(e.target.value)} /></div>
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="fecha_cambio" className="flex items-center gap-2"><CalendarIcon/> Fecha de Último Cambio</Label>
-                        <Popover>
-                            <PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !fechaCambio && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4"/>{fechaCambio ? format(fechaCambio, "PPP", { locale: es }) : <span>Selecciona fecha</span>}</Button></PopoverTrigger>
-                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={fechaCambio} onSelect={setFechaCambio} initialFocus /></PopoverContent>
-                        </Popover>
-                    </div>
-                     <div className="space-y-2">
-                        <Label className="flex items-center gap-2"><Percent/> Cobertura de Cursos</Label>
-                        <div className="flex items-center gap-2"><Progress value={selectedEmpleado.coberturaCursos} className="h-3" /><span className="font-bold text-sm">{selectedEmpleado.coberturaCursos.toFixed(0)}%</span></div>
-                     </div>
+        <Sheet open={!!selectedEmpleado} onOpenChange={() => setSelectedEmpleado(null)}>
+            <SheetContent className="sm:max-w-xl w-full flex flex-col">
+                <SheetHeader className="p-6 border-b">
+                    <SheetTitle className="text-2xl">{selectedEmpleado.nombre_completo}</SheetTitle>
+                    <SheetDescription>{selectedEmpleado.puesto.titulo} | {selectedEmpleado.puesto.departamento}</SheetDescription>
+                </SheetHeader>
+                <ScrollArea className="flex-1">
+                <div className="p-6 space-y-6">
+                    <Card><CardHeader><CardTitle className="text-lg flex items-center gap-3"><Sparkles className="h-5 w-5 text-primary"/>Progreso de Promoción</CardTitle></CardHeader>
+                        <CardContent className="grid grid-cols-2 gap-x-6 gap-y-4">
+                            {(() => {
+                                const regla = reglasAscenso?.find(r => r.puesto_actual === selectedEmpleado.puesto.titulo);
+                                if (!regla) return <p className="col-span-2 text-sm text-muted-foreground">Este puesto no tiene un plan de carrera definido.</p>;
+                                const criterios = [
+                                    { label: 'Permanencia', status: getCriterioStatus(selectedEmpleado, regla, 'tiempo') },
+                                    { label: 'Cursos', status: getCriterioStatus(selectedEmpleado, regla, 'cursos') },
+                                    { label: 'Desempeño', status: getCriterioStatus(selectedEmpleado, regla, 'desempeno') },
+                                    { label: 'Ex. Teórico', status: getCriterioStatus(selectedEmpleado, regla, 'teorico') },
+                                ];
+                                return criterios.map(({label, status}) => (
+                                    <TooltipProvider key={label}><Tooltip><TooltipTrigger>
+                                        <div className="flex items-center gap-2"><status.Icon className={cn('h-5 w-5', status.color)} /> <span className="text-sm font-medium text-muted-foreground">{label}</span></div>
+                                    </TooltipTrigger><TooltipContent>{status.tooltip}</TooltipContent></Tooltip></TooltipProvider>
+                                ));
+                            })()}
+                        </CardContent>
+                    </Card>
+                    
+                    <Accordion type="multiple" className="w-full space-y-4">
+                        <AccordionItem value="evaluaciones" className="border rounded-lg">
+                            <AccordionTrigger className="px-4 py-3 text-lg font-medium"><div className="flex items-center gap-3"><ClipboardEdit/>Evaluaciones</div></AccordionTrigger>
+                            <AccordionContent className="p-4 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2"><Label htmlFor="eval_desempeno">Eval. Desempeño</Label><Input id="eval_desempeno" type="number" placeholder="0-100" value={evalDesempeno} onChange={e => setEvalDesempeno(e.target.value)} /></div>
+                                    <div className="space-y-2"><Label htmlFor="examen_teorico">Examen Teórico</Label><Input id="examen_teorico" type="number" placeholder="0-100" value={examenTeorico} onChange={e => setExamenTeorico(e.target.value)} /></div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="fecha_cambio">Fecha de Último Cambio/Ingreso</Label>
+                                    <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !fechaCambio && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4"/>{fechaCambio ? format(fechaCambio, "PPP", { locale: es }) : <span>Selecciona fecha</span>}</Button></PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={fechaCambio} onSelect={setFechaCambio} initialFocus /></PopoverContent></Popover>
+                                </div>
+                                <div className="flex justify-end"><Button onClick={handleSave} disabled={isSubmitting}>{isSubmitting ? <Loader2 className="animate-spin mr-2"/> : null}Guardar Evaluaciones</Button></div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="cursos" className="border rounded-lg">
+                            <AccordionTrigger className="px-4 py-3 text-lg font-medium"><div className="flex items-center gap-3"><BookOpen/>Matriz de Habilidades</div></AccordionTrigger>
+                            <AccordionContent className="p-4 space-y-4 max-h-80 overflow-y-auto">
+                                <h4 className="font-semibold text-red-500">Pendientes ({selectedEmpleado.cursosPendientes.length})</h4>
+                                <ul className="list-disc list-inside space-y-1 text-sm">{selectedEmpleado.cursosPendientes.map(c => <li key={c.id}>{c.nombre_oficial}</li>)}</ul>
+                                <h4 className="font-semibold text-green-500 pt-4">Completados ({selectedEmpleado.cursosCompletados.length})</h4>
+                                <ul className="list-disc list-inside space-y-1 text-sm">{selectedEmpleado.cursosCompletados.map(c => <li key={c.id}>{c.nombre_oficial}</li>)}</ul>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
                 </div>
-                <DialogFooter><Button variant="outline" onClick={() => setSelectedEmpleado(null)}>Cancelar</Button><Button onClick={handleSave}>Guardar</Button></DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </ScrollArea>
+                <SheetFooter className="p-6 border-t gap-2">
+                     <Button variant="outline" onClick={() => setEmpleadoNoApto(selectedEmpleado)} className={selectedEmpleado.promocionData?.no_apto ? "border-green-500 text-green-500" : "border-red-500 text-red-500"}>
+                        {selectedEmpleado.promocionData?.no_apto ? <UserCheck className="h-4 w-4 mr-2"/> : <UserX className="h-4 w-4 mr-2"/>}
+                        {selectedEmpleado.promocionData?.no_apto ? "Marcar como Apto" : "Marcar como No Apto"}
+                     </Button>
+                     <Button onClick={() => setEmpleadoAPromover(selectedEmpleado)} className="bg-green-600 hover:bg-green-700" disabled={getStatusInfo(selectedEmpleado, reglasAscenso || []).status !== 'Elegible'}>
+                        <Award className="h-4 w-4 mr-2"/>Promover
+                     </Button>
+                </SheetFooter>
+            </SheetContent>
+        </Sheet>
       )}
 
-      <AlertDialog open={!!empleadoAPromover} onOpenChange={() => setEmpleadoAPromover(null)}>
-        <AlertDialogContent className="rounded-2xl">
-            <AlertDialogHeader>
-                <AlertDialogTitle>Confirmar Promoción</AlertDialogTitle>
-                <AlertDialogDescription>
-                    ¿Estás seguro de que quieres promover a 
-                    <strong className="text-foreground"> {empleadoAPromover?.nombre_completo}</strong>?
-                    <div className="flex items-center justify-center gap-4 my-4 text-center">
-                        <div>
-                            <p className="text-xs text-muted-foreground">Puesto Actual</p>
-                            <Badge variant="secondary">{empleadoAPromover?.puesto.titulo}</Badge>
-                        </div>
-                        <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                        <div>
-                            <p className="text-xs text-muted-foreground">Puesto Nuevo</p>
-                            <Badge className="bg-green-600 text-white">{empleadoAPromover ? getPuestoSiguiente(empleadoAPromover.puesto.titulo) : '...'}</Badge>
-                        </div>
-                    </div>
-                     Esta acción actualizará su puesto en la plantilla y reiniciará su ciclo de promoción. No se puede deshacer.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handlePromocion} disabled={isSubmitting} className="bg-green-600 hover:bg-green-700">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Confirmar y Promover
-                </AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {empleadoAPromover && (<AlertDialog open={!!empleadoAPromover} onOpenChange={() => setEmpleadoAPromover(null)}>
+        <AlertDialogContent className="rounded-2xl"><AlertDialogHeader><AlertDialogTitle>Confirmar Promoción</AlertDialogTitle>
+            <AlertDialogDescription>
+                ¿Estás seguro de promover a <strong className="text-foreground">{empleadoAPromover?.nombre_completo}</strong>?
+                <div className="flex items-center justify-center gap-4 my-4 text-center">
+                    <div><p className="text-xs text-muted-foreground">Puesto Actual</p><Badge variant="secondary">{empleadoAPromover?.puesto.titulo}</Badge></div>
+                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                    <div><p className="text-xs text-muted-foreground">Puesto Nuevo</p><Badge className="bg-green-600 text-white">{empleadoAPromover ? getPuestoSiguiente(empleadoAPromover.puesto.titulo) : '...'}</Badge></div>
+                </div>Esta acción es irreversible y actualizará el puesto del empleado.
+            </AlertDialogDescription></AlertDialogHeader>
+            <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={handlePromocion} disabled={isSubmitting} className="bg-green-600 hover:bg-green-700">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirmar</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent></AlertDialog>)}
 
-      <AlertDialog open={!!empleadoNoApto} onOpenChange={() => setEmpleadoNoApto(null)}>
-        <AlertDialogContent className="rounded-2xl">
-            <AlertDialogHeader>
-                <AlertDialogTitle>Confirmar Cambio de Estado</AlertDialogTitle>
-                <AlertDialogDescription>
-                    Estás a punto de cambiar el estado de elegibilidad de 
-                    <strong className="text-foreground"> {empleadoNoApto?.nombre_completo}</strong>.
-                    <p className='mt-2'>
-                        {empleadoNoApto?.promocionData?.no_apto 
-                            ? 'Esto lo volverá a hacer elegible para futuras promociones, si cumple los demás criterios.'
-                            : 'Esto lo marcará como "No Apto" para promoción, independientemente de sus métricas.'
-                        }
-                    </p>
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleToggleNoApto} disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Confirmar
-                </AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
+      {empleadoNoApto && (<AlertDialog open={!!empleadoNoApto} onOpenChange={() => setEmpleadoNoApto(null)}>
+        <AlertDialogContent className="rounded-2xl"><AlertDialogHeader><AlertDialogTitle>Confirmar Cambio de Estado</AlertDialogTitle>
+            <AlertDialogDescription>
+                Estás a punto de cambiar el estado de <strong className="text-foreground">{empleadoNoApto?.nombre_completo}</strong> a <strong className="text-foreground">{empleadoNoApto?.promocionData?.no_apto ? "Apto" : "No Apto"}</strong> para futuras promociones.
+            </AlertDialogDescription></AlertDialogHeader>
+            <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={handleToggleNoApto} disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirmar</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent></AlertDialog>)}
     </div>
   );
 }
+
