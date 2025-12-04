@@ -46,26 +46,25 @@ export default function LoginPage() {
                 transition={{ duration: 0.8, ease: 'easeOut' }}
                 className="mb-8"
             >
-                <h1 className="text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400">
+                <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400">
                     VIÑOPLASTIC
                 </h1>
-                <p className="mt-2 text-lg text-slate-300">
+                <p className="mt-0 text-lg text-slate-300">
                     Portal de Recursos Humanos
                 </p>
             </motion.div>
-            
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
                 className="w-full max-w-sm"
             >
-                <Card className="w-full bg-black/30 border-white/20 text-white shadow-2xl backdrop-blur-lg p-6 sm:p-8">
+                <Card className="w-full bg-black/30 border-white/20 text-white shadow-3xl backdrop-blur-lg p-6 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-2xl font-bold text-white">Control de Acceso</h2>
-                    <p className="text-slate-300 mt-1">Ingresa tus credenciales</p>
                   </div>
-                  <form onSubmit={handleLogin} className="space-y-6">
+                  <form onSubmit={handleLogin} className="space-y-3">
                       <div className="grid gap-2 text-left">
                           <Label htmlFor="email" className="text-slate-300">Correo Electrónico</Label>
                           <Input 
