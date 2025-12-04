@@ -1,15 +1,23 @@
+
 'use client';
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
 import { BookMarked, BarChart3, Briefcase, ClipboardPlus, BookCopy } from 'lucide-react';
+import { motion } from 'framer-motion';
 
+const navLinks = [
+    { href: "/capacitacion/matriz-de-habilidades", icon: BookMarked, title: "Matriz de Habilidades" },
+    { href: "/capacitacion/captura", icon: ClipboardPlus, title: "Captura de Cursos" },
+    { href: "/capacitacion/analisis", icon: BarChart3, title: "Análisis de Cumplimiento" },
+    { href: "/capacitacion/analisis-por-puesto", icon: Briefcase, title: "Análisis por Puesto" },
+    { href: "/capacitacion/analisis-por-curso", icon: BookCopy, title: "Análisis por Curso" },
+]
 
 export default function CapacitacionPage() {
   return (
@@ -22,71 +30,28 @@ export default function CapacitacionPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <Link href="/capacitacion/matriz-de-habilidades" className="block hover:no-underline group">
-            <Card className="h-full hover:border-primary/50 transition-all">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <BookMarked className="h-6 w-6 text-primary"/>
-                        Matriz de Habilidades
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Define y asigna los cursos obligatorios para cada puesto de trabajo en la organización.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-        <Link href="/capacitacion/captura" className="block hover:no-underline group">
-            <Card className="h-full hover:border-primary/50 transition-all">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <ClipboardPlus className="h-6 w-6 text-primary"/>
-                        Captura de Cursos
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Registra los cursos completados por el personal para mantener el sistema actualizado.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-        <Link href="/capacitacion/analisis" className="block hover:no-underline group">
-            <Card className="h-full hover:border-primary/50 transition-all">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <BarChart3 className="h-6 w-6 text-primary"/>
-                        Análisis de Cumplimiento
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Visualiza el progreso y cumplimiento de la capacitación en toda la planta.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-        <Link href="/capacitacion/analisis-por-puesto" className="block hover:no-underline group">
-            <Card className="h-full hover:border-primary/50 transition-all">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <Briefcase className="h-6 w-6 text-primary"/>
-                        Análisis por Puesto
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Revisa el estado de la capacitación detallado para un puesto de trabajo específico.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
-        <Link href="/capacitacion/analisis-por-curso" className="block hover:no-underline group">
-            <Card className="h-full hover:border-primary/50 transition-all">
-                <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
-                        <BookCopy className="h-6 w-6 text-primary"/>
-                        Análisis por Curso
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <CardDescription>Audita el cumplimiento y el personal asignado para cada curso individualmente.</CardDescription>
-                </CardContent>
-            </Card>
-        </Link>
+        {navLinks.map((item) => (
+             <Link key={item.href} href={item.href} className="block hover:no-underline group">
+                <motion.div
+                    whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="h-full"
+                >
+                    <Card className="h-full flex flex-col items-center justify-center text-center p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 bg-card/60 border-border/50 hover:border-primary/50 backdrop-blur-sm">
+                        <motion.div
+                            whileHover={{ rotateY: 180, transition: { duration: 0.5 } }}
+                            className="text-primary mb-4"
+                            style={{ perspective: 800 }}
+                        >
+                            <item.icon className="h-12 w-12" />
+                        </motion.div>
+                        <CardTitle className="text-xl font-semibold">
+                            {item.title}
+                        </CardTitle>
+                    </Card>
+                </motion.div>
+            </Link>
+        ))}
       </div>
     </div>
   );
