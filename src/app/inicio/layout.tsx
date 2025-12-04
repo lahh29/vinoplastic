@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
-import { useAuth, useUser, useCollection, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, Timestamp } from 'firebase/firestore';
 import { Dock, DockIcon } from '@/components/ui/dock';
 import {
@@ -89,17 +89,11 @@ function Notifications() {
   const firestore = useFirestore();
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
   const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
-  const [isOpen, setIsOpen] = React.useState(false);
   
-  const [notifications, setNotifications] = React.useState<{ expiringContracts: any[], dueEvaluations: any[] }>({ expiringContracts: [], dueEvaluations: [] });
-  const [isClient, setIsClient] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  React.useEffect(() => {
-    if (!contratos || !isClient || isLoading) return;
+  const notifications = React.useMemo(() => {
+    if (!contratos || isLoading) {
+      return { expiringContracts: [], dueEvaluations: [] };
+    }
 
     const today = new Date();
     const fifteenDaysFromNow = addDays(today, 15);
@@ -129,11 +123,11 @@ function Notifications() {
         }
     });
 
-    setNotifications({
+    return {
       expiringContracts: expiring.sort((a,b) => (getDate(a.fechas_contrato.termino)?.getTime() ?? 0) - (getDate(b.fechas_contrato.termino)?.getTime() ?? 0)),
       dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0))
-    });
-  }, [contratos, isClient, isLoading]);
+    };
+  }, [contratos, isLoading]);
 
   const notificationCount = notifications.expiringContracts.length + notifications.dueEvaluations.length;
   
@@ -144,11 +138,11 @@ function Notifications() {
   };
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <DockIcon>
           <Bell className="h-5 w-5 text-muted-foreground" />
-          {isClient && notificationCount > 0 && (
+          {notificationCount > 0 && (
             <span className="absolute top-0 right-0 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
@@ -156,59 +150,46 @@ function Notifications() {
           )}
         </DockIcon>
       </DropdownMenuTrigger>
-      <AnimatePresence>
-        {isOpen && (
-            <DropdownMenuContent
-                asChild
-                forceMount
-                align="end"
-                className="w-80 shadow-2xl border-border/50 rounded-2xl p-0 mb-2"
-              >
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                variants={contentVariants}
-              >
-                  <div className='p-4 border-b border-border/50'>
-                    <h3 className="font-semibold">Notificaciones</h3>
-                  </div>
-                  <div className="py-2 px-2 max-h-96 overflow-y-auto space-y-2">
-                    <div className="px-2 py-1">
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2 mb-2">
-                        <AlertTriangle className="h-4 w-4 text-destructive"/> Contratos por Vencer
-                      </h4>
-                      {notifications.expiringContracts.length > 0 ? (
-                        notifications.expiringContracts.map(c => (
-                          <div key={c.id} className="p-2.5 rounded-lg hover:bg-accent/50">
-                            <p className="font-medium text-sm">{c.nombre_completo}</p>
-                            <p className="text-xs text-destructive">Vence: {formatDate(c.fechas_contrato.termino)}</p>
-                          </div>
-                        ))
-                      ) : <p className="p-2 text-sm text-muted-foreground italic">Nada por aquí.</p>}
-                    </div>
-                    <DropdownMenuSeparator />
-                    <div className="px-2 py-1">
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2 mb-2">
-                        <FileClock className="h-4 w-4 text-primary"/> Evaluaciones Próximas
-                      </h4>
-                      {notifications.dueEvaluations.length > 0 ? (
-                        notifications.dueEvaluations.map((item: any) => (
-                          <div key={item.contrato.id + item.tipo} className="p-2.5 rounded-lg hover:bg-accent/50">
-                            <p className="font-medium text-sm">{item.contrato.nombre_completo}</p>
-                            <p className="text-xs text-primary">
-                              {item.tipo} evaluación antes del: {item.fecha}
-                            </p>
-                          </div>
-                        ))
-                      ) : <p className="p-2 text-sm text-muted-foreground italic">Todo al día.</p>}
-                    </div>
-                  </div>
-                {notificationCount === 0 && <p className="p-8 text-center text-sm text-muted-foreground">¡Sin notificaciones pendientes!</p>}
-              </motion.div>
-            </DropdownMenuContent>
-        )}
-      </AnimatePresence>
+      <DropdownMenuContent
+        align="end"
+        className="w-80 shadow-2xl border-border/50 rounded-2xl p-0 mb-2"
+        >
+        <div className='p-4 border-b border-border/50'>
+          <h3 className="font-semibold">Notificaciones</h3>
+        </div>
+        <div className="py-2 px-2 max-h-96 overflow-y-auto space-y-2">
+          <div className="px-2 py-1">
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2 mb-2">
+              <AlertTriangle className="h-4 w-4 text-destructive"/> Contratos por Vencer
+            </h4>
+            {notifications.expiringContracts.length > 0 ? (
+              notifications.expiringContracts.map(c => (
+                <div key={c.id} className="p-2.5 rounded-lg hover:bg-accent/50">
+                  <p className="font-medium text-sm">{c.nombre_completo}</p>
+                  <p className="text-xs text-destructive">Vence: {formatDate(c.fechas_contrato.termino)}</p>
+                </div>
+              ))
+            ) : <p className="p-2 text-sm text-muted-foreground italic">Nada por aquí.</p>}
+          </div>
+          <DropdownMenuSeparator />
+          <div className="px-2 py-1">
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2 mb-2">
+              <FileClock className="h-4 w-4 text-primary"/> Evaluaciones Próximas
+            </h4>
+            {notifications.dueEvaluations.length > 0 ? (
+              notifications.dueEvaluations.map((item: any) => (
+                <div key={item.contrato.id + item.tipo} className="p-2.5 rounded-lg hover:bg-accent/50">
+                  <p className="font-medium text-sm">{item.contrato.nombre_completo}</p>
+                  <p className="text-xs text-primary">
+                    {item.tipo} evaluación antes del: {item.fecha}
+                  </p>
+                </div>
+              ))
+            ) : <p className="p-2 text-sm text-muted-foreground italic">Todo al día.</p>}
+          </div>
+        </div>
+      {notificationCount === 0 && <p className="p-8 text-center text-sm text-muted-foreground">¡Sin notificaciones pendientes!</p>}
+      </DropdownMenuContent>
     </DropdownMenu>
   )
 }
@@ -312,37 +293,37 @@ export default function InicioLayout({
                     
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <DockIcon>
-                                        <AnimatedUserIcon />
-                                    </DockIcon>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
-                                    <DropdownMenuLabel className="font-normal">
-                                        <div className="flex flex-col space-y-1">
-                                            <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
-                                            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                                        </div>
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem asChild>
-                                      <Link href="/usuarios">
-                                        <Users className="mr-2 h-4 w-4" />
-                                        <span>Usuarios</span>
-                                      </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        <Settings className="mr-2 h-4 w-4" />
-                                        <span>Configuración</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Cerrar sesión</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                          <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                  <DockIcon>
+                                      <AnimatedUserIcon />
+                                  </DockIcon>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
+                                  <DropdownMenuLabel className="font-normal">
+                                      <div className="flex flex-col space-y-1">
+                                          <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
+                                          <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                                      </div>
+                                  </DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem asChild>
+                                    <Link href="/usuarios">
+                                      <Users className="mr-2 h-4 w-4" />
+                                      <span>Usuarios</span>
+                                    </Link>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                      <Settings className="mr-2 h-4 w-4" />
+                                      <span>Configuración</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
+                                      <LogOut className="mr-2 h-4 w-4" />
+                                      <span>Cerrar sesión</span>
+                                  </DropdownMenuItem>
+                              </DropdownMenuContent>
+                          </DropdownMenu>
                         </TooltipTrigger>
                          <TooltipContent>
                             <p>Perfil y Sesión</p>

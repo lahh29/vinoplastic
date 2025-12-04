@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { PropsWithChildren, useRef } from "react"
@@ -50,11 +51,30 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 
     const renderChildren = () => {
       return React.Children.map(children, (child) => {
+        // We need to make sure the child is a valid element and is a DockIcon
         if (
-          React.isValidElement<DockIconProps>(child) &&
-          child.type === DockIcon
+          React.isValidElement(child) &&
+          (child.type === DockIcon || 
+          (child.type === React.Fragment && (child.props.children as React.ReactElement)?.type === DockIcon) ||
+          (child.props.children as React.ReactElement)?.type === DockIcon
+          )
         ) {
-          return React.cloneElement(child, {
+            const dockIcon = React.Children.toArray((child.props as any).children).find((c: any) => c.type === DockIcon) as React.ReactElement<DockIconProps> | undefined;
+            if(dockIcon){
+                 return React.cloneElement(child, {
+                    ...child.props,
+                    children: React.cloneElement(dockIcon, {
+                         ...dockIcon.props,
+                        mouseX: mouseX,
+                        size: iconSize,
+                        magnification: iconMagnification,
+                        disableMagnification: disableMagnification,
+                        distance: iconDistance,
+                    }),
+                });
+            }
+
+          return React.cloneElement(child as React.ReactElement<any>, {
             ...child.props,
             mouseX: mouseX,
             size: iconSize,
@@ -111,7 +131,7 @@ export interface DockIconProps
   props?: PropsWithChildren
 }
 
-const DockIcon = ({
+const DockIcon = React.forwardRef<HTMLDivElement, DockIconProps>(({
   size = DEFAULT_SIZE,
   magnification = DEFAULT_MAGNIFICATION,
   disableMagnification,
@@ -120,13 +140,15 @@ const DockIcon = ({
   className,
   children,
   ...props
-}: DockIconProps) => {
-  const ref = useRef<HTMLDivElement>(null)
+}, ref) => {
+  const innerRef = useRef<HTMLDivElement>(null)
+  React.useImperativeHandle(ref, () => innerRef.current!, [])
+  
   const padding = Math.max(6, size * 0.2)
   const defaultMouseX = useMotionValue(Infinity)
 
   const distanceCalc = useTransform(mouseX ?? defaultMouseX, (val: number) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 }
+    const bounds = innerRef.current?.getBoundingClientRect() ?? { x: 0, width: 0 }
     return val - bounds.x - bounds.width / 2
   })
 
@@ -146,7 +168,7 @@ const DockIcon = ({
 
   return (
     <motion.div
-      ref={ref}
+      ref={innerRef}
       style={{ width: scaleSize, height: scaleSize, padding }}
       className={cn(
         "flex aspect-square cursor-pointer items-center justify-center rounded-full",
@@ -158,7 +180,7 @@ const DockIcon = ({
       <div>{children}</div>
     </motion.div>
   )
-}
+})
 
 DockIcon.displayName = "DockIcon"
 
