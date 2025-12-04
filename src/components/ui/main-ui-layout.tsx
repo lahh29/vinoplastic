@@ -42,13 +42,17 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 
-const navItems = [
+const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
   { href: '/contratos', icon: FileText, label: 'Contratos' },
   { href: '/empleados', icon: Users, label: 'Empleados' },
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
   { href: '/categorias', icon: Shapes, label: 'Categorías' },
   { href: '/formacion', icon: GraduationCap, label: 'Formación' },
+];
+
+const employeeNavItems = [
+  { href: '/portal', icon: Home, label: 'Mi Portal' },
 ];
 
 // Interfaces para notificaciones
@@ -213,7 +217,7 @@ export default function MainUILayout({
       () => (user ? doc(firestore, 'usuarios', user.uid) : null),
       [user, firestore]
   );
-  const { data: currentUserData } = useDoc<UserData>(currentUserInfoRef);
+  const { data: currentUserData, isLoading: isRoleLoading } = useDoc<UserData>(currentUserInfoRef);
 
   React.useEffect(() => {
     if (!isUserLoading && !user) {
@@ -227,7 +231,9 @@ export default function MainUILayout({
     }
   };
 
-  if (isUserLoading || !user) {
+  const isLoading = isUserLoading || isRoleLoading;
+
+  if (isLoading || !user) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-2">
@@ -238,8 +244,11 @@ export default function MainUILayout({
     );
   }
   
+  const isAdmin = currentUserData?.role === 'admin';
+  const navItems = isAdmin ? adminNavItems : employeeNavItems;
+
   const isActive = (href: string) => {
-    if (href === '/inicio') {
+    if (href === '/inicio' || href === '/portal') {
         return pathname === href;
     }
     return pathname.startsWith(href);
@@ -280,17 +289,21 @@ export default function MainUILayout({
                         </Tooltip>
                     ))}
 
-                    <div className="border-l h-full mx-2 border-border/60" />
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="h-full flex items-center">
-                              <Notifications />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Notificaciones</p>
-                        </TooltipContent>
-                    </Tooltip>
+                    {isAdmin && (
+                        <>
+                            <div className="border-l h-full mx-2 border-border/60" />
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                <div className="h-full flex items-center">
+                                    <Notifications />
+                                </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Notificaciones</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </>
+                    )}
                     
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -308,17 +321,14 @@ export default function MainUILayout({
                                       </div>
                                   </DropdownMenuLabel>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem asChild>
-                                    <Link href="/usuarios">
-                                      <Users className="mr-2 h-4 w-4" />
-                                      <span>Usuarios</span>
-                                    </Link>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>
-                                      <Settings className="mr-2 h-4 w-4" />
-                                      <span>Configuración</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
+                                  {isAdmin && (
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/usuarios">
+                                        <Users className="mr-2 h-4 w-4" />
+                                        <span>Usuarios</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                  )}
                                   <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
                                       <LogOut className="mr-2 h-4 w-4" />
                                       <span>Cerrar sesión</span>
