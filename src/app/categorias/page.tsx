@@ -314,8 +314,8 @@ export default function PromocionesPage() {
 
   return (
     <div className="flex h-full flex-col lg:flex-row gap-6">
-      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
-        <Card className="w-full lg:max-w-xs lg:w-1/4 flex flex-col h-full">
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="w-full lg:max-w-xs lg:w-1/4 h-full">
+        <Card className="flex flex-col h-full">
             <CardHeader className="p-6 border-b">
             <CardTitle className="flex items-center gap-3 text-xl"><Briefcase className="h-5 w-5 text-primary" /> Áreas de Trabajo</CardTitle>
             <CardDescription>{areasUnicas.length} áreas encontradas</CardDescription>
