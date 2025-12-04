@@ -176,19 +176,24 @@ export default function PerfilPage() {
 
             <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="space-y-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><CalendarDays/> Antigüedad</h3>
-                        <div><Label>Fecha de Ingreso</Label><p className="text-lg font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
-                        <div><Label>Tiempo en la Empresa</Label><p className="text-md font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
-                    </div>
-                    <div className="space-y-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><Award/> Evaluaciones</h3>
-                        <div><Label>Evaluación de Desempeño</Label><p className="text-lg font-bold">{selectedEmpleado.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></div>
-                        <div><Label>Examen Teórico</Label><p className="text-lg font-bold">{selectedEmpleado.promocionData?.examen_teorico ?? 'N/A'}</p></div>
-                    </div>
-                    <div className="space-y-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><Target/> Plan de Carrera</h3>
-                        {reglaAplicable ? (
+                     <Card>
+                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><CalendarDays/> Antigüedad</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div><Label>Fecha de Ingreso</Label><p className="text-lg font-bold">{selectedEmpleado.fecha_ingreso ? format(parseDate(selectedEmpleado.fecha_ingreso)!, 'dd MMM, yyyy', {locale: es}) : 'N/A'}</p></div>
+                            <div><Label>Tiempo en la Empresa</Label><p className="text-md font-semibold text-muted-foreground">{antiguedad || 'N/A'}</p></div>
+                        </CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Award/> Evaluaciones</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div><Label>Evaluación de Desempeño</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></div>
+                            <div><Label>Examen Teórico</Label><p className="text-2xl font-bold">{selectedEmpleado.promocionData?.examen_teorico ?? 'N/A'}</p></div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Target/> Plan de Carrera</CardTitle></CardHeader>
+                        <CardContent>
+                            {reglaAplicable ? (
                             <ul className="space-y-1 text-sm">
                                 <li className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary"/>Siguiente Puesto: <span className="font-bold">{reglaAplicable.puesto_siguiente}</span></li>
                                 <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary"/>Meses Mínimos: <span className="font-bold">{reglaAplicable.meses_minimos}</span></li>
@@ -197,11 +202,19 @@ export default function PerfilPage() {
                                 <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary"/>Cursos ≥ <span className="font-bold">{reglaAplicable.min_cobertura_matriz}%</span></li>
                             </ul>
                         ) : (<p className="text-sm text-muted-foreground">No hay plan de carrera definido para este puesto.</p>)}
-                    </div>
+                        </CardContent>
+                    </Card>
                 </div>
                 
                 <div>
-                  <h3 className="font-semibold text-lg flex items-center gap-2 mb-4"><BookOpen/>Matriz de Habilidades</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-lg flex items-center gap-2"><BookOpen/>Matriz de Habilidades</h3>
+                    {selectedEmpleado.cursosConEstado.length > 0 && (
+                      <Badge variant="secondary" className="text-sm">
+                        {selectedEmpleado.cursosConEstado.filter(c => c.estado === 'Aprobado').length} / {selectedEmpleado.cursosConEstado.length}
+                      </Badge>
+                    )}
+                  </div>
                   <div className="border rounded-lg overflow-hidden">
                     <Table>
                       <TableHeader>
