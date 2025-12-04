@@ -61,6 +61,17 @@ interface ContratoEvaluaciones {
     tercera: EvaluacionDetalle;
 }
 
+interface Empleado {
+    id: string;
+    id_empleado: string;
+    nombre_completo: string;
+    puesto: {
+        titulo: string;
+        departamento: string;
+    };
+    fecha_ingreso?: Timestamp;
+}
+
 interface Contrato {
   id: string; // Document ID from Firestore
   id_empleado: string;
@@ -69,6 +80,7 @@ interface Contrato {
   fechas_contrato: ContratoFechas;
   evaluaciones: ContratoEvaluaciones;
   indeterminado?: boolean;
+  fecha_ingreso_plantilla?: Timestamp; // Campo fusionado
 }
 
 const getDate = (timestamp: any): Date | null => {
@@ -82,7 +94,7 @@ const getDate = (timestamp: any): Date | null => {
 const formatDate = (timestamp: any): string => {
   if (!timestamp) return 'N/A';
   const date = getDate(timestamp);
-  if (!date || !isValid(date)) return 'N/A'; // Changed from 'Fecha inválida' to 'N/A'
+  if (!date || !isValid(date)) return 'N/A';
   return format(date, 'dd/MMM/yy', { locale: es });
 };
 
@@ -92,7 +104,28 @@ export default function ContratosPage() {
   const { toast } = useToast();
   const { checkAdminAndExecute } = useRoleCheck();
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
-  const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
+  const plantillaRef = useMemoFirebase(() => firestore ? collection(firestore, 'Plantilla') : null, [firestore]);
+
+  const { data: contratos, isLoading: loadingContratos } = useCollection<Contrato>(contratosRef);
+  const { data: empleados, isLoading: loadingEmpleados } = useCollection<Empleado>(plantillaRef);
+  
+  const isLoading = loadingContratos || loadingEmpleados;
+
+  const contratosFusionados = useMemo(() => {
+    if (isLoading || !contratos || !empleados) return [];
+    
+    const empleadosMap = new Map(empleados.map(e => [e.id_empleado, e]));
+
+    return contratos
+      .filter(c => empleadosMap.has(c.id_empleado)) // Solo contratos de empleados existentes
+      .map(c => {
+        const empleadoData = empleadosMap.get(c.id_empleado);
+        return {
+          ...c,
+          fecha_ingreso_plantilla: empleadoData?.fecha_ingreso || c.fechas_contrato.ingreso,
+        };
+      });
+  }, [contratos, empleados, isLoading]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [expiringContracts, setExpiringContracts] = useState<Contrato[]>([]);
@@ -104,20 +137,20 @@ export default function ContratosPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!contratos) return;
+    if (!contratosFusionados) return;
 
     const today = new Date();
     const fifteenDaysFromNow = addDays(today, 15);
     const sevenDaysFromNow = addDays(today, 7);
 
-    const expiring = contratos.filter(c => {
+    const expiring = contratosFusionados.filter(c => {
         if (c.indeterminado) return false;
         const termDate = getDate(c.fechas_contrato?.termino);
         return termDate && termDate >= today && termDate <= fifteenDaysFromNow;
     });
     
     const evaluationsDue: {contrato: Contrato, fecha: string, tipo: string}[] = [];
-    contratos.forEach(c => {
+    contratosFusionados.forEach(c => {
         if (!c.evaluaciones) return;
         const eval1Date = getDate(c.evaluaciones.primera?.fecha_programada);
         const eval2Date = getDate(c.evaluaciones.segunda?.fecha_programada);
@@ -136,13 +169,13 @@ export default function ContratosPage() {
 
     setExpiringContracts(expiring.sort((a,b) => (getDate(a.fechas_contrato.termino)?.getTime() ?? 0) - (getDate(b.fechas_contrato.termino)?.getTime() ?? 0)));
     setDueEvaluations(evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones?.primera?.fecha_programada) ?? new Date(0)).getTime() - (getDate(b.contrato.evaluaciones?.primera?.fecha_programada) ?? new Date(0)).getTime()));
-  }, [contratos]);
+  }, [contratosFusionados]);
 
   const { determinados, indeterminados } = useMemo(() => {
-    if (!contratos) return { determinados: [], indeterminados: [] };
+    if (!contratosFusionados) return { determinados: [], indeterminados: [] };
 
     const search = searchTerm.toLowerCase();
-    const filtered = contratos.filter((contrato: Contrato) => {
+    const filtered = contratosFusionados.filter((contrato: Contrato) => {
         if (!contrato.id_empleado || !contrato.nombre_completo) return false;
         return (
             contrato.id_empleado.toLowerCase().includes(search) ||
@@ -155,7 +188,7 @@ export default function ContratosPage() {
       indeterminados: filtered.filter(c => c.indeterminado),
     };
 
-  }, [contratos, searchTerm]);
+  }, [contratosFusionados, searchTerm]);
   
   const handleRowClick = (contrato: Contrato) => {
     checkAdminAndExecute(() => {
@@ -167,7 +200,7 @@ export default function ContratosPage() {
         });
         setIsIndeterminate(contrato.indeterminado || false);
 
-        const ingresoDate = getDate(contrato.fechas_contrato.ingreso);
+        const ingresoDate = getDate(contrato.fecha_ingreso_plantilla);
         if(ingresoDate) {
             setCalculatedDates({
                 eval1: addDays(ingresoDate, 30),
@@ -204,6 +237,7 @@ export default function ContratosPage() {
       updatedData.indeterminado = isIndeterminate;
 
       delete (updatedData as any).id;
+      delete (updatedData as any).fecha_ingreso_plantilla;
       
       try {
         await setDoc(docRef, updatedData, { merge: true });
@@ -322,7 +356,7 @@ export default function ContratosPage() {
                         <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent transition-colors">
                             <TableCell>{contrato.id_empleado}</TableCell>
                             <TableCell className="font-medium">{contrato.nombre_completo}</TableCell>
-                            <TableCell>{formatDate(contrato.fechas_contrato?.ingreso)}</TableCell>
+                            <TableCell>{formatDate(contrato.fecha_ingreso_plantilla)}</TableCell>
                             <TableCell>{formatDate(contrato.fechas_contrato?.termino)}</TableCell>
                         </TableRow>
                         ))}
@@ -339,7 +373,7 @@ export default function ContratosPage() {
                         <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent transition-colors">
                             <TableCell>{contrato.id_empleado}</TableCell>
                             <TableCell className="font-medium">{contrato.nombre_completo}</TableCell>
-                            <TableCell>{formatDate(contrato.fechas_contrato?.ingreso)}</TableCell>
+                            <TableCell>{formatDate(contrato.fecha_ingreso_plantilla)}</TableCell>
                         </TableRow>
                         ))}
                     </TableBody>
