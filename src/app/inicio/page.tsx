@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
-import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock } from 'lucide-react';
+import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock, User } from 'lucide-react';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import React, { useMemo } from 'react';
 import { doc } from 'firebase/firestore';
@@ -29,7 +29,8 @@ const navLinks = [
     { href: "/diagnostico/puestos", icon: ClipboardList, title: "Diagnóstico de Puestos", description: "Ver un listado de todos los puestos de trabajo únicos registrados en la plantilla." },
     { href: "/diagnostico/cursos", icon: BookCopy, title: "Catálogo de Cursos", description: "Consulta todos los cursos disponibles en el sistema para la asignación de capacitaciones." },
     { href: "/diagnostico/matriz-faltante", icon: AlertTriangle, title: "Puestos sin Matriz", description: "Identifica los puestos que aún no tienen una matriz de habilidades asignada." },
-    { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto." }
+    { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto." },
+    { href: "/perfil", icon: User, title: "Perfil de Empleado", description: "Consulta el perfil detallado de un empleado." }
 ];
 
 
@@ -86,4 +87,3 @@ export default function InicioPage() {
     </div>
   );
 }
-
