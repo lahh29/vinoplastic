@@ -151,5 +151,24 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
+    
+    /**
+     * @description
+     *   Controls access to vacation and leave records. Any authenticated user can read and write.
+     * @path /vacaciones/{vacacionId}
+     */
+    match /vacaciones/{vacacionId} {
+        allow read, write: if isSignedIn();
+    }
+
+    /**
+     * @description
+     *   Controls access to official holidays. Any authenticated user can read, only admin can modify.
+     * @path /dias_festivos/{diaId}
+     */
+    match /dias_festivos/{diaId} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+    }
   }
 }
