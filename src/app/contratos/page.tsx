@@ -318,7 +318,7 @@ export default function ContratosPage() {
                     </TableCell>
                     <TableCell>
                       {contrato.indeterminado ? (
-                          <Badge variant="outline" className="text-green-400 border-green-400/50">Indeterminado</Badge>
+                          <Badge variant="default" className="bg-primary/80">Indeterminado</Badge>
                       ) : (
                           <Badge variant="secondary">Determinado</Badge>
                       )}
@@ -342,7 +342,7 @@ export default function ContratosPage() {
                 </DialogHeader>
                 <div className="py-6 space-y-6">
                     <div className="space-y-4 rounded-lg border p-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><Star className="text-yellow-400"/> Evaluaciones de Desempeño</h3>
+                        <h3 className="font-semibold text-lg flex items-center gap-2"><Star className="text-primary"/> Evaluaciones de Desempeño</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="space-y-2">
                                 <Label htmlFor="eval1" className="flex items-center gap-2 text-muted-foreground">
@@ -380,7 +380,7 @@ export default function ContratosPage() {
                         </div>
                     </div>
                     <div className="space-y-4 rounded-lg border p-4">
-                       <h3 className="font-semibold text-lg flex items-center gap-2"><TrendingUp className="text-green-400"/> Estatus del Contrato</h3>
+                       <h3 className="font-semibold text-lg flex items-center gap-2"><TrendingUp className="text-primary"/> Estatus del Contrato</h3>
                        <div className="flex items-center space-x-3 justify-between pt-2">
                             <div className="flex items-center space-x-3">
                                 <Switch 
