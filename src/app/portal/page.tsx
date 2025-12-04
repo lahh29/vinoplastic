@@ -191,7 +191,7 @@ export default function PortalPage() {
 
   return (
     <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{ duration: 0.5 }} className="space-y-8">
-      <h1 className="text-4xl font-bold tracking-tight">Bienvenido a tu Portal, {empleadoPerfil.nombre_completo.split(' ')[0]}</h1>
+      <h1 className="text-4xl font-bold tracking-tight">Bienvenido a tu Portal</h1>
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start">
