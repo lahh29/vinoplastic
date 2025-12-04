@@ -14,15 +14,24 @@ interface Empleado { id: string; id_empleado: string; nombre_completo: string; p
 interface PerfilPuesto { id: string; nombre_puesto: string; cursos_obligatorios: string[]; }
 interface HistorialCurso { id_curso: string; calificacion: number; fecha_aplicacion: string; }
 interface Historial { id: string; id_empleado: string; cursos: HistorialCurso[]; }
-interface Promocion { id: string; fecha_ultimo_cambio?: { toDate: () => Date }; examen_teorico?: number; evaluacion_practica?: 'Aprobada' | 'Reprobada' | 'Pendiente'; }
-interface CursoCatalogo { id: string; nombre_oficial: string; }
+interface Promocion { id: string; fecha_ultimo_cambio?: { toDate: () => Date }; examen_teorico?: number; evaluacion_desempeno?: number; no_apto?: boolean; }
+interface CursoCatalogo { id: string; id_curso: string; nombre_oficial: string; }
+interface ReglaAscenso {
+    id: string; // puesto_actual slug
+    puesto_actual: string;
+    puesto_siguiente: string;
+    meses_minimos: number;
+    min_evaluacion_desempeno: number;
+    min_examen_teorico?: number;
+    min_cobertura_matriz: number;
+}
 interface EmpleadoPromocion extends Empleado {
   promocionData?: Promocion;
   coberturaCursos: number;
   cursosCompletadosNombres: string[];
   cursosPendientesNombres: string[];
 }
-type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Requiere Atención' | 'Pendiente';
+type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Requiere Atención' | 'Pendiente' | 'No Apto';
 
 
 const reportTypes = [
@@ -69,88 +78,25 @@ const parseDate = (date: any): Date | null => {
   return null;
 };
 
-// Lógica de estatus (copiada de la página de categorías)
-const getStatusInfo = (empleado: EmpleadoPromocion): { status: EstatusPromocion, message: string } => {
-    const puesto = (empleado.puesto.titulo || '').toUpperCase();
-    
-    let rol: string | null = null;
-    let categoriaMatch: RegExpMatchArray | null = null;
+// Lógica de estatus
+const getStatusInfo = (empleado: EmpleadoPromocion, regla?: ReglaAscenso): { status: EstatusPromocion, message: string } => {
+    if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto.' };
+    if (!regla) return { status: 'Máxima Categoría', message: 'Este puesto no tiene una categoría superior definida en el plan de carrera.' };
 
-    if (puesto.startsWith('OPERADOR DE ACABADOS GP-12')) { rol = 'operador_acabados'; categoriaMatch = puesto.match(/GP-12\s([A-D])$/);
-    } else if (puesto.startsWith('SUPERVISOR DE ACABADOS')) { rol = 'supervisor_acabados'; categoriaMatch = puesto.match(/GP12\s([A-C])$/);
-    } else if (puesto.startsWith('INSPECTOR DE CALIDAD')) { rol = 'inspector'; categoriaMatch = puesto.match(/CALIDAD\s([A-D])$/);
-    } else if (puesto.startsWith('INGENIERO DE CALIDAD')) { rol = 'ingeniero_calidad'; categoriaMatch = puesto.match(/CALIDAD\s([A-C])$/);
-    } else if (puesto.startsWith('TÉCNICO DE MANTENIMIENTO A EDIFICIOS')) { rol = 'tecnico_edificios'; categoriaMatch = puesto.match(/EDIFICIOS\s([A-B])$/);
-    } else if (puesto.startsWith('TÉCNICO DE MANTENIMIENTO')) { rol = 'tecnico_mantenimiento'; categoriaMatch = puesto.match(/MANTENIMIENTO\s([A-D])$/);
-    } else if (puesto.startsWith('AUXILIAR DE MANTENIMIENTO')) { rol = 'auxiliar_mantenimiento'; categoriaMatch = puesto.match(/MANTENIMIENTO\s([A-C])$/);
-    } else if (puesto.startsWith('TÉCNICO DE TALLER DE MOLDES')) { rol = 'tecnico_taller'; categoriaMatch = puesto.match(/MOLDES\s([A-E])$/);
-    } else if (puesto.startsWith('OPERADOR DE MÁQUINA')) { rol = 'operador_maquina'; categoriaMatch = puesto.match(/MÁQUINA\s([A-D])$/);
-    } else if (puesto.startsWith('MONTADOR DE MOLDES')) { rol = 'montador'; categoriaMatch = puesto.match(/MOLDES\s([A-C])$/);
-    } else if (puesto.startsWith('ASISTENTE DE PRODUCCION')) { rol = 'asistente_produccion'; categoriaMatch = puesto.match(/PRODUCCION\s([A-B])$/);
-    } else if (puesto.startsWith('SUPERVISOR DE PRODUCCIÓN')) { rol = 'supervisor_produccion'; categoriaMatch = puesto.match(/PRODUCCIÓN\s([A-D])$/);
-    } else if (puesto.startsWith('INGENIERO DE PROCESO')) { rol = 'ingeniero_proceso'; categoriaMatch = puesto.match(/PROCESO\s([A-D])$/);
-    } else if (puesto.startsWith('INGENIERO DE PROYECTOS')) { rol = 'ingeniero_proyectos'; categoriaMatch = puesto.match(/PROYECTOS\s([A-D])$/);
-    } else if (puesto.startsWith('LIDER DE PROYECTOS')) { rol = 'lider_proyectos'; categoriaMatch = puesto.match(/PROYECTOS\s([A-C])$/);
-    } else if (puesto.startsWith('AUXILIAR DE ALMACÉN')) { rol = 'auxiliar_almacen'; categoriaMatch = puesto.match(/ALMACÉN\s([A-D])$/);
-    } else if (puesto.startsWith('AUXILIAR ADMINISTRATIVO DE ALMACÉN')) { rol = 'aux_admin_almacen'; categoriaMatch = puesto.match(/ALMACÉN\s([A-C])$/);
-    } else if (puesto.startsWith('AUXILIAR DEL SGI')) { rol = 'aux_sgi'; categoriaMatch = puesto.match(/SGI\s([B-C])$/);
-    } else if (puesto.startsWith('METRÓLOGO')) { rol = 'metrologo'; categoriaMatch = puesto.match(/METRÓLOGO\s([A-C])$/);
-    } else if (puesto.startsWith('ANALISTA DE RECLUTAMIENTO Y SELECCIÓN')) { rol = 'analista_reclutamiento'; categoriaMatch = puesto.match(/SELECCIÓN\s([A-B])$/);
-    } else if (puesto.startsWith('AUXILIAR DE LIMPIEZA')) { rol = 'auxiliar_limpieza'; categoriaMatch = puesto.match(/LIMPIEZA\s([A-B])$/);
-    } else if (puesto.startsWith('AUXILIAR DE BÁSCULA')) { rol = 'auxiliar_bascula'; categoriaMatch = puesto.match(/BÁSCULA\s([A-C])$/);
-    } else if (puesto.startsWith('CHECK LIST')) { rol = 'check_list'; categoriaMatch = puesto.match(/LIST\s([A-C])$/);
-    } else if (puesto.startsWith('MATERIALISTA')) { rol = 'materialista'; categoriaMatch = puesto.match(/MATERIALISTA\s([A-C])$/);
-    } else if (puesto.startsWith('PREPARADOR')) { rol = 'preparador'; categoriaMatch = puesto.match(/PREPARADOR\s([A-C])$/);
-    } else if (puesto.startsWith('SCRAP')) { rol = 'scrap'; categoriaMatch = puesto.match(/SCRAP\s([A-C])$/);
-    } else {
-        return { status: 'Pendiente', message: 'Puesto no aplica.' };
-    }
+    const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : parseDate(empleado.fecha_ingreso);
+    if (!fechaCambio) return { status: 'Pendiente', message: 'Se necesita registrar la fecha del último cambio o de ingreso.' };
 
-    if (!categoriaMatch) return { status: 'Pendiente', message: 'No se pudo determinar la categoría.' };
-    const categoria = categoriaMatch[1];
-    
-    const allRules: any = {
-      operador_acabados: { 'A': null, 'B': { cursos: 60, tiempo: 6 }, 'C': { cursos: 30, tiempo: 6 }, 'D': { cursos: 0, tiempo: 3 } },
-      supervisor_acabados: { 'A': null, 'B': { cursos: 90, tiempo: 8 }, 'C': { cursos: 80, tiempo: 6 } },
-      inspector: { 'A': null, 'B': { cursos: 70, tiempo: 6 }, 'C': { cursos: 50, tiempo: 6 }, 'D': { cursos: 0, tiempo: 6 } },
-      ingeniero_calidad: { 'A': null, 'B': { cursos: 90, tiempo: 9 }, 'C': { cursos: 80, tiempo: 9 } },
-      tecnico_mantenimiento: { 'A': null, 'B': { cursos: 50, tiempo: 8 }, 'C': { cursos: 30, tiempo: 8 }, 'D': { cursos: 0, tiempo: 8 } },
-      auxiliar_mantenimiento: { 'A': null, 'B': { cursos: 50, tiempo: 6 }, 'C': { cursos: 0, tiempo: 3 } },
-      tecnico_edificios: { 'A': null, 'B': { cursos: 90, tiempo: 8 } },
-      tecnico_taller: { 'A': null, 'B': { cursos: 90, tiempo: 18 }, 'C': { cursos: 80, tiempo: 12 }, 'D': { cursos: 50, tiempo: 12 }, 'E': { cursos: 30, tiempo: 6 } },
-      operador_maquina: { 'A': null, 'B': { cursos: 90, tiempo: 6 }, 'C': { cursos: 60, tiempo: 6 }, 'D': { cursos: 30, tiempo: 3 } },
-      montador: { 'A': null, 'B': { cursos: 90, tiempo: 12 }, 'C': { cursos: 60, tiempo: 6 } },
-      asistente_produccion: { 'A': null, 'B': { cursos: 60, tiempo: 12 }},
-      supervisor_produccion: { 'A': null, 'B': { cursos: 60, tiempo: 12 }, 'C': { cursos: 30, tiempo: 6 }, 'D': { cursos: 0, tiempo: 6 } },
-      ingeniero_proceso: { 'A': null, 'B': { cursos: 60, tiempo: 12 }, 'C': { cursos: 30, tiempo: 6 }, 'D': { cursos: 0, tiempo: 6 } },
-      ingeniero_proyectos: { 'A': null, 'B': { cursos: 60, tiempo: 12 }, 'C': { cursos: 30, tiempo: 6 }, 'D': { cursos: 0, tiempo: 6 } },
-      lider_proyectos: { 'A': null, 'B': { cursos: 60, tiempo: 12 }, 'C': { cursos: 0, tiempo: 6 } },
-      auxiliar_almacen: { 'A': null, 'B': { cursos: 60, tiempo: 6 }, 'C': { cursos: 30, tiempo: 6 }, 'D': { cursos: 0, tiempo: 6 } },
-      aux_admin_almacen: { 'A': null, 'B': { cursos: 60, tiempo: 6 }, 'C': { cursos: 30, tiempo: 6 } },
-      aux_sgi: { 'B': null, 'C': { cursos: 0, tiempo: 8 } },
-      metrologo: { 'A': null, 'B': { cursos: 70, tiempo: 8 }, 'C': { cursos: 0, tiempo: 6 } },
-      analista_reclutamiento: { 'A': null, 'B': { cursos: 90, tiempo: 6 } },
-      auxiliar_limpieza: { 'A': null, 'B': { cursos: 90, tiempo: 6 } },
-      auxiliar_bascula: { 'A': null, 'B': { cursos: 60, tiempo: 6 }, 'C': { cursos: 0, tiempo: 6 } },
-      check_list: { 'A': null, 'B': { cursos: 60, tiempo: 6 }, 'C': { cursos: 0, tiempo: 6 } },
-      materialista: { 'A': null, 'B': { cursos: 60, tiempo: 6 }, 'C': { cursos: 0, tiempo: 6 } },
-      preparador: { 'A': null, 'B': { cursos: 60, tiempo: 6 }, 'C': { cursos: 0, tiempo: 6 } },
-      scrap: { 'A': null, 'B': { cursos: 60, tiempo: 6 }, 'C': { cursos: 0, tiempo: 6 } },
-    };
-
-    if (rol && allRules[rol] && allRules[rol][categoria] === null) return { status: 'Máxima Categoría', message: 'Categoría más alta alcanzada.' };
-    const reglas = rol ? allRules[rol]?.[categoria] : null;
-    if (!reglas) return { status: 'Pendiente', message: 'Sin reglas de promoción.' };
-
-    const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : null;
-    if (!fechaCambio) return { status: 'Pendiente', message: 'Falta fecha de último cambio.' };
-    
     const mesesDesdeCambio = differenceInMonths(new Date(), fechaCambio);
-    const { cursos: cursosRequeridos, tiempo: tiempoEspera } = reglas;
+    if (mesesDesdeCambio < regla.meses_minimos) return { status: 'En Progreso', message: `En período de espera. Necesita ${regla.meses_minimos} meses y tiene ${mesesDesdeCambio}.` };
+    
+    const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
+    if (evaluacionDesempeno === undefined || evaluacionDesempeno < regla.min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Evaluación de desempeño pendiente o inferior a ${regla.min_evaluacion_desempeno}.` };
 
-    if (mesesDesdeCambio < tiempoEspera) return { status: 'En Progreso', message: `Necesita ${tiempoEspera} meses, tiene ${mesesDesdeCambio}.` };
-    if (empleado.coberturaCursos < cursosRequeridos) return { status: 'Requiere Atención', message: `Requiere ${cursosRequeridos}% de cursos y tiene ${empleado.coberturaCursos.toFixed(0)}%.` };
-    return { status: 'Elegible', message: `¡Listo para evaluación!` };
+    if (regla.min_examen_teorico && (empleado.promocionData?.examen_teorico === undefined || empleado.promocionData.examen_teorico < regla.min_examen_teorico)) return { status: 'Requiere Atención', message: `Examen teórico pendiente o inferior a ${regla.min_examen_teorico}.` };
+    
+    if (empleado.coberturaCursos < regla.min_cobertura_matriz) return { status: 'Requiere Atención', message: `Cobertura de cursos insuficiente. Requiere ${regla.min_cobertura_matriz}% y tiene ${empleado.coberturaCursos.toFixed(0)}%.` };
+    
+    return { status: 'Elegible', message: 'Cumple con todos los criterios para ser evaluado para promoción.' };
 };
 
 
@@ -162,21 +108,24 @@ export default function ReportesPage() {
     const historialRef = useMemoFirebase(() => collection(firestore, 'historial_capacitacion'), [firestore]);
     const promocionesRef = useMemoFirebase(() => collection(firestore, 'Promociones'), [firestore]);
     const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
+    const reglasAscensoRef = useMemoFirebase(() => collection(firestore, 'reglas_ascenso'), [firestore]);
 
     const { data: empleados, isLoading: l1 } = useCollection<Empleado>(plantillaRef);
     const { data: perfiles, isLoading: l2 } = useCollection<PerfilPuesto>(perfilesRef);
     const { data: historiales, isLoading: l3 } = useCollection<Historial>(historialRef);
     const { data: promociones, isLoading: l4 } = useCollection<Promocion>(promocionesRef);
     const { data: catalogoCursos, isLoading: l5 } = useCollection<CursoCatalogo>(catalogoCursosRef);
+    const { data: reglasAscenso, isLoading: l6 } = useCollection<ReglaAscenso>(reglasAscensoRef);
     
-    const isLoading = l1 || l2 || l3 || l4 || l5;
+    const isLoading = l1 || l2 || l3 || l4 || l5 || l6;
 
     const datosProcesados = useMemo(() => {
-        if (isLoading || !empleados || !perfiles || !historiales || !promociones || !catalogoCursos) return null;
+        if (isLoading || !empleados || !perfiles || !historiales || !promociones || !catalogoCursos || !reglasAscenso) return null;
         
         const historialesMap = new Map(historiales.map(h => [h.id_empleado, h.cursos]));
         const promocionesMap = new Map(promociones.map(p => [p.id, p]));
-        const catalogoMap = new Map(catalogoCursos.map(c => [c.id, c.nombre_oficial]));
+        const catalogoMap = new Map(catalogoCursos.map(c => [c.id_curso, c]));
+        const reglasMap = new Map(reglasAscenso.map(r => [r.puesto_actual, r]));
 
         return empleados.map(emp => {
             const perfil = perfiles.find(p => p.nombre_puesto === emp.puesto.titulo);
@@ -189,17 +138,21 @@ export default function ReportesPage() {
                 const cursosObligatoriosIds = new Set(perfil.cursos_obligatorios);
                 
                 const completadosIds = Array.from(cursosCompletadosMap.keys()).filter(id => cursosObligatoriosIds.has(id));
-                cursosCompletadosNombres = completadosIds.map(id => catalogoMap.get(id) || id);
+                cursosCompletadosNombres = completadosIds.map(id => catalogoMap.get(id)?.nombre_oficial || id);
 
                 const pendientesIds = perfil.cursos_obligatorios.filter(id => !cursosCompletadosMap.has(id));
-                cursosPendientesNombres = pendientesIds.map(id => catalogoMap.get(id) || id);
+                cursosPendientesNombres = pendientesIds.map(id => catalogoMap.get(id)?.nombre_oficial || id);
 
                 coberturaCursos = cursosObligatoriosIds.size > 0 ? (completadosIds.length / cursosObligatoriosIds.size) * 100 : 100;
             }
             const promocionData = promocionesMap.get(emp.id_empleado);
-            return { ...emp, coberturaCursos, promocionData, cursosCompletadosNombres, cursosPendientesNombres };
+            const empleadoProcesado = { ...emp, coberturaCursos, promocionData, cursosCompletadosNombres, cursosPendientesNombres };
+            const reglaAplicable = reglasMap.get(emp.puesto.titulo);
+            const statusInfo = getStatusInfo(empleadoProcesado, reglaAplicable);
+            
+            return { ...empleadoProcesado, statusInfo };
         });
-    }, [isLoading, empleados, perfiles, historiales, promociones, catalogoCursos]);
+    }, [isLoading, empleados, perfiles, historiales, promociones, catalogoCursos, reglasAscenso]);
 
     const downloadCSV = (content: string, fileName: string) => {
         const blob = new Blob(["\uFEFF" + content], { type: 'text/csv;charset=utf-8;' });
@@ -222,7 +175,7 @@ export default function ReportesPage() {
         const headerRow = headerTitles.join(',');
         const rows = data.map(row => 
             headerKeys.map(key => {
-                const value = row[key];
+                const value = key.split('.').reduce((o, i) => (o ? o[i] : ''), row);
                 const stringValue = (value === null || value === undefined) ? '' : String(value);
                 return `"${stringValue.replace(/"/g, '""')}"`;
             }).join(',')
@@ -238,20 +191,16 @@ export default function ReportesPage() {
 
         switch(reportType) {
             case 'plantilla':
-                const plantillaData = datosProcesados.map(emp => ({ ...emp, ...emp.puesto }));
-                csvContent = convertToCSV(plantillaData, { "id_empleado": "ID Empleado", "nombre_completo": "Nombre", "departamento": "Departamento", "titulo": "Puesto" });
+                csvContent = convertToCSV(datosProcesados, { "id_empleado": "ID Empleado", "nombre_completo": "Nombre", "puesto.departamento": "Departamento", "puesto.titulo": "Puesto" });
                 break;
             case 'cumplimiento':
                 const cumplimientoData = datosProcesados.map(emp => ({
-                    id_empleado: emp.id_empleado,
-                    nombre_completo: emp.nombre_completo,
-                    puesto: emp.puesto.titulo,
-                    departamento: emp.puesto.departamento,
+                    ...emp,
                     porcentaje: emp.coberturaCursos.toFixed(0) + '%',
-                    cursos_completados: emp.cursosCompletadosNombres.join('; '),
-                    cursos_pendientes: emp.cursosPendientesNombres.join('; ')
+                    cursos_completados_str: emp.cursosCompletadosNombres.join('; '),
+                    cursos_pendientes_str: emp.cursosPendientesNombres.join('; ')
                 }));
-                csvContent = convertToCSV(cumplimientoData, { "id_empleado": "ID Empleado", "nombre_completo": "Nombre", "puesto": "Puesto", "departamento": "Departamento", "porcentaje": "Cumplimiento", "cursos_completados": "Cursos Completados", "cursos_pendientes": "Cursos Pendientes" });
+                csvContent = convertToCSV(cumplimientoData, { "id_empleado": "ID Empleado", "nombre_completo": "Nombre", "puesto.titulo": "Puesto", "puesto.departamento": "Departamento", "porcentaje": "Cumplimiento", "cursos_completados_str": "Cursos Completados", "cursos_pendientes_str": "Cursos Pendientes" });
                 break;
             case 'departamento':
                 const porDepto: {[key: string]: { total: number, suma_cumplimiento: number }} = {};
@@ -270,24 +219,24 @@ export default function ReportesPage() {
                 break;
             case 'categorias':
                  const categoriasData = datosProcesados
-                    .filter(emp => getStatusInfo(emp).status !== 'Pendiente')
+                    .filter(emp => emp.statusInfo.status !== 'Pendiente')
                     .map(emp => ({
                         id_empleado: emp.id_empleado,
                         nombre_completo: emp.nombre_completo,
                         puesto: emp.puesto.titulo,
-                        estatus: getStatusInfo(emp).status,
-                        mensaje_estatus: getStatusInfo(emp).message,
+                        estatus: emp.statusInfo.status,
+                        mensaje_estatus: emp.statusInfo.message,
                         cobertura_cursos: emp.coberturaCursos.toFixed(0) + '%',
                         ultimo_cambio: emp.promocionData?.fecha_ultimo_cambio ? format(parseDate(emp.promocionData.fecha_ultimo_cambio)!, 'dd/MM/yyyy') : 'N/A',
+                        evaluacion_desempeno: emp.promocionData?.evaluacion_desempeno ?? 'N/A',
                         examen_teorico: emp.promocionData?.examen_teorico ?? 'N/A',
-                        evaluacion_practica: emp.promocionData?.evaluacion_practica ?? 'N/A'
                     }));
-                csvContent = convertToCSV(categoriasData, { "id_empleado": "ID Empleado", "nombre_completo": "Nombre", "puesto": "Puesto", "estatus": "Estatus Promoción", "mensaje_estatus": "Detalle de Estatus", "cobertura_cursos": "% Cursos", "ultimo_cambio": "Fecha Últ. Cambio", "examen_teorico": "Examen Teórico", "evaluacion_practica": "Eval. Práctica" });
+                csvContent = convertToCSV(categoriasData, { "id_empleado": "ID Empleado", "nombre_completo": "Nombre", "puesto": "Puesto", "estatus": "Estatus Promoción", "mensaje_estatus": "Detalle de Estatus", "cobertura_cursos": "% Cursos", "ultimo_cambio": "Fecha Últ. Cambio", "evaluacion_desempeno": "Eval. Desempeño", "examen_teorico": "Examen Teórico" });
                 break;
             case 'historial':
                 if(!historiales || !empleados || !catalogoCursos) break;
                 const empleadoMap = new Map(empleados.map(e => [e.id_empleado, e]));
-                const catalogoMap = new Map(catalogoCursos.map(c => [c.id, c.nombre_oficial]));
+                const catalogoMap = new Map(catalogoCursos.map(c => [c.id_curso, c.nombre_oficial]));
                 const historialCompleto = historiales.flatMap(hist =>
                     (hist.cursos || []).map(curso => {
                         const empleado = empleadoMap.get(hist.id_empleado);

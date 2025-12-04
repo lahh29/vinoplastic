@@ -27,16 +27,20 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, FileClock, Search, Calendar, Star, TrendingUp } from 'lucide-react';
+import { AlertTriangle, FileClock, Search, Calendar, Star, TrendingUp, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
-import { useCollection, useFirestore, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
-import { collection, doc, Timestamp } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, Timestamp, setDoc } from 'firebase/firestore';
 import { format, addDays, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRoleCheck } from '@/hooks/use-role-check';
+import { motion } from 'framer-motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
+
 
 interface ContratoFechas {
   ingreso: Timestamp;
@@ -68,31 +72,22 @@ interface Contrato {
 
 const getDate = (timestamp: any): Date | null => {
     if (!timestamp) return null;
-    // Handle Firestore Timestamp object
-    if (timestamp.toDate) {
-      return timestamp.toDate();
-    }
-    // Handle string or number date representations
+    if (timestamp.toDate) return timestamp.toDate();
     const date = new Date(timestamp);
-    if (isValid(date)) {
-      return date;
-    }
-    return null;
+    return isValid(date) ? date : null;
 };
 
-// Helper para convertir Timestamp de Firestore a un formato más legible
 const formatDate = (timestamp: any): string => {
   if (!timestamp) return 'N/A';
   const date = getDate(timestamp);
-  if (!date || !isValid(date)) {
-      return 'Fecha inválida';
-  }
+  if (!date || !isValid(date)) return 'Fecha inválida';
   return format(date, 'dd/MMM/yy', { locale: es });
 };
 
 
 export default function ContratosPage() {
   const firestore = useFirestore();
+  const { toast } = useToast();
   const { checkAdminAndExecute } = useRoleCheck();
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
   const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
@@ -101,28 +96,17 @@ export default function ContratosPage() {
   const [expiringContracts, setExpiringContracts] = useState<Contrato[]>([]);
   const [dueEvaluations, setDueEvaluations] = useState<{contrato: Contrato, fecha: string, tipo: string}[]>([]);
   const [selectedContract, setSelectedContract] = useState<Contrato | null>(null);
-  const [evaluations, setEvaluations] = useState({
-    eval1: '',
-    eval2: '',
-    eval3: '',
-  });
-  const [calculatedDates, setCalculatedDates] = useState<{
-    eval1: Date | null;
-    eval2: Date | null;
-    eval3: Date | null;
-    termino: Date | null;
-  }>({ eval1: null, eval2: null, eval3: null, termino: null });
-
+  const [evaluations, setEvaluations] = useState({ eval1: '', eval2: '', eval3: '' });
+  const [calculatedDates, setCalculatedDates] = useState<{ eval1: Date | null; eval2: Date | null; eval3: Date | null; termino: Date | null; }>({ eval1: null, eval2: null, eval3: null, termino: null });
   const [isIndeterminate, setIsIndeterminate] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (!contratos) return;
 
     const today = new Date();
-    const fifteenDaysFromNow = new Date();
-    fifteenDaysFromNow.setDate(today.getDate() + 15);
-    const sevenDaysFromNow = new Date();
-    sevenDaysFromNow.setDate(today.getDate() + 7);
+    const fifteenDaysFromNow = addDays(today, 15);
+    const sevenDaysFromNow = addDays(today, 7);
 
     const expiring = contratos.filter(c => {
         if (c.indeterminado) return false;
@@ -149,11 +133,7 @@ export default function ContratosPage() {
     });
 
     setExpiringContracts(expiring.sort((a,b) => (getDate(a.fechas_contrato.termino)?.getTime() ?? 0) - (getDate(b.fechas_contrato.termino)?.getTime() ?? 0)));
-    setDueEvaluations(evaluationsDue.sort((a,b) => {
-        const dateA = getDate(a.contrato.evaluaciones?.primera?.fecha_programada) ?? new Date(0);
-        const dateB = getDate(b.contrato.evaluaciones?.primera?.fecha_programada) ?? new Date(0);
-        return dateA.getTime() - dateB.getTime();
-    }));
+    setDueEvaluations(evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones?.primera?.fecha_programada) ?? new Date(0)).getTime() - (getDate(b.contrato.evaluaciones?.primera?.fecha_programada) ?? new Date(0)).getTime()));
   }, [contratos]);
 
   const filteredContratos = useMemo(() => {
@@ -168,7 +148,6 @@ export default function ContratosPage() {
     });
   }, [contratos, searchTerm]);
   
-
   const handleRowClick = (contrato: Contrato) => {
     checkAdminAndExecute(() => {
         setSelectedContract(contrato);
@@ -191,40 +170,60 @@ export default function ContratosPage() {
     });
   };
 
-  const handleSave = () => {
-    checkAdminAndExecute(() => {
-        if (!selectedContract || !firestore) return;
+ const handleSave = () => {
+    checkAdminAndExecute(async () => {
+      if (!selectedContract || !firestore) return;
+      setIsSaving(true);
+      const docRef = doc(firestore, 'Contratos', selectedContract.id);
+      
+      const updatedData = { ...selectedContract };
 
-        const docRef = doc(firestore, 'Contratos', selectedContract.id);
-        
-        const updatedData = JSON.parse(JSON.stringify(selectedContract));
+      const parseScore = (score: string) => score.includes('%') ? parseFloat(score.replace('%','')) : (isNaN(parseFloat(score)) ? null : parseFloat(score));
+      
+      updatedData.evaluaciones.primera.calificacion_texto = evaluations.eval1;
+      updatedData.evaluaciones.primera.calificacion_valor = parseScore(evaluations.eval1);
+      updatedData.evaluaciones.primera.estatus = (evaluations.eval1 === 'Pendiente' || evaluations.eval1 === '') ? 'Pendiente' : 'Evaluado';
+      
+      updatedData.evaluaciones.segunda.calificacion_texto = evaluations.eval2;
+      updatedData.evaluaciones.segunda.calificacion_valor = parseScore(evaluations.eval2);
+      updatedData.evaluaciones.segunda.estatus = (evaluations.eval2 === 'Pendiente' || evaluations.eval2 === '') ? 'Pendiente' : 'Evaluado';
 
-        updatedData.evaluaciones.primera.calificacion_texto = evaluations.eval1;
-        updatedData.evaluaciones.primera.estatus = (evaluations.eval1 === 'Pendiente' || evaluations.eval1 === '') ? 'Pendiente' : 'Evaluado';
-        
-        updatedData.evaluaciones.segunda.calificacion_texto = evaluations.eval2;
-        updatedData.evaluaciones.segunda.estatus = (evaluations.eval2 === 'Pendiente' || evaluations.eval2 === '') ? 'Pendiente' : 'Evaluado';
+      updatedData.evaluaciones.tercera.calificacion_texto = evaluations.eval3;
+      updatedData.evaluaciones.tercera.calificacion_valor = parseScore(evaluations.eval3);
+      updatedData.evaluaciones.tercera.estatus = (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado';
+      
+      updatedData.indeterminado = isIndeterminate;
 
-        updatedData.evaluaciones.tercera.calificacion_texto = evaluations.eval3;
-        updatedData.evaluaciones.tercera.estatus = (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado';
-        
-        updatedData.indeterminado = isIndeterminate;
-
-        updatedData.fechas_contrato.termino = calculatedDates.termino;
-        updatedData.evaluaciones.primera.fecha_programada = calculatedDates.eval1;
-        updatedData.evaluaciones.segunda.fecha_programada = calculatedDates.eval2;
-        updatedData.evaluaciones.tercera.fecha_programada = calculatedDates.eval3;
-
-
-        delete updatedData.id;
-
-        setDocumentNonBlocking(docRef, updatedData, { merge: true });
+      delete (updatedData as any).id;
+      
+      try {
+        await setDoc(docRef, updatedData, { merge: true });
+        toast({
+          title: "Éxito",
+          description: `El contrato de ${selectedContract.nombre_completo} ha sido actualizado.`,
+          className: "bg-green-100 text-green-800 border-green-300",
+        })
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar el contrato.",
+          variant: 'destructive',
+        })
+      } finally {
+        setIsSaving(false);
         setSelectedContract(null);
+      }
     });
   };
   
   return (
-    <div className="space-y-8">
+    <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-8"
+    >
       <div className="max-w-4xl">
         <h1 className="text-4xl font-bold tracking-tight">Gestión de Contratos</h1>
         <p className="mt-2 text-lg text-muted-foreground">
@@ -233,53 +232,57 @@ export default function ContratosPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
-        <Card>
+        <Card className="rounded-2xl shadow-lg border-destructive/20 bg-destructive/5">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-semibold">Contratos por Vencer</CardTitle>
                 <AlertTriangle className="h-6 w-6 text-destructive" />
             </CardHeader>
             <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">En los próximos 15 días.</p>
+                <ScrollArea className="h-48">
                 {expiringContracts.length > 0 ? (
-                    <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
+                    <div className="space-y-3 pr-4">
                         {expiringContracts.map(c => (
-                            <div key={c.id} className="p-3 bg-destructive/10 border-l-4 border-destructive rounded-r-lg">
+                            <motion.div whileHover={{ scale: 1.02}} key={c.id} className="p-3 bg-card/60 border-l-4 border-destructive rounded-r-lg shadow-sm">
                                 <p className="font-semibold text-sm">{c.nombre_completo}</p>
                                 <p className="text-xs text-muted-foreground">Vence el: {formatDate(c.fechas_contrato?.termino)}</p>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 ) : (
-                    <p className="text-sm text-muted-foreground italic">No hay contratos por vencer.</p>
+                    <div className="flex h-full items-center justify-center"><p className="text-sm text-muted-foreground italic">No hay contratos por vencer.</p></div>
                 )}
+                </ScrollArea>
             </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl shadow-lg border-primary/20 bg-primary/5">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-semibold">Evaluaciones Próximas</CardTitle>
                 <FileClock className="h-6 w-6 text-primary" />
             </CardHeader>
             <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">En los próximos 7 días.</p>
+                 <ScrollArea className="h-48">
                  {dueEvaluations.length > 0 ? (
-                    <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
+                    <div className="space-y-3 pr-4">
                         {dueEvaluations.map(item => (
-                             <div key={item.contrato.id + item.tipo} className="p-3 bg-primary/10 border-l-4 border-primary rounded-r-lg">
+                             <motion.div whileHover={{ scale: 1.02}} key={item.contrato.id + item.tipo} className="p-3 bg-card/60 border-l-4 border-primary rounded-r-lg shadow-sm">
                                 <p className="font-semibold text-sm">{item.contrato.nombre_completo}</p>
                                 <p className="text-xs text-muted-foreground">
                                    {item.tipo} evaluación antes del: {item.fecha}
                                 </p>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 ) : (
-                    <p className="text-sm text-muted-foreground italic">No hay evaluaciones próximas.</p>
+                    <div className="flex h-full items-center justify-center"><p className="text-sm text-muted-foreground italic">No hay evaluaciones próximas.</p></div>
                 )}
+                </ScrollArea>
             </CardContent>
         </Card>
       </div>
 
-      <Card>
+      <Card className="rounded-2xl shadow-lg">
         <CardHeader>
           <CardTitle>Listado de Personal</CardTitle>
           <CardDescription>
@@ -291,12 +294,12 @@ export default function ContratosPage() {
               placeholder="Buscar por ID o Nombre..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 rounded-full"
             />
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border">
+          <div className="overflow-x-auto rounded-lg border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -309,7 +312,7 @@ export default function ContratosPage() {
               </TableHeader>
               <TableBody>
                 {filteredContratos.map((contrato: Contrato) => (
-                  <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent">
+                  <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent transition-colors">
                     <TableCell>{contrato.id_empleado}</TableCell>
                     <TableCell className="font-medium">{contrato.nombre_completo}</TableCell>
                     <TableCell>{formatDate(contrato.fechas_contrato?.ingreso)}</TableCell>
@@ -333,7 +336,7 @@ export default function ContratosPage() {
 
       {selectedContract && (
         <Dialog open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
-            <DialogContent className="sm:max-w-2xl">
+            <DialogContent className="sm:max-w-2xl rounded-2xl bg-card">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">Seguimiento de Evaluaciones</DialogTitle>
                     <DialogDescription className="text-base">
@@ -342,7 +345,7 @@ export default function ContratosPage() {
                 </DialogHeader>
                 <div className="py-6 space-y-6">
                     <div className="space-y-4 rounded-lg border p-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><Star className="text-primary"/> Evaluaciones de Desempeño</h3>
+                        <h3 className="font-semibold text-lg flex items-center gap-2"><Star className="text-amber-400"/> Evaluaciones de Desempeño</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="space-y-2">
                                 <Label htmlFor="eval1" className="flex items-center gap-2 text-muted-foreground">
@@ -380,7 +383,7 @@ export default function ContratosPage() {
                         </div>
                     </div>
                     <div className="space-y-4 rounded-lg border p-4">
-                       <h3 className="font-semibold text-lg flex items-center gap-2"><TrendingUp className="text-primary"/> Estatus del Contrato</h3>
+                       <h3 className="font-semibold text-lg flex items-center gap-2"><TrendingUp className="text-green-500"/> Estatus del Contrato</h3>
                        <div className="flex items-center space-x-3 justify-between pt-2">
                             <div className="flex items-center space-x-3">
                                 <Switch 
@@ -401,11 +404,15 @@ export default function ContratosPage() {
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setSelectedContract(null)}>Cancelar</Button>
-                    <Button onClick={handleSave}>Guardar Cambios</Button>
+                    <Button onClick={handleSave} disabled={isSaving}>
+                        {isSaving ? <Loader2 className="animate-spin mr-2"/> : null}
+                        Guardar Cambios
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
       )}
-    </div>
+    </motion.div>
   );
 }
+
