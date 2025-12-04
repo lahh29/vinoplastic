@@ -167,6 +167,7 @@ export default function PerfilPage() {
     if (duracion.years && duracion.years > 0) parts.push(`${duracion.years} años`);
     if (duracion.months && duracion.months > 0) parts.push(`${duracion.months} meses`);
     if (duracion.days && duracion.days > 0) parts.push(`${duracion.days} días`);
+    if(parts.length === 0) return "Menos de un día";
 
     return parts.join(', ');
   }, [selectedEmpleado]);
@@ -209,10 +210,10 @@ export default function PerfilPage() {
         </CardContent>
       </Card>
 
-      {isLoading && selectedEmpleado && <Loader2 className="mx-auto h-8 w-8 animate-spin" />}
+      {isLoading && <div className="flex justify-center items-center p-10"><Loader2 className="mx-auto h-8 w-8 animate-spin" /></div>}
       
       {selectedEmpleado && !isLoading && (
-        <>
+        <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.5}} className="space-y-8">
             <Card className={cn("overflow-hidden", statusColors[statusInfo!.status])}>
                 <CardHeader>
                     <CardTitle className="text-2xl text-white flex items-center justify-between">
@@ -287,7 +288,7 @@ export default function PerfilPage() {
                         </CardTitle>
                         {selectedEmpleado.cursosConEstado.length > 0 && (
                             <Badge variant="secondary" className="text-base">
-                            {selectedEmpleado.cursosConEstado.filter(c => c.estado === 'Aprobado').length} / {selectedEmpleado.cursosConEstado.length}
+                                {selectedEmpleado.cursosConEstado.filter(c => c.estado === 'Aprobado').length} / {selectedEmpleado.cursosConEstado.length}
                             </Badge>
                         )}
                     </div>
@@ -296,7 +297,7 @@ export default function PerfilPage() {
                    <CursosTable cursos={selectedEmpleado.cursosConEstado} />
                 </CardContent>
             </Card>
-        </>
+        </motion.div>
       )}
     </div>
   );
