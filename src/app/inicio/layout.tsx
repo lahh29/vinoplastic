@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
-import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, doc, Timestamp } from 'firebase/firestore';
 import { Dock, DockIcon } from '@/components/ui/dock';
 import {
