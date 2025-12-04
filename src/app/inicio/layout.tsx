@@ -46,7 +46,6 @@ const navItems = [
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
   { href: '/categorias', icon: Shapes, label: 'Categorías' },
   { href: '/formacion', icon: GraduationCap, label: 'Formación' },
-  { href: '/reportes', icon: FileDown, label: 'Reportes' },
 ];
 
 // Interfaces para notificaciones

@@ -102,6 +102,19 @@ export default function InicioPage() {
                 </CardContent>
             </Card>
         </Link>
+        <Link href="/reportes" className="block hover:no-underline group">
+            <Card className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 h-full overflow-hidden bg-card border-border/50 hover:border-primary/50">
+                <CardHeader className="p-6">
+                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
+                        <FileDown className="h-6 w-6 text-primary"/>
+                        Generar Reportes
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 pt-0">
+                    <CardDescription>Exporta datos clave de personal, capacitación y cumplimiento a archivos CSV.</CardDescription>
+                </CardContent>
+            </Card>
+        </Link>
        </div>
     </div>
   );
