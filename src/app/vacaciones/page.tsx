@@ -32,10 +32,10 @@ interface DiaFestivo {
 }
 
 const badgeColors: Record<Vacacion['tipo'], string> = {
-    'Vacaciones': 'bg-blue-500 text-white',
-    'Permiso': 'bg-yellow-500 text-white',
+    'Vacaciones': 'bg-primary text-primary-foreground',
+    'Permiso': 'bg-yellow-500 text-black',
     'Incapacidad': 'bg-purple-500 text-white',
-    'Falta': 'bg-red-500 text-white'
+    'Falta': 'bg-destructive text-destructive-foreground'
 };
 
 const DayWithEvents = ({ date, events }: { date: Date, events: (Vacacion | DiaFestivo)[] }) => {
@@ -121,7 +121,7 @@ export default function VacacionesPage() {
                     <CardTitle>Calendario de Ausencias</CardTitle>
                     <CardDescription>Eventos programados para todo el personal.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex justify-center p-0 sm:p-2">
+                <CardContent className="p-0 sm:p-2 flex justify-center">
                     <Calendar
                         mode="single"
                         className="p-0 w-full"
@@ -158,9 +158,9 @@ export default function VacacionesPage() {
                                     <div className="flex-shrink-0 h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold">{v.nombre_empleado.charAt(0)}</div>
                                     <div>
                                         <p className="font-semibold text-sm">{v.nombre_empleado}</p>
-                                        <p className="text-xs text-muted-foreground">{format(v.fecha_inicio.toDate(), 'dd MMM')} - {format(v.fecha_fin.toDate(), 'dd MMM')}</p>
+                                        <p className="text-xs text-muted-foreground">{format(v.fecha_inicio.toDate(), 'dd MMM', {locale: es})} - {format(v.fecha_fin.toDate(), 'dd MMM', {locale: es})}</p>
                                     </div>
-                                    <Badge className={cn("ml-auto text-white", badgeColors[v.tipo])}>{v.tipo}</Badge>
+                                    <Badge className={cn("ml-auto", badgeColors[v.tipo])}>{v.tipo}</Badge>
                                 </div>
                             )) : <p className="text-sm text-muted-foreground italic text-center py-8">Nadie fuera próximamente.</p>}
                             </div>
