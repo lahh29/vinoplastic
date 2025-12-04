@@ -118,57 +118,57 @@ export default function UsuariosPage() {
         setSelectedUser(null);
         setIsEditing(false);
     };
+    
+  const handleSave = () => {
+    checkAdminAndExecute(async () => {
+      if (!selectedUser || !selectedUser.id || !firestore) return;
+      setIsSubmitting(true);
+      try {
+          const userDocRef = doc(firestore, 'usuarios', selectedUser.id);
+          const dataToSave = {
+              nombre: selectedUser.nombre || '',
+              role: selectedUser.role || 'lector',
+              id_empleado: selectedUser.id_empleado || null
+          };
+          
+          await setDoc(userDocRef, dataToSave, { merge: true });
 
-    const handleSave = () => {
-        checkAdminAndExecute(async () => {
-            if (!selectedUser || !selectedUser.id || !firestore) return;
-            setIsSubmitting(true);
-            try {
-                const userDocRef = doc(firestore, 'usuarios', selectedUser.id);
-                const dataToSave = {
-                    nombre: selectedUser.nombre || '',
-                    role: selectedUser.role || 'lector',
-                    id_empleado: selectedUser.id_empleado || ''
-                };
-                
-                await setDoc(userDocRef, dataToSave, { merge: true });
-
-                toast({
-                    title: 'Éxito',
-                    description: `Se ha actualizado el usuario ${selectedUser.email}.`,
-                    className: "bg-green-100 text-green-800 border-green-300",
-                });
-                closeDialogs();
-            } catch (error) {
-                console.error("Error guardando usuario:", error);
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: "No se pudo guardar el usuario.",
-                });
-            } finally {
-                setIsSubmitting(false);
-            }
-        });
-    };
+          toast({
+              title: 'Éxito',
+              description: `Se ha actualizado el usuario ${selectedUser.email}.`,
+              className: "bg-green-100 text-green-800 border-green-300",
+          });
+          closeDialogs();
+      } catch (error) {
+          console.error("Error guardando usuario:", error);
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: "No se pudo guardar el usuario.",
+          });
+      } finally {
+          setIsSubmitting(false);
+      }
+    });
+  };
 
 
-    const handleDelete = (user: UserData) => {
-        checkAdminAndExecute(() => {
-            if (user.id === currentUser?.uid) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Acción no permitida',
-                    description: 'No puedes eliminar tu propia cuenta de usuario.',
-                });
-                return;
-            }
-            setUserToDelete(user);
-        });
-    };
+  const handleDelete = (user: UserData) => {
+    checkAdminAndExecute(() => {
+        if (user.id === currentUser?.uid) {
+            toast({
+                variant: 'destructive',
+                title: 'Acción no permitida',
+                description: 'No puedes eliminar tu propia cuenta de usuario.',
+            });
+            return;
+        }
+        setUserToDelete(user);
+    });
+  };
 
-    const confirmDelete = () => {
-      checkAdminAndExecute(async () => {
+  const confirmDelete = () => {
+    checkAdminAndExecute(async () => {
         if (!userToDelete || !firestore) return;
         setIsSubmitting(true);
         try {
@@ -189,7 +189,24 @@ export default function UsuariosPage() {
         } finally {
             setIsSubmitting(false);
         }
-      });
+    });
+  };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!selectedUser) return;
+        const { name, value } = e.target;
+        setSelectedUser({ ...selectedUser, [name]: value });
+    };
+
+    const handlePuestoChange = (name: string, value: string) => {
+        if (!selectedUser) return;
+        setSelectedUser({
+            ...selectedUser,
+            puesto: {
+                ...selectedUser.puesto,
+                [name]: value
+            }
+        });
     };
 
     const getAccessLevel = (role: UserData['role']) => {
