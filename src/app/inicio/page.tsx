@@ -8,11 +8,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
-import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock, User, BarChart, HardHat } from 'lucide-react';
+import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock, User, BarChart, HardHat, Loader2 } from 'lucide-react';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 
 // Interfaces
@@ -32,18 +33,38 @@ const navLinks = [
 
 
 export default function InicioPage() {
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const router = useRouter();
 
     const currentUserInfoRef = useMemoFirebase(
       () => (user ? doc(firestore, 'usuarios', user.uid) : null),
       [user, firestore]
     );
-    const { data: currentUserData } = useDoc<UserData>(currentUserInfoRef);
+    const { data: currentUserData, isLoading: isRoleLoading } = useDoc<UserData>(currentUserInfoRef);
     
+    useEffect(() => {
+        if (!isUserLoading && !isRoleLoading && currentUserData) {
+            if (currentUserData.role === 'lector') {
+                router.replace('/portal');
+            }
+        }
+    }, [isUserLoading, isRoleLoading, currentUserData, router]);
+
     const userName = useMemo(() => {
         return currentUserData?.nombre || user?.displayName || 'Usuario';
     }, [currentUserData, user]);
+
+    if (isUserLoading || isRoleLoading || currentUserData?.role === 'lector') {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                    <p className="text-muted-foreground">Cargando portal...</p>
+                </div>
+            </div>
+        );
+    }
 
 
   return (
@@ -84,3 +105,4 @@ export default function InicioPage() {
     </div>
   );
 }
+
