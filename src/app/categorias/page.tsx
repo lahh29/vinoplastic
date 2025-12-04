@@ -76,40 +76,39 @@ const formatDate = (date: any): string => {
 
 type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Requiere Atención' | 'Pendiente' | 'No Apto';
 
-const getStatusInfo = (empleado: EmpleadoPromocion, reglasAscenso: ReglaAscenso[]): { status: EstatusPromocion, message: string, color: string } => {
-    if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto para promoción.', color: 'bg-zinc-500' };
+const getStatusInfo = (empleado: EmpleadoPromocion, reglasAscenso: ReglaAscenso[]): { status: EstatusPromocion, message: string, color: string, textColor: string } => {
+    if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto para promoción.', color: 'bg-zinc-500/10 border-zinc-500/30', textColor: 'text-zinc-400' };
     const puestoActual = empleado.puesto.titulo;
     const regla = reglasAscenso.find(r => r.puesto_actual === puestoActual);
+    
     if (!regla) {
-        // Si no hay regla, verificamos si existe una regla donde este puesto sea el "siguiente"
         const esPuestoFinal = !reglasAscenso.some(r => r.puesto_siguiente === puestoActual);
-        const tieneCategoria = /[A-E]$/.test(puestoActual); // Verifica si el puesto termina en una letra de categoría
-        
+        const tieneCategoria = /[A-E]$/.test(puestoActual);
         if (tieneCategoria && esPuestoFinal) {
-             return { status: 'Máxima Categoría', message: 'El empleado ha alcanzado la categoría más alta en su plan de carrera.', color: 'bg-yellow-500' };
+             return { status: 'Máxima Categoría', message: 'El empleado ha alcanzado la categoría más alta en su plan de carrera.', color: 'bg-yellow-500/10 border-yellow-500/30', textColor: 'text-yellow-400' };
         }
-        return { status: 'Pendiente', message: 'Este puesto no forma parte de un plan de carrera o es la categoría inicial.', color: 'bg-gray-400' };
+        return { status: 'Pendiente', message: 'Este puesto no forma parte de un plan de carrera o es la categoría inicial.', color: 'bg-gray-400/10 border-gray-400/30', textColor: 'text-gray-400' };
     }
 
     const { meses_minimos, min_cobertura_matriz, min_evaluacion_desempeno, min_examen_teorico } = regla;
     const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : parseDate(empleado.fecha_ingreso);
-    if (!fechaCambio) return { status: 'Pendiente', message: 'Se necesita registrar la fecha del último cambio o de ingreso para evaluar.', color: 'bg-gray-400' };
+    if (!fechaCambio) return { status: 'Pendiente', message: 'Se necesita registrar la fecha del último cambio o de ingreso para evaluar.', color: 'bg-gray-400/10 border-gray-400/30', textColor: 'text-gray-400' };
     
     const mesesDesdeCambio = differenceInMonths(new Date(), fechaCambio);
 
-    if (mesesDesdeCambio < meses_minimos) return { status: 'En Progreso', message: `En período de espera. Necesita ${meses_minimos} meses, actualmente tiene ${mesesDesdeCambio}.`, color: 'bg-blue-500' };
+    if (mesesDesdeCambio < meses_minimos) return { status: 'En Progreso', message: `En período de espera. Necesita ${meses_minimos} meses, actualmente tiene ${mesesDesdeCambio}.`, color: 'bg-blue-500/10 border-blue-500/30', textColor: 'text-blue-400' };
     
     const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
-    if (evaluacionDesempeno === undefined || evaluacionDesempeno === null || evaluacionDesempeno < min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Evaluación de desempeño pendiente o inferior a ${min_evaluacion_desempeno} (actual: ${evaluacionDesempeno ?? 'N/A'}).`, color: 'bg-orange-500' };
+    if (evaluacionDesempeno === undefined || evaluacionDesempeno === null || evaluacionDesempeno < min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Evaluación de desempeño pendiente o inferior a ${min_evaluacion_desempeno} (actual: ${evaluacionDesempeno ?? 'N/A'}).`, color: 'bg-orange-500/10 border-orange-500/30', textColor: 'text-orange-400' };
 
     const examenTeorico = empleado.promocionData?.examen_teorico;
     if (min_examen_teorico !== undefined && min_examen_teorico > 0) {
-        if(examenTeorico === undefined || examenTeorico === null || examenTeorico < min_examen_teorico) return { status: 'Requiere Atención', message: `Examen teórico pendiente o inferior a ${min_examen_teorico}. Calificación actual: ${examenTeorico ?? 'N/A'}.`, color: 'bg-orange-500' };
+        if(examenTeorico === undefined || examenTeorico === null || examenTeorico < min_examen_teorico) return { status: 'Requiere Atención', message: `Examen teórico pendiente o inferior a ${min_examen_teorico}. Calificación actual: ${examenTeorico ?? 'N/A'}.`, color: 'bg-orange-500/10 border-orange-500/30', textColor: 'text-orange-400' };
     }
     
-    if (empleado.coberturaCursos < min_cobertura_matriz) return { status: 'Requiere Atención', message: `Tiempo de espera cumplido, pero requiere ${min_cobertura_matriz}% de cursos y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, color: 'bg-orange-500' };
+    if (empleado.coberturaCursos < min_cobertura_matriz) return { status: 'Requiere Atención', message: `Tiempo de espera cumplido, pero requiere ${min_cobertura_matriz}% de cursos y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, color: 'bg-orange-500/10 border-orange-500/30', textColor: 'text-orange-400' };
     
-    return { status: 'Elegible', message: `Cumple con el tiempo, cursos y evaluación. ¡Listo para ser evaluado!`, color: 'bg-green-600' };
+    return { status: 'Elegible', message: `Cumple con el tiempo, cursos y evaluación. ¡Listo para ser evaluado!`, color: 'bg-green-600/10 border-green-600/30', textColor: 'text-green-500' };
 };
 
 const getCriterioStatus = (empleado: EmpleadoPromocion, regla: ReglaAscenso, criterio: 'tiempo' | 'desempeno' | 'teorico' | 'cursos') => {
@@ -335,23 +334,21 @@ export default function PromocionesPage() {
                     const statusInfo = getStatusInfo(emp, reglasAscenso);
                     return(
                     <motion.div layout key={emp.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }} className="h-full">
-                        <Card className="flex flex-col h-full hover:shadow-lg hover:-translate-y-1 transition-transform duration-200 cursor-pointer" onClick={() => setSelectedEmpleado(emp)}>
-                            <CardHeader className="flex-row gap-4 items-center p-4">
-                                <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center font-bold text-lg text-primary">{emp.nombre_completo.charAt(0)}</div>
-                                <div className="flex-1">
-                                    <p className="font-semibold text-base leading-tight truncate">{emp.nombre_completo}</p>
-                                    <p className="text-xs text-muted-foreground truncate">{emp.puesto.titulo}</p>
+                        <Card className="group flex flex-col h-full hover:shadow-lg transition-all duration-200 cursor-pointer border hover:border-primary/50 relative overflow-hidden" onClick={() => setSelectedEmpleado(emp)}>
+                            <CardContent className="p-4 flex-1 flex flex-col">
+                                <div className="flex-1 mb-4">
+                                    <div className="flex justify-between items-start">
+                                        <Badge className={cn('text-xs font-semibold border', statusInfo.color, statusInfo.textColor)}>{statusInfo.status}</Badge>
+                                        <span className="text-xs font-mono text-muted-foreground">{emp.id_empleado}</span>
+                                    </div>
+                                    <p className="font-bold text-lg leading-tight mt-3">{emp.nombre_completo}</p>
+                                    <p className="text-sm text-muted-foreground">{emp.puesto.titulo}</p>
                                 </div>
-                            </CardHeader>
-                            <CardContent className="p-4 pt-0 flex-1">
-                                <TooltipProvider><Tooltip><TooltipTrigger className="w-full text-left">
-                                <Badge className={cn('text-white text-xs', statusInfo.color)}>{statusInfo.status}</Badge>
-                                </TooltipTrigger><TooltipContent><p>{statusInfo.message}</p></TooltipContent></Tooltip></TooltipProvider>
-                                <div className="mt-4 space-y-2">
-                                    <Label className="text-xs">Cobertura de Cursos</Label>
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Cobertura de Cursos</Label>
                                     <div className="flex items-center gap-2">
-                                        <Progress value={emp.coberturaCursos} className="h-2" />
-                                        <span className="text-xs font-bold">{emp.coberturaCursos.toFixed(0)}%</span>
+                                        <Progress value={emp.coberturaCursos} className="h-1.5" />
+                                        <span className="text-xs font-bold text-foreground">{emp.coberturaCursos.toFixed(0)}%</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -457,3 +454,4 @@ export default function PromocionesPage() {
     </div>
   );
 }
+
