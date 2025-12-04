@@ -1,0 +1,842 @@
+[
+  {
+    "id_curso": "8d_s_para_la_solucion_de_problemas",
+    "nombre_oficial": "8D'S PARA LA SOLUCION DE PROBLEMAS"
+  },
+  {
+    "id_curso": "administraci_n_por_calidad",
+    "nombre_oficial": "ADMINISTRACIÓN POR CALIDAD"
+  },
+  {
+    "id_curso": "aspectos_e_impactos_ambientales",
+    "nombre_oficial": "ASPECTOS E IMPACTOS AMBIENTALES"
+  },
+  {
+    "id_curso": "aspel_banco_win_1_5",
+    "nombre_oficial": "ASPEL BANCO WIN 1.5"
+  },
+  {
+    "id_curso": "auditor_as_de_proceso_en_capas_lpa_s_",
+    "nombre_oficial": "AUDITORÍAS DE PROCESO EN CAPAS (LPA'S)"
+  },
+  {
+    "id_curso": "base_iii_plus",
+    "nombre_oficial": "BASE III PLUS"
+  },
+  {
+    "id_curso": "bombas_centrifugas",
+    "nombre_oficial": "BOMBAS CENTRIFUGAS"
+  },
+  {
+    "id_curso": "brigadas_de_comunicaci_n_y_evacuaci_n",
+    "nombre_oficial": "BRIGADAS DE COMUNICACIÓN Y EVACUACIÓN"
+  },
+  {
+    "id_curso": "b_sico_de_desarrollo_administrativo",
+    "nombre_oficial": "BÁSICO DE DESARROLLO ADMINISTRATIVO"
+  },
+  {
+    "id_curso": "clase_laboratorio_curso_dale_carnegie_comunicaci_n_efectiva_y_relaciones_humanas",
+    "nombre_oficial": "CLASE LABORATORIO CURSO DALE CARNEGIE COMUNICACIÓN EFECTIVA Y RELACIONES HUMANAS"
+  },
+  {
+    "id_curso": "comprensi_n_de_los_requisitos_especificos_del_cliente",
+    "nombre_oficial": "COMPRENSIÓN DE LOS REQUISITOS ESPECIFICOS DEL CLIENTE"
+  },
+  {
+    "id_curso": "control_de_contratistas",
+    "nombre_oficial": "CONTROL DE CONTRATISTAS"
+  },
+  {
+    "id_curso": "core_tools",
+    "nombre_oficial": "CORE TOOLS"
+  },
+  {
+    "id_curso": "ct_pat",
+    "nombre_oficial": "CT-PAT"
+  },
+  {
+    "id_curso": "curso_b_sico_de_derechos_humanos",
+    "nombre_oficial": "CURSO BÁSICO DE DERECHOS HUMANOS"
+  },
+  {
+    "id_curso": "curso_de_tampograf_a",
+    "nombre_oficial": "CURSO DE TAMPOGRAFÍA"
+  },
+  {
+    "id_curso": "descripci_n_de_puesto",
+    "nombre_oficial": "DESCRIPCIÓN DE PUESTO"
+  },
+  {
+    "id_curso": "despliegue_de_funci_n_de_calidad_q_f_d_",
+    "nombre_oficial": "DESPLIEGUE DE FUNCIÓN DE CALIDAD Q.F.D."
+  },
+  {
+    "id_curso": "diagrama_de_tortuga",
+    "nombre_oficial": "DIAGRAMA DE TORTUGA"
+  },
+  {
+    "id_curso": "evacuaci_n_de_inmueble_y_b_squeda_y_rescate",
+    "nombre_oficial": "EVACUACIÓN DE INMUEBLE Y BÚSQUEDA Y RESCATE"
+  },
+  {
+    "id_curso": "formaci_n_de_auditores_internos_de_sistemas_de_calidad_iso_ts_16949",
+    "nombre_oficial": "FORMACIÓN DE AUDITORES INTERNOS DE SISTEMAS DE CALIDAD ISO TS 16949"
+  },
+  {
+    "id_curso": "formaci_n_de_instructores_internos",
+    "nombre_oficial": "FORMACIÓN DE INSTRUCTORES INTERNOS"
+  },
+  {
+    "id_curso": "foro_simposio_dgn_iso_9000",
+    "nombre_oficial": "FORO/SIMPOSIO DGN-ISO 9000"
+  },
+  {
+    "id_curso": "frigel",
+    "nombre_oficial": "FRIGEL"
+  },
+  {
+    "id_curso": "habilidades_gerenciales",
+    "nombre_oficial": "HABILIDADES GERENCIALES"
+  },
+  {
+    "id_curso": "ingenier_a_de_calidad_taguchi",
+    "nombre_oficial": "INGENIERÍA DE CALIDAD TAGUCHI"
+  },
+  {
+    "id_curso": "interpretaci_n_de_la_norma_iso_9000_edici_n_94",
+    "nombre_oficial": "INTERPRETACIÓN DE LA NORMA ISO 9000 EDICIÓN 94"
+  },
+  {
+    "id_curso": "iso_14001_2015",
+    "nombre_oficial": "ISO 14001:2015"
+  },
+  {
+    "id_curso": "iso_9001_2015",
+    "nombre_oficial": "ISO 9001:2015"
+  },
+  {
+    "id_curso": "la_productividad_como_reto_al_cambio",
+    "nombre_oficial": "LA PRODUCTIVIDAD COMO RETO AL CAMBIO"
+  },
+  {
+    "id_curso": "liderazgo_efectivo",
+    "nombre_oficial": "LIDERAZGO EFECTIVO"
+  },
+  {
+    "id_curso": "lotus_1_2_3",
+    "nombre_oficial": "LOTUS 1-2-3"
+  },
+  {
+    "id_curso": "mantenimiento_de_sistemas_hidr_ulicos",
+    "nombre_oficial": "MANTENIMIENTO DE SISTEMAS HIDRÁULICOS"
+  },
+  {
+    "id_curso": "nom_018_stps_2015_sistema_armonizado_para_la_identificaci_n_y_comunicaci_n_de_peligros_y_riesgos_por_sustancias_qu_micas_peligrosas_en_los_centros_de_trabajo_",
+    "nombre_oficial": "NOM-018-STPS-2015. SISTEMA ARMONIZADO PARA LA IDENTIFICACIÓN Y COMUNICACIÓN DE PELIGROS Y RIESGOS POR SUSTANCIAS QUÍMICAS PELIGROSAS EN LOS CENTROS DE TRABAJO."
+  },
+  {
+    "id_curso": "nom_036_1_stps_2018_factores_de_riesgo_ergon_mico_en_el_manejo_manual_de_cargas",
+    "nombre_oficial": "NOM-036-1-STPS-2018. FACTORES DE RIESGO ERGONÓMICO EN EL MANEJO MANUAL DE CARGAS"
+  },
+  {
+    "id_curso": "normalizaci_n_calidad_y_competitividad_internacional_",
+    "nombre_oficial": "NORMALIZACIÓN, CALIDAD Y COMPETITIVIDAD INTERNACIONAL."
+  },
+  {
+    "id_curso": "qs_internal_auditor_training_course",
+    "nombre_oficial": "QS INTERNAL AUDITOR TRAINING COURSE"
+  },
+  {
+    "id_curso": "redacci_n_de_documentos_para_iso_9000",
+    "nombre_oficial": "REDACCIÓN DE DOCUMENTOS PARA ISO-9000"
+  },
+  {
+    "id_curso": "t_cnicas_de_control_neum_tico",
+    "nombre_oficial": "TÉCNICAS DE CONTROL NEUMÁTICO"
+  },
+  {
+    "id_curso": "alertas_de_calidad_y_cat_logo_de_fallas",
+    "nombre_oficial": "ALERTAS DE CALIDAD Y CATÁLOGO DE FALLAS"
+  },
+  {
+    "id_curso": "nom_026_stps_2008_colores_y_senales_de_seguridad_e_higiene_e_identificaci_n_de_riesgos_por_fluidos_conducidos_por_tuber_as_",
+    "nombre_oficial": "NOM-026-STPS-2008. COLORES Y SEÑALES DE SEGURIDAD E HIGIENE E IDENTIFICACIÓN DE RIESGOS POR FLUIDOS CONDUCIDOS POR TUBERÍAS."
+  },
+  {
+    "id_curso": "prevenci_n_de_la_violencia_laboral",
+    "nombre_oficial": "PREVENCIÓN DE LA VIOLENCIA LABORAL"
+  },
+  {
+    "id_curso": "sistema_de_gesti_n_integral",
+    "nombre_oficial": "SISTEMA DE GESTIÓN INTEGRAL"
+  },
+  {
+    "id_curso": "capacitaci_n_de_secadores",
+    "nombre_oficial": "CAPACITACIÓN DE SECADORES"
+  },
+  {
+    "id_curso": "inducci_n_a_la_empresa",
+    "nombre_oficial": "INDUCCIÓN A LA EMPRESA"
+  },
+  {
+    "id_curso": "metodolog_a_5_s",
+    "nombre_oficial": "METODOLOGÍA 5'S"
+  },
+  {
+    "id_curso": "nom_004_stps_1999_operaci_n_segura_de_la_maquinaria_y_equipo",
+    "nombre_oficial": "NOM-004-STPS-1999. OPERACIÓN SEGURA DE LA MAQUINARIA Y EQUIPO"
+  },
+  {
+    "id_curso": "nom_005_stps_1998_procedimiento_para_el_manejo_transporte_y_almacenamiento_de_sustancias_qu_micas_peligrosas",
+    "nombre_oficial": "NOM-005-STPS-1998. PROCEDIMIENTO PARA EL MANEJO, TRANSPORTE Y ALMACENAMIENTO DE SUSTANCIAS QUÍMICAS PELIGROSAS"
+  },
+  {
+    "id_curso": "nom_010_stps_2014_manejo_seguro_de_sustancias_qu_micas",
+    "nombre_oficial": "NOM-010-STPS-2014. MANEJO SEGURO DE SUSTANCIAS QUÍMICAS"
+  },
+  {
+    "id_curso": "nom_020_stps_2011_seguridad_en_el_manejo_de_recipientes_sujetos_a_presi_n",
+    "nombre_oficial": "NOM-020-STPS-2011 . SEGURIDAD EN EL MANEJO DE RECIPIENTES SUJETOS A PRESIÓN"
+  },
+  {
+    "id_curso": "nom_022_stps_2008_riesgos_de_la_electricidad_est_tica",
+    "nombre_oficial": "NOM-022-STPS-2008 RIESGOS DE LA ELECTRICIDAD ESTÁTICA"
+  },
+  {
+    "id_curso": "nom_029_stps_2011_seguridad_en_el_mantenimiento_de_instalaciones_el_ctricas",
+    "nombre_oficial": "NOM-029-STPS-2011. SEGURIDAD EN EL MANTENIMIENTO DE INSTALACIONES ELÉCTRICAS"
+  },
+  {
+    "id_curso": "operaci_n_segura_de_montacargas",
+    "nombre_oficial": "OPERACIÓN SEGURA DE MONTACARGAS"
+  },
+  {
+    "id_curso": "programaci_n_intermedia_de_robot_r8",
+    "nombre_oficial": "PROGRAMACIÓN INTERMEDIA DE ROBOT R8"
+  },
+  {
+    "id_curso": "separaci_n_de_residuos",
+    "nombre_oficial": "SEPARACIÓN DE RESIDUOS"
+  },
+  {
+    "id_curso": "sgc",
+    "nombre_oficial": "SGC"
+  },
+  {
+    "id_curso": "termoreguladores",
+    "nombre_oficial": "TERMOREGULADORES"
+  },
+  {
+    "id_curso": "uso_operaci_n_y_mantenimiento_a_tempro_plus_d",
+    "nombre_oficial": "USO, OPERACIÓN Y MANTENIMIENTO A TEMPRO PLUS D"
+  },
+  {
+    "id_curso": "buen_llenado_de_vale_de_scrap_csl1_",
+    "nombre_oficial": "BUEN LLENADO DE VALE DE SCRAP (CSL1)"
+  },
+  {
+    "id_curso": "cambios_a_la_normativa_iatf_16949_2016",
+    "nombre_oficial": "CAMBIOS A LA NORMATIVA IATF 16949:2016"
+  },
+  {
+    "id_curso": "catadioptricos",
+    "nombre_oficial": "CATADIOPTRICOS"
+  },
+  {
+    "id_curso": "colada_caliente",
+    "nombre_oficial": "COLADA CALIENTE"
+  },
+  {
+    "id_curso": "conocimiento_sobre_gu_as_de_luz",
+    "nombre_oficial": "CONOCIMIENTO SOBRE GUÍAS DE LUZ"
+  },
+  {
+    "id_curso": "conocimiento_sobre_piezas_cosm_ticas",
+    "nombre_oficial": "CONOCIMIENTO SOBRE PIEZAS COSMÉTICAS"
+  },
+  {
+    "id_curso": "conocimiento_sobre_piezas_estructurales",
+    "nombre_oficial": "CONOCIMIENTO SOBRE PIEZAS ESTRUCTURALES"
+  },
+  {
+    "id_curso": "control_de_producto_no_conforme",
+    "nombre_oficial": "CONTROL DE PRODUCTO NO CONFORME"
+  },
+  {
+    "id_curso": "documentos_y_registros",
+    "nombre_oficial": "DOCUMENTOS Y REGISTROS"
+  },
+  {
+    "id_curso": "equipo_de_protecci_n_personal",
+    "nombre_oficial": "EQUIPO DE PROTECCIÓN PERSONAL"
+  },
+  {
+    "id_curso": "familias_del_producto",
+    "nombre_oficial": "FAMILIAS DEL PRODUCTO"
+  },
+  {
+    "id_curso": "identificaci_n_de_resina_suministro_a_m_quinas_de_inyecci_n",
+    "nombre_oficial": "IDENTIFICACIÓN DE RESINA - SUMINISTRO A MÁQUINAS DE INYECCIÓN"
+  },
+  {
+    "id_curso": "it_cal_002_instrucci_n_de_trabajo_para_el_llenado_de_registros",
+    "nombre_oficial": "IT-CAL-002 INSTRUCCIÓN DE TRABAJO PARA EL LLENADO DE REGISTROS"
+  },
+  {
+    "id_curso": "limpieza_de_tolvas_deshumificador_elevadores_contenedor_y_vaso_pigmentador",
+    "nombre_oficial": "LIMPIEZA DE TOLVAS, DESHUMIFICADOR, ELEVADORES, CONTENEDOR Y VASO PIGMENTADOR"
+  },
+  {
+    "id_curso": "nom_030_stps_2009_seguridad_y_salud_en_el_trabajo",
+    "nombre_oficial": "NOM-030-STPS-2009. SEGURIDAD Y SALUD EN EL TRABAJO"
+  },
+  {
+    "id_curso": "proceso_de_inyecci_n_de_plastico",
+    "nombre_oficial": "PROCESO DE INYECCIÓN DE PLASTICO"
+  },
+  {
+    "id_curso": "reportes_de_producci_n",
+    "nombre_oficial": "REPORTES DE PRODUCCIÓN"
+  },
+  {
+    "id_curso": "uso_de_extintores",
+    "nombre_oficial": "USO DE EXTINTORES"
+  },
+  {
+    "id_curso": "validaci_n_de_arranque",
+    "nombre_oficial": "VALIDACIÓN DE ARRANQUE"
+  },
+  {
+    "id_curso": "seguridad_y_prevenci_n_de_accidentes",
+    "nombre_oficial": "SEGURIDAD Y PREVENCIÓN DE ACCIDENTES"
+  },
+  {
+    "id_curso": "nom_002_stps_2010_condiciones_de_seguridad_prevenci_n_y_protecci_n_contra_incendios_en_los_centros_de_trabajo",
+    "nombre_oficial": "NOM-002-STPS-2010. CONDICIONES DE SEGURIDAD-PREVENCIÓN Y PROTECCIÓN CONTRA INCENDIOS EN LOS CENTROS DE TRABAJO"
+  },
+  {
+    "id_curso": "nom_035_stps_2018_factores_de_riesgo_psicosocial_en_el_trabajo",
+    "nombre_oficial": "NOM-035-STPS-2018. FACTORES DE RIESGO PSICOSOCIAL EN EL TRABAJO"
+  },
+  {
+    "id_curso": "objetivos_del_sistema_de_gesti_n_misi_n_visi_n_aspectos_e_impactos_ambientales",
+    "nombre_oficial": "OBJETIVOS DEL SISTEMA DE GESTIÓN, MISIÓN, VISIÓN, ASPECTOS E IMPACTOS AMBIENTALES"
+  },
+  {
+    "id_curso": "prevenci_n_y_combate_de_incendios",
+    "nombre_oficial": "PREVENCIÓN Y COMBATE DE INCENDIOS"
+  },
+  {
+    "id_curso": "m_todo_peps",
+    "nombre_oficial": "MÉTODO PEPS"
+  },
+  {
+    "id_curso": "nom_009_stps_2011_seguridad_para_trabajos_en_altura",
+    "nombre_oficial": "NOM-009-STPS-2011 SEGURIDAD PARA TRABAJOS EN ALTURA"
+  },
+  {
+    "id_curso": "it_asc_019",
+    "nombre_oficial": "IT-ASC-019"
+  },
+  {
+    "id_curso": "nom_017_spts_2008_equipo_de_protecci_n_personal_selecci_n",
+    "nombre_oficial": "NOM-017-SPTS-2008 EQUIPO DE PROTECCIÓN PERSONAL-SELECCIÓN"
+  },
+  {
+    "id_curso": "cavidades_revueltas",
+    "nombre_oficial": "CAVIDADES REVUELTAS"
+  },
+  {
+    "id_curso": "instrucciones_de_trabajo",
+    "nombre_oficial": "INSTRUCCIONES DE TRABAJO"
+  },
+  {
+    "id_curso": "orden_de_producci_n",
+    "nombre_oficial": "ORDEN DE PRODUCCIÓN"
+  },
+  {
+    "id_curso": "para_operadores_de_m_quina_de_inyecci_n",
+    "nombre_oficial": "PARA OPERADORES DE MÁQUINA DE INYECCIÓN"
+  },
+  {
+    "id_curso": "reclamos_del_cliente",
+    "nombre_oficial": "RECLAMOS DEL CLIENTE"
+  },
+  {
+    "id_curso": "reporte_de_producci_n",
+    "nombre_oficial": "REPORTE DE PRODUCCIÓN"
+  },
+  {
+    "id_curso": "estructura_del_sgi_y_documentos",
+    "nombre_oficial": "ESTRUCTURA DEL SGI Y DOCUMENTOS"
+  },
+  {
+    "id_curso": "iatf_16949_2016",
+    "nombre_oficial": "IATF 16949:2016"
+  },
+  {
+    "id_curso": "gd_t",
+    "nombre_oficial": "GD&T"
+  },
+  {
+    "id_curso": "introducci_n_a_la_metrologia_y_manejo_de_equipos_de_medici_n",
+    "nombre_oficial": "INTRODUCCIÓN A LA METROLOGIA Y MANEJO DE EQUIPOS DE MEDICIÓN"
+  },
+  {
+    "id_curso": "minitab",
+    "nombre_oficial": "MINITAB"
+  },
+  {
+    "id_curso": "msa_4_edicion_sistema_de_analisis_de_medici_n",
+    "nombre_oficial": "MSA (4 EDICION) SISTEMA DE ANALISIS DE MEDICIÓN"
+  },
+  {
+    "id_curso": "spc_2_edicion_control_del_proceso_estadistico",
+    "nombre_oficial": "SPC (2 EDICION) CONTROL DEL PROCESO ESTADISTICO"
+  },
+  {
+    "id_curso": "espectrofot_metro",
+    "nombre_oficial": "ESPECTROFOTÓMETRO"
+  },
+  {
+    "id_curso": "amef_aiag_vda_",
+    "nombre_oficial": "AMEF (AIAG-VDA)"
+  },
+  {
+    "id_curso": "fmea_en_reversa",
+    "nombre_oficial": "FMEA EN REVERSA"
+  },
+  {
+    "id_curso": "pr_asc_027",
+    "nombre_oficial": "PR-ASC-027"
+  },
+  {
+    "id_curso": "requisitos_e_interpretaci_n_de_estudios_msa",
+    "nombre_oficial": "REQUISITOS E INTERPRETACIÓN DE ESTUDIOS MSA"
+  },
+  {
+    "id_curso": "vda_6_3_auditor_a_de_procesos",
+    "nombre_oficial": "VDA 6.3 AUDITORÍA DE PROCESOS"
+  },
+  {
+    "id_curso": "curso_deshumificadores",
+    "nombre_oficial": "CURSO DESHUMIFICADORES"
+  },
+  {
+    "id_curso": "desarrollo_de_habilidades_en_supervisi_n",
+    "nombre_oficial": "DESARROLLO DE HABILIDADES EN SUPERVISIÓN"
+  },
+  {
+    "id_curso": "habilidades_para_el_manejo_de_personal",
+    "nombre_oficial": "HABILIDADES PARA EL MANEJO DE PERSONAL"
+  },
+  {
+    "id_curso": "iso_ts_16949_internal_auditor",
+    "nombre_oficial": "ISO/TS 16949 INTERNAL AUDITOR"
+  },
+  {
+    "id_curso": "auditor_interno_iatf_16949_automotriz",
+    "nombre_oficial": "AUDITOR INTERNO IATF 16949 AUTOMOTRIZ"
+  },
+  {
+    "id_curso": "cep_graficas_xr_",
+    "nombre_oficial": "CEP (GRAFICAS XR)"
+  },
+  {
+    "id_curso": "control_de_datos_y_documentos",
+    "nombre_oficial": "CONTROL DE DATOS Y DOCUMENTOS"
+  },
+  {
+    "id_curso": "manejo_de_material_no_conforme",
+    "nombre_oficial": "MANEJO DE MATERIAL NO CONFORME"
+  },
+  {
+    "id_curso": "manejo_y_prestamo_de_instrumentos_de_medici_n",
+    "nombre_oficial": "MANEJO Y PRESTAMO DE INSTRUMENTOS DE MEDICIÓN"
+  },
+  {
+    "id_curso": "pr_asc_010",
+    "nombre_oficial": "PR-ASC-010"
+  },
+  {
+    "id_curso": "procedimiento_acciones_correctivas_y_preventivas",
+    "nombre_oficial": "PROCEDIMIENTO ACCIONES CORRECTIVAS Y PREVENTIVAS"
+  },
+  {
+    "id_curso": "trazabilidad_de_producto",
+    "nombre_oficial": "TRAZABILIDAD DE PRODUCTO"
+  },
+  {
+    "id_curso": "assy_bezel",
+    "nombre_oficial": "ASSY BEZEL"
+  },
+  {
+    "id_curso": "cantilever_g01_y_g05",
+    "nombre_oficial": "CANTILEVER G01 Y G05"
+  },
+  {
+    "id_curso": "capacitaci_n_uso_y_buenas_pr_cticas_de_instrumentos_de_capacitaci_n",
+    "nombre_oficial": "CAPACITACIÓN USO Y BUENAS PRÁCTICAS DE INSTRUMENTOS DE CAPACITACIÓN"
+  },
+  {
+    "id_curso": "cero_reclamos_cero_paros_mejores_pr_cticas_en_la_producci_n_de_piezas_plasticas_en_color",
+    "nombre_oficial": "CERO RECLAMOS, CERO PAROS, MEJORES PRÁCTICAS EN LA PRODUCCIÓN DE PIEZAS PLASTICAS EN COLOR"
+  },
+  {
+    "id_curso": "iso_19011_2018",
+    "nombre_oficial": "ISO 19011:2018"
+  },
+  {
+    "id_curso": "proceso_de_liberaci_n_inspecci_n_recibo",
+    "nombre_oficial": "PROCESO DE LIBERACIÓN INSPECCIÓN RECIBO"
+  },
+  {
+    "id_curso": "vda_6_5_auditor_a_de_producto",
+    "nombre_oficial": "VDA 6.5 AUDITORÍA DE PRODUCTO"
+  },
+  {
+    "id_curso": "capacitaci_n_a_instructores",
+    "nombre_oficial": "CAPACITACIÓN A INSTRUCTORES"
+  },
+  {
+    "id_curso": "comisi_n_de_seguridad_e_higiene",
+    "nombre_oficial": "COMISIÓN DE SEGURIDAD E HIGIENE"
+  },
+  {
+    "id_curso": "nom_027_stps_2008_soldadura_y_corte_condiciones_de_seguridad_e_higiene",
+    "nombre_oficial": "NOM-027-STPS-2008. SOLDADURA Y CORTE - CONDICIONES DE SEGURIDAD E HIGIENE"
+  },
+  {
+    "id_curso": "operaci_n_y_mantenimiento_de_termoreguladores_deshumificadores_y_cargadores",
+    "nombre_oficial": "OPERACIÓN Y MANTENIMIENTO DE TERMOREGULADORES, DESHUMIFICADORES Y CARGADORES"
+  },
+  {
+    "id_curso": "equivalencias_dimensionales",
+    "nombre_oficial": "EQUIVALENCIAS DIMENSIONALES"
+  },
+  {
+    "id_curso": "inteligencia_emocional",
+    "nombre_oficial": "INTELIGENCIA EMOCIONAL"
+  },
+  {
+    "id_curso": "it_pro_009",
+    "nombre_oficial": "IT-PRO-009"
+  },
+  {
+    "id_curso": "politica_de_incidencias_sanciones_y_vacaciones",
+    "nombre_oficial": "POLITICA DE INCIDENCIAS, SANCIONES Y VACACIONES"
+  },
+  {
+    "id_curso": "politica_de_tiempo_extra_roles_de_horarios",
+    "nombre_oficial": "POLITICA DE TIEMPO EXTRA, ROLES DE HORARIOS"
+  },
+  {
+    "id_curso": "nom_006_stps_2014_condiciones_de_seguridad_en_el_manejo_y_almacenamiento_de_materiales",
+    "nombre_oficial": "NOM-006-STPS-2014 . CONDICIONES DE SEGURIDAD EN EL MANEJO Y ALMACENAMIENTO DE MATERIALES"
+  },
+  {
+    "id_curso": "primeros_auxilios",
+    "nombre_oficial": "PRIMEROS AUXILIOS"
+  },
+  {
+    "id_curso": "7_1_desperdicios_y_principios_de_lean_manufacturing",
+    "nombre_oficial": "7+1 DESPERDICIOS Y PRINCIPIOS DE LEAN MANUFACTURING"
+  },
+  {
+    "id_curso": "gesti_n_de_riesgos_iso_31000_2009",
+    "nombre_oficial": "GESTIÓN DE RIESGOS ISO 31000:2009"
+  },
+  {
+    "id_curso": "lean_industry_4_0",
+    "nombre_oficial": "LEAN INDUSTRY 4.0"
+  },
+  {
+    "id_curso": "lean_manufacturing",
+    "nombre_oficial": "LEAN MANUFACTURING"
+  },
+  {
+    "id_curso": "medici_n_en_software_m3",
+    "nombre_oficial": "MEDICIÓN EN SOFTWARE M3"
+  },
+  {
+    "id_curso": "six_sigma_green_belt",
+    "nombre_oficial": "SIX SIGMA GREEN BELT"
+  },
+  {
+    "id_curso": "fusion_cam",
+    "nombre_oficial": "FUSION CAM"
+  },
+  {
+    "id_curso": "imds",
+    "nombre_oficial": "IMDS"
+  },
+  {
+    "id_curso": "plan_de_control_psw_y_desviaci_n",
+    "nombre_oficial": "PLAN DE CONTROL PSW Y DESVIACIÓN"
+  },
+  {
+    "id_curso": "actividades_a_pie_de_m_quina",
+    "nombre_oficial": "ACTIVIDADES A PIE DE MÁQUINA"
+  },
+  {
+    "id_curso": "ataques_cibern_ticos",
+    "nombre_oficial": "ATAQUES CIBERNÉTICOS"
+  },
+  {
+    "id_curso": "auditores_para_proveedores_iatf_16949_2016",
+    "nombre_oficial": "AUDITORES PARA PROVEEDORES IATF 16949:2016"
+  },
+  {
+    "id_curso": "capacitaci_n_de_mantenimiento_de_robot_r8",
+    "nombre_oficial": "CAPACITACIÓN DE MANTENIMIENTO DE ROBOT R8"
+  },
+  {
+    "id_curso": "comunicaci_n_efectiva",
+    "nombre_oficial": "COMUNICACIÓN EFECTIVA"
+  },
+  {
+    "id_curso": "desarrollo_de_habilidades_directivas_y_gerenciales",
+    "nombre_oficial": "DESARROLLO DE HABILIDADES DIRECTIVAS Y GERENCIALES"
+  },
+  {
+    "id_curso": "difusi_n_de_it_pro_009_it_pro_038",
+    "nombre_oficial": "DIFUSIÓN DE IT-PRO-009/IT-PRO-038"
+  },
+  {
+    "id_curso": "gemba",
+    "nombre_oficial": "GEMBA"
+  },
+  {
+    "id_curso": "it_asc_007",
+    "nombre_oficial": "IT-ASC-007"
+  },
+  {
+    "id_curso": "kpi_s",
+    "nombre_oficial": "KPI'S"
+  },
+  {
+    "id_curso": "paqueter_a_office",
+    "nombre_oficial": "PAQUETERÍA OFFICE"
+  },
+  {
+    "id_curso": "rotor_upper_10037231",
+    "nombre_oficial": "ROTOR UPPER 10037231"
+  },
+  {
+    "id_curso": "uso_y_manejo_de_herramientas_de_trabajo",
+    "nombre_oficial": "USO Y MANEJO DE HERRAMIENTAS DE TRABAJO"
+  },
+  {
+    "id_curso": "curso_svb_y_primeros_auxilios",
+    "nombre_oficial": "CURSO SVB Y PRIMEROS AUXILIOS"
+  },
+  {
+    "id_curso": "estad_stica_b_sica",
+    "nombre_oficial": "ESTADÍSTICA BÁSICA"
+  },
+  {
+    "id_curso": "manipulacion_de_robots_wittman",
+    "nombre_oficial": "MANIPULACION DE ROBOTS WITTMAN"
+  },
+  {
+    "id_curso": "buenas_pr_cticas_en_el_taller",
+    "nombre_oficial": "BUENAS PRÁCTICAS EN EL TALLER"
+  },
+  {
+    "id_curso": "primeros_auxilios_y_combate_contra_incendio",
+    "nombre_oficial": "PRIMEROS AUXILIOS Y COMBATE CONTRA INCENDIO"
+  },
+  {
+    "id_curso": "brigadas_de_primeros_auxilios_y_combate_contra_incendio",
+    "nombre_oficial": "BRIGADAS DE PRIMEROS AUXILIOS Y COMBATE CONTRA INCENDIO"
+  },
+  {
+    "id_curso": "conocimiento_sobre_la_ley_federal_del_trabajo",
+    "nombre_oficial": "CONOCIMIENTO SOBRE LA LEY FEDERAL DEL TRABAJO"
+  },
+  {
+    "id_curso": "trata_de_personas",
+    "nombre_oficial": "TRATA DE PERSONAS"
+  },
+  {
+    "id_curso": "matriz_de_riesgos",
+    "nombre_oficial": "MATRIZ DE RIESGOS"
+  },
+  {
+    "id_curso": "auditor_iso_14001_2015",
+    "nombre_oficial": "AUDITOR ISO 14001:2015"
+  },
+  {
+    "id_curso": "cqi_23_proceso_y_evaluacion_del_sistema_de_moldeo_1ed",
+    "nombre_oficial": "CQI 23 PROCESO Y EVALUACION DEL SISTEMA DE MOLDEO 1ED"
+  },
+  {
+    "id_curso": "introducci_n_a_la_sostenibilidad",
+    "nombre_oficial": "INTRODUCCIÓN A LA SOSTENIBILIDAD"
+  },
+  {
+    "id_curso": "metrolog_a_de_presi_n_calibraci_n_de_man_metros_",
+    "nombre_oficial": "METROLOGÍA DE PRESIÓN (CALIBRACIÓN DE MANÓMETROS)"
+  },
+  {
+    "id_curso": "pol_tica_medioambiental",
+    "nombre_oficial": "POLÍTICA MEDIOAMBIENTAL"
+  },
+  {
+    "id_curso": "sistemas_de_gesti_n_de_la_sostenibilidad",
+    "nombre_oficial": "SISTEMAS DE GESTIÓN DE LA SOSTENIBILIDAD"
+  },
+  {
+    "id_curso": "reglas_de_seguridad_epp_y_qu_mica_del_fuego",
+    "nombre_oficial": "REGLAS DE SEGURIDAD, EPP Y QUÍMICA DEL FUEGO"
+  },
+  {
+    "id_curso": "pr_asc_001",
+    "nombre_oficial": "PR-ASC-001"
+  },
+  {
+    "id_curso": "conocimiento_de_moldes_mantenimiento_preventivo_y_correctivo",
+    "nombre_oficial": "CONOCIMIENTO DE MOLDES, MANTENIMIENTO PREVENTIVO Y CORRECTIVO"
+  },
+  {
+    "id_curso": "soldadura_tig_o_gtwa",
+    "nombre_oficial": "SOLDADURA TIG O GTWA"
+  },
+  {
+    "id_curso": "hot_runner_mold_master_level_advanced",
+    "nombre_oficial": "HOT-RUNNER MOLD MASTER LEVEL ADVANCED"
+  },
+  {
+    "id_curso": "calypso_avanzado",
+    "nombre_oficial": "CALYPSO AVANZADO"
+  },
+  {
+    "id_curso": "confirmaci_n_metrol_gica",
+    "nombre_oficial": "CONFIRMACIÓN METROLÓGICA"
+  },
+  {
+    "id_curso": "mi_ger_001",
+    "nombre_oficial": "MI-GER-001"
+  },
+  {
+    "id_curso": "rps",
+    "nombre_oficial": "RPS"
+  },
+  {
+    "id_curso": "electroerosion",
+    "nombre_oficial": "ELECTROEROSION"
+  },
+  {
+    "id_curso": "check_list_proceso",
+    "nombre_oficial": "CHECK LIST DE PROCESO Y VALIDACIÓN DE ARRANQUE - REVALIDACIÓN"
+  },
+  {
+    "id_curso": "curso_para_materialista",
+    "nombre_oficial": "CURSO PARA MATERIALISTA  DE PRODUCCIÓN"
+  },
+  {
+    "id_curso": "curso_para_preparador",
+    "nombre_oficial":"CURSO PARA PREPARADOR DE PRODUCCIÓN"
+  },
+  {
+    "id_curso": "uso_bascula",
+    "nombre_oficial": "USO DE BÁSCULA"
+  },
+  {
+    "id_curso": "plan_de_derrame",
+    "nombre_oficial": "PLAN DE CONTINGENCIA DERRAME DE MATERIA PRIMA"
+  },
+  {
+    "id_curso": "pr_asc_001",
+    "nombre_oficial": "PR-ASC-011"
+  },
+  {
+    "id_curso": "keyence",
+    "nombre_oficial": "KEYENCE"
+  },
+  {
+    "id_curso": "cmm",
+    "nombre_oficial": "MANEJO DE MÁQUINA CMM"
+  },
+  {
+    "id_curso": "planos",
+    "nombre_oficial": "INTERPRETACIÓN DE PLANOS"
+  },
+  {
+    "id_curso": "trazabilidad",
+    "nombre_oficial": "TRAZABILIDAD DEL PRODUCTO"
+  },
+  {
+    "id_curso": "proceso_liberacion_materia",
+    "nombre_oficial": "PROCESO DE LIBREACIÓN DE MATERIA PRIMA"
+  },
+  {
+    "id_curso": "gestion_proyectos",
+    "nombre_oficial": "GESTIÓN DE PROYECTOS"
+  },
+  {
+    "id_curso": "moldeo_cientifico",
+    "nombre_oficial": "MOLDEO CIENTIFICO"
+  },
+  {
+    "id_curso": "desviacion",
+    "nombre_oficial": "LLENADO CORRECTO DE DESVIACIÓN"
+  },
+  {
+    "id_curso": "graficas",
+    "nombre_oficial": "GRÁFICAS DE CONTROL"
+  },
+  {
+    "id_curso": "medicion_tiempos",
+    "nombre_oficial": "MEDICION DE TIEMPOS Y MOVIMIENTOS"
+  },
+  {
+    "id_curso": "condiciones_moldeo",
+    "nombre_oficial": "AJUSTE INICIAL DE LAS CONDICIONES DE MOLDEO"
+  },
+  {
+    "id_curso": "rr",
+    "nombre_oficial": "R&R"
+  },
+  {
+    "id_curso": "inspeccion_visual",
+    "nombre_oficial": "INSPECCIÓN VISUAL."
+  },
+  {
+    "id_curso": "planeacion_produccion",
+    "nombre_oficial": "PLANEACIÓN Y CONTROL DE LA PRODUCCIÓN"
+  },
+  {
+    "id_curso": "smed",
+    "nombre_oficial": "SMED"
+  },
+  {
+    "id_curso": "maquinaria_equipo",
+    "nombre_oficial": "PREVENCIÓN DE RIESGOS POR MAQUINARIA Y EQUIPO"
+  },
+  {
+    "id_curso": "montaje_moldes",
+    "nombre_oficial": "SEGURIDAD EN MONTAJE / DESMONTAJE DE MOLDES"
+  },
+  {
+    "id_curso": "derrames",
+    "nombre_oficial": "PLAN DE CONTINGENCIA DE DERRAMES"
+  },
+  {
+    "id_curso": "robot_wittman",
+    "nombre_oficial": "PROGRAMACIÓN BÁSICA DE ROBOT WITTMAN"
+  },
+  {
+    "id_curso": "robot_sepro",
+    "nombre_oficial": "PROGRAMACIÓN BÁSICA DE ROBOT SEPRO"
+  },
+  {
+    "id_curso": "systec",
+    "nombre_oficial": "OPERACIÓN, MANTENIMIENTO EN INTERPRETACIÓN MAQUINA SYSTEC E INTELEC"
+  },
+  {
+    "id_curso": "mantto_robot",
+    "nombre_oficial": "MANTENIMIENTO A ROBOTS WITTMAN"
+  }
+]

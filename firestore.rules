@@ -1,0 +1,152 @@
+/**
+ * Core Philosophy:
+ * This ruleset establishes a dynamic, role-based access control (RBAC) model.
+ * A dedicated 'usuarios' collection stores user roles ('admin' or 'lector').
+ *
+ * - Admin users have full read/write access to all data.
+ * - Authenticated non-admin users (lectores) have read-only access.
+ *
+ * This provides a secure and scalable way to manage permissions without
+ * hardcoding user emails or UIDs in the rules.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the current user has the 'admin' role by looking up
+     * their UID in the /usuarios collection.
+     */
+    function isAdmin() {
+      // Ensure user is signed in and then check their role document.
+      // The `exists()` check is crucial to prevent errors if the doc doesn't exist.
+      return isSignedIn() && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ----------------------------------------------------------------------
+    // Collection Rules
+    // ----------------------------------------------------------------------
+    
+    /**
+     * @description
+     *   Controls access to user roles.
+     *   - Any signed-in user can read the user list to facilitate UI logic.
+     *   - Only admins can write/delete any user document.
+     * @path /usuarios/{userId}
+     */
+    match /usuarios/{userId} {
+      allow read: if isSignedIn();
+      allow write, delete: if isAdmin();
+    }
+
+    /**
+     * @description
+     *   Controls access to employee contracts. Allows any signed-in user to read
+     *   contract data but restricts write operations to admin users.
+     * @path /Contratos/{contratoId}
+     */
+    match /Contratos/{contratoId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    /**
+     * @description
+     *   Controls access to employee records from the main workforce.
+     *   Allows any signed-in user to read data but restricts write operations
+     *   to admin users.
+     * @path /Plantilla/{empleadoId}
+     */
+    match /Plantilla/{empleadoId} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+    }
+
+    /**
+     * @description
+     *   Controls access to HR reports. Allows any signed-in user to read
+     *   reports but restricts write operations to admin users.
+     * @path /reports/{reportId}
+     */
+    match /reports/{reportId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+     /**
+     * @description
+     *   Controls access to the master course catalog. Any authenticated user can read it.
+     *   Only admin can modify it.
+     * @path /catalogo_cursos/{cursoId}
+     */
+    match /catalogo_cursos/{cursoId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    /**
+     * @description
+     *   Controls access to job profiles and their mandatory courses. Any authenticated user can read.
+     *   Only admin can modify.
+     * @path /perfiles_puesto/{puestoId}
+     */
+    match /perfiles_puesto/{puestoId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    /**
+     * @description
+     *   Controls access to the training history for each employee. Any authenticated user can read it.
+     *   Only admin can modify it.
+     * @path /historial_capacitacion/{empleadoId}
+     */
+    match /historial_capacitacion/{empleadoId} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+    }
+    
+    /**
+     * @description
+     *   Controls access to the promotion records for eligible employees.
+     *   Any authenticated user can read it, but only the admin can modify it.
+     * @path /Promociones/{empleadoId}
+     */
+    match /Promociones/{empleadoId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    /**
+     * @description
+     *   Controls access to the annual training plan records.
+     *   Any authenticated user can read it, but only the admin can modify it.
+     * @path /plan_formacion/{planId}
+     */
+    match /plan_formacion/{planId} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+    }
+
+    /**
+     * @description
+     *   Controls access to the promotion logic rules.
+     *   Any authenticated user can read it, but only the admin can modify it.
+     * @path /reglas_ascenso/{reglaId}
+     */
+    match /reglas_ascenso/{reglaId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,180 @@
+
+{
+  "entities": {
+    "Contrato": {
+      "title": "Contrato",
+      "type": "object",
+      "description": "Represents an employee contract with evaluation data.",
+      "properties": {
+        "id_empleado": { "type": "string" },
+        "nombre_completo": { "type": "string" },
+        "fechas": {
+          "type": "object",
+          "properties": {
+            "ingreso": { "type": "string", "format": "date-time" },
+            "termino_contrato": { "type": "string", "format": "date-time" },
+            "evaluacion_1": { "type": "string", "format": "date-time" },
+            "evaluacion_2": { "type": "string", "format": "date-time" },
+            "evaluacion_3": { "type": "string", "format": "date-time" }
+          }
+        },
+        "evaluacion": {
+          "type": "object",
+          "properties": {
+            "calificacion_texto_1": { "type": "string" },
+            "calificacion_texto_2": { "type": "string" },
+            "calificacion_texto_3": { "type": "string" }
+          }
+        },
+        "indeterminado": { "type": "boolean" }
+      },
+      "required": ["id_empleado", "nombre_completo", "fechas"]
+    },
+    "Plantilla": {
+      "title": "Plantilla",
+      "type": "object",
+      "description": "Represents an employee in the company's workforce.",
+      "properties": {
+          "id_empleado": { "type": "string" },
+          "nombre_completo": { "type": "string" },
+          "puesto": {
+              "type": "object",
+              "properties": {
+                  "departamento": { "type": "string" },
+                  "area": { "type": "string" },
+                  "titulo": { "type": "string" },
+                  "turno": { "type": "string" }
+              }
+          }
+      },
+      "required": ["id_empleado", "nombre_completo", "puesto"]
+    },
+    "Report": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Report",
+      "type": "object",
+      "description": "Represents a generated HR report.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the report." },
+        "title": { "type": "string", "description": "The title of the report." },
+        "dateGenerated": { "type": "string", "description": "The date the report was generated.", "format": "date-time" },
+        "content": { "type": "string", "description": "The content of the report (e.g., summary and recommendations)." },
+        "employeeIds": {
+          "type": "array",
+          "description": "References to Employees included in this report. (Relationship: Report 1:N Employee)",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["id", "title", "dateGenerated", "content"]
+    },
+    "PerfilPuesto": {
+      "title": "Perfil de Puesto",
+      "type": "object",
+      "description": "Defines the required courses for a specific job title.",
+      "properties": {
+        "nombre_puesto": { "type": "string" },
+        "cursos_obligatorios": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "fecha_actualizacion": { "type": "string", "format": "date-time" }
+      },
+      "required": ["nombre_puesto", "cursos_obligatorios"]
+    },
+    "Promocion": {
+        "title": "Promocion",
+        "description": "Represents an employee's promotion record and requirements.",
+        "type": "object",
+        "properties": {
+            "id_empleado": { "type": "string"},
+            "nombre": { "type": "string"},
+            "puesto_actual": { "type": "string"},
+            "fecha_ultimo_cambio": { "type": "string", "format": "date-time", "description": "Date of the last category change."},
+            "evaluacion_desempeno": { "type": "number", "description": "Performance evaluation score (0-100)." },
+            "examen_teorico": { "type": "number", "description": "Score from the theoretical exam (0-100)."},
+            "cobertura_cursos": { "type": "number", "description": "Percentage of required courses completed."},
+            "no_apto": { "type": "boolean", "description": "Manually marks an employee as not suitable for promotion." },
+            "metadata": {
+                "type": "object",
+                "properties": {
+                    "creado_el": { "type": "string", "format": "date-time" },
+                    "actualizado_el": { "type": "string", "format": "date-time" }
+                }
+            }
+        },
+        "required": ["id_empleado", "nombre", "puesto_actual"]
+    },
+    "Usuario": {
+        "title": "Usuario",
+        "description": "Represents a platform user and their role.",
+        "type": "object",
+        "properties": {
+            "nombre": { "type": "string" },
+            "email": { "type": "string", "format": "email" },
+            "role": { "type": "string", "enum": ["admin", "lector"] }
+        },
+        "required": ["email", "role"]
+    }
+  },
+  "auth": {
+    "providers": ["password", "anonymous"]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/Contratos/{contratoId}",
+        "definition": {
+          "entityName": "Contrato",
+          "schema": { "$ref": "#/entities/Contrato" },
+          "description": "Stores employee contract data, including evaluation dates and scores.",
+          "params": [{ "name": "contratoId", "description": "The unique identifier for the contract, typically the employee ID." }]
+        }
+      },
+      {
+        "path": "/Plantilla/{empleadoId}",
+        "definition": {
+            "entityName": "Plantilla",
+            "schema": { "$ref": "#/entities/Plantilla" },
+            "description": "Stores the main workforce data.",
+            "params": [{ "name": "empleadoId", "description": "The unique identifier for the employee." }]
+        }
+      },
+      {
+        "path": "/reports/{reportId}",
+        "definition": {
+          "entityName": "Report",
+          "schema": { "$ref": "#/entities/Report" },
+          "description": "Stores HR reports. Each document represents a generated report.",
+          "params": [{ "name": "reportId", "description": "The unique identifier for the report." }]
+        }
+      },
+       {
+        "path": "/perfiles_puesto/{puestoId}",
+        "definition": {
+          "entityName": "PerfilPuesto",
+          "schema": { "$ref": "#/entities/PerfilPuesto" },
+          "description": "Stores the mandatory courses for each job profile.",
+          "params": [{ "name": "puestoId", "description": "The normalized job title name." }]
+        }
+      },
+      {
+        "path": "/Promociones/{empleadoId}",
+        "definition": {
+          "entityName": "Promocion",
+          "schema": { "$ref": "#/entities/Promocion" },
+          "description": "Stores promotion eligibility records for employees.",
+          "params": [{ "name": "empleadoId", "description": "The unique identifier for the employee, linking to their record in Plantilla." }]
+        }
+      },
+      {
+        "path": "/usuarios/{usuarioId}",
+        "definition": {
+          "entityName": "Usuario",
+          "schema": { "$ref": "#/entities/Usuario" },
+          "description": "Stores platform user roles for dynamic access control.",
+          "params": [{ "name": "usuarioId", "description": "The user's UID from Firebase Authentication." }]
+        }
+      }
+    ]
+  }
+}
