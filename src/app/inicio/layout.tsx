@@ -257,48 +257,7 @@ export default function InicioLayout({
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-transparent">
         <StarsBackground starColor='#fff' speed={0.5} className="absolute inset-0 z-[-1]"/>
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
-            <Link href="/inicio" className="flex items-center gap-2 font-semibold">
-              <Logo />
-              <span className='font-bold'>Recursos Humanos</span>
-            </Link>
-
-            <div className="flex items-center gap-2">
-              <Notifications />
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                       <AnimatedUserIcon />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
-                            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                        </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/usuarios">
-                        <Users className="mr-2 h-4 w-4" />
-                        <span>Usuarios</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Configuración</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Cerrar sesión</span>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-        </header>
+        
         <main className="flex-1 overflow-auto pb-24">
             <div className="h-full p-4 sm:p-6 lg:p-8">
                 {children}
@@ -306,7 +265,7 @@ export default function InicioLayout({
         </main>
         <div className="fixed inset-x-0 bottom-6 z-50">
             <TooltipProvider>
-                <Dock direction="middle" className="bg-background/70 border-border/60">
+                <Dock direction="middle" className="bg-background/70 border-border/60 backdrop-blur-sm">
                     {navItems.map((item) => (
                         <Tooltip key={item.label}>
                             <TooltipTrigger asChild>
@@ -321,6 +280,58 @@ export default function InicioLayout({
                             </TooltipContent>
                         </Tooltip>
                     ))}
+
+                    <div className="border-l h-full mx-2 border-border/60" />
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                           <div>
+                            <Notifications />
+                           </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Notificaciones</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <DockIcon>
+                                        <AnimatedUserIcon />
+                                    </DockIcon>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
+                                    <DropdownMenuLabel className="font-normal">
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
+                                            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                      <Link href="/usuarios">
+                                        <Users className="mr-2 h-4 w-4" />
+                                        <span>Usuarios</span>
+                                      </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Settings className="mr-2 h-4 w-4" />
+                                        <span>Configuración</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        <span>Cerrar sesión</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </TooltipTrigger>
+                         <TooltipContent>
+                            <p>Perfil y Sesión</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </Dock>
             </TooltipProvider>
         </div>
