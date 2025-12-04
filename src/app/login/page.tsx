@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -5,10 +6,9 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Logo } from '@/components/logo';
 import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { MagicCard } from '@/components/ui/magic-card';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { motion } from 'framer-motion';
@@ -22,7 +22,9 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    initiateEmailSignIn(auth, email, password);
+    if (auth && email && password) {
+      initiateEmailSignIn(auth, email, password);
+    }
   };
   
   React.useEffect(() => {
@@ -56,40 +58,45 @@ export default function LoginPage() {
                 transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
                 className="w-full max-w-sm"
             >
-                <Card className="w-full border-white/10 bg-black/20 text-white shadow-2xl backdrop-blur-lg">
+                <MagicCard 
+                    className="w-full border-white/10 bg-black/20 text-white shadow-2xl backdrop-blur-lg"
+                    gradientColor="hsl(var(--primary))"
+                >
                     <CardHeader className="text-center p-6">
                         <CardTitle className="text-white">Control de Acceso</CardTitle>
                         <CardDescription className="text-slate-400">Ingresa tus credenciales</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6">
-                        <form onSubmit={handleLogin} className="space-y-4">
+                    <CardContent className="p-6 pt-0">
+                        <form onSubmit={handleLogin} className="space-y-6">
                             <div className="grid gap-2 text-left">
-                                <Label htmlFor="email">Correo</Label>
+                                <Label htmlFor="email">Correo Electrónico</Label>
                                 <Input 
-                                id="email" 
-                                type="email" 
-                                placeholder="empleado@vinoplastic.com"
-                                required 
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 focus:ring-primary"
+                                    id="email" 
+                                    type="email" 
+                                    placeholder="usuario@vinoplastic.com"
+                                    required 
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 focus:ring-primary rounded-md"
                                 />
                             </div>
                             <div className="grid gap-2 text-left">
                                 <Label htmlFor="password">Contraseña</Label>
                                 <Input 
-                                id="password" 
-                                type="password" 
-                                required 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 focus:ring-primary"
+                                    id="password" 
+                                    type="password" 
+                                    required 
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 focus:ring-primary rounded-md"
                                 />
                             </div>
-                             <Button onClick={handleLogin} className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground">Ingresar</Button>
+                             <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md">
+                                Ingresar
+                            </Button>
                         </form>
                     </CardContent>
-                </Card>
+                </MagicCard>
             </motion.div>
         </div>
     </div>
