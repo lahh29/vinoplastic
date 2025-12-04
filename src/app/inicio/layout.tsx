@@ -146,15 +146,15 @@ function Notifications() {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full">
+        <DockIcon>
           <Bell className="h-5 w-5 text-muted-foreground" />
           {isClient && notificationCount > 0 && (
-            <span className="absolute top-2 right-2 flex h-3 w-3">
+            <span className="absolute top-0 right-0 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
             </span>
           )}
-        </Button>
+        </DockIcon>
       </DropdownMenuTrigger>
       <AnimatePresence>
         {isOpen && (
@@ -162,7 +162,7 @@ function Notifications() {
                 asChild
                 forceMount
                 align="end"
-                className="w-80 shadow-2xl border-border/50 rounded-2xl p-0"
+                className="w-80 shadow-2xl border-border/50 rounded-2xl p-0 mb-2"
               >
               <motion.div
                 initial="hidden"
@@ -262,9 +262,19 @@ export default function InicioLayout({
                 {children}
             </div>
         </main>
-        <div className="fixed inset-x-0 bottom-6 z-50">
+        <motion.div 
+            className="fixed inset-x-0 bottom-6 z-50"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+        >
             <TooltipProvider>
-                <Dock direction="middle" className="bg-background/70 border-border/60 backdrop-blur-sm">
+                <Dock 
+                    direction="middle" 
+                    className="bg-background/70 border-border/60 backdrop-blur-sm"
+                    disableMagnification={false}
+                    iconMagnification={50}
+                >
                     {navItems.map((item) => (
                         <Tooltip key={item.label}>
                             <TooltipTrigger asChild>
@@ -284,7 +294,7 @@ export default function InicioLayout({
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                           <div>
+                           <div className="h-full flex items-center">
                             <Notifications />
                            </div>
                         </TooltipTrigger>
@@ -333,7 +343,7 @@ export default function InicioLayout({
                     </Tooltip>
                 </Dock>
             </TooltipProvider>
-        </div>
+        </motion.div>
     </div>
   );
 }

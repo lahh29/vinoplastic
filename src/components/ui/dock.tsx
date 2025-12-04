@@ -78,6 +78,18 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
           "items-center": direction === "middle",
           "items-end": direction === "bottom",
         })}
+        // Ambient animation
+        animate={{
+            y: [0, -4, 0],
+        }}
+        transition={{
+            y: {
+                duration: 2.5,
+                repeat: Infinity,
+                repeatType: "mirror",
+                ease: "easeInOut",
+            },
+        }}
       >
         {renderChildren()}
       </motion.div>
