@@ -25,7 +25,6 @@ interface UserData {
 
 const navLinks = [
     { href: "/vacaciones", icon: CalendarClock, title: "Gestión de Vacaciones", description: "Visualiza el calendario de ausencias y programa las vacaciones del personal." },
-    { href: "/capacitacion", icon: HardHat, title: "Módulo de Capacitación", description: "Analiza, gestiona y captura el progreso de la formación del personal."},
     { href: "/reportes", icon: BarChart, title: "Reportes y Diagnósticos", description: "Genera informes y obtén una visión general del estado del personal." },
     { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto." },
     { href: "/perfil", icon: User, title: "Perfil de Empleado", description: "Consulta el perfil detallado de un empleado." }
@@ -85,4 +84,3 @@ export default function InicioPage() {
     </div>
   );
 }
-
