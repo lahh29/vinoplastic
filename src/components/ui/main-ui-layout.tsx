@@ -41,6 +41,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useRoleCheck } from '@/hooks/use-role-check';
+import { AppTour } from './app-tour';
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
@@ -150,15 +151,17 @@ function Notifications() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <DockIcon>
-          <Bell className="h-5 w-5 text-muted-foreground" />
-          {notificationCount > 0 && (
-            <span className="absolute top-0 right-0 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-            </span>
-          )}
-        </DockIcon>
+        <div data-tour="notifications">
+          <DockIcon>
+            <Bell className="h-5 w-5 text-muted-foreground" />
+            {notificationCount > 0 && (
+              <span className="absolute top-0 right-0 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+            )}
+          </DockIcon>
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl rounded-2xl">
         <DialogHeader>
@@ -267,7 +270,7 @@ export default function MainUILayout({
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-transparent">
         <StarsBackground starColor='#fff' speed={0.5} className="absolute inset-0 z-[-1]"/>
-        
+        <AppTour />
         <main className="flex-1 overflow-auto pb-24">
             <div className="h-full p-4 sm:p-6 lg:p-8">
                 {children}
@@ -279,6 +282,7 @@ export default function MainUILayout({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+            data-tour="dock-menu"
         >
             <TooltipProvider>
                 <Dock 
@@ -320,9 +324,11 @@ export default function MainUILayout({
                         <TooltipTrigger asChild>
                           <DropdownMenu>
                               <DropdownMenuTrigger asChild>
+                                <div data-tour="profile-menu">
                                   <DockIcon>
                                       <AnimatedUserIcon />
                                   </DockIcon>
+                                </div>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
                                   <DropdownMenuLabel className="font-normal">
