@@ -21,6 +21,12 @@ interface CursoCatalogo {
   tipo?: 'interno' | 'externo';
 }
 
+interface PerfilPuesto {
+    id: string;
+    nombre_puesto: string;
+    cursos_obligatorios: string[];
+}
+
 export default function EstrategiaPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -29,12 +35,32 @@ export default function EstrategiaPage() {
   const [savingStates, setSavingStates] = useState<Record<string, boolean>>({});
 
   const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
-  const { data: catalogoCursos, isLoading } = useCollection<CursoCatalogo>(catalogoCursosRef);
+  const perfilesRef = useMemoFirebase(() => collection(firestore, 'perfiles_puesto'), [firestore]);
+
+  const { data: catalogoCursos, isLoading: isLoadingCursos } = useCollection<CursoCatalogo>(catalogoCursosRef);
+  const { data: perfiles, isLoading: isLoadingPerfiles } = useCollection<PerfilPuesto>(perfilesRef);
   
+  const isLoading = isLoadingCursos || isLoadingPerfiles;
+
   const filteredCursos = useMemo(() => {
-    if (!catalogoCursos) return [];
-    return catalogoCursos.filter(curso => curso.nombre_oficial.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [catalogoCursos, searchTerm]);
+    if (!catalogoCursos || !perfiles) return [];
+
+    // 1. Crear un Set con todos los ID de cursos que están en uso en los perfiles
+    const cursosEnUso = new Set<string>();
+    perfiles.forEach(perfil => {
+        perfil.cursos_obligatorios.forEach(cursoId => {
+            cursosEnUso.add(cursoId);
+        });
+    });
+
+    // 2. Filtrar el catálogo para incluir solo los cursos en uso y que coincidan con la búsqueda
+    return catalogoCursos
+      .filter(curso => 
+        cursosEnUso.has(curso.id_curso) &&
+        curso.nombre_oficial.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a,b) => a.nombre_oficial.localeCompare(b.nombre_oficial));
+  }, [catalogoCursos, perfiles, searchTerm]);
 
   const handleTipoChange = async (cursoId: string, tipo: 'interno' | 'externo') => {
     if (!firestore) return;
