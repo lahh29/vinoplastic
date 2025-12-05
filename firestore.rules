@@ -34,9 +34,9 @@ service cloud.firestore {
     }
     
     match /usuarios/{userId} {
-      allow list: if canRead();
-      allow get: if canRead() || request.auth.uid == userId;
-      allow write, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+      allow delete: if isAdmin();
     }
     
     match /Contratos/{contratoId} {
@@ -45,8 +45,7 @@ service cloud.firestore {
     }
 
     match /Plantilla/{empleadoId} {
-        allow list: if canRead();
-        allow get: if canRead() || (isEmpleado() && getUserData().id_empleado == empleadoId);
+        allow read: if true;
         allow write: if isAdmin();
     }
 
