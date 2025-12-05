@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -123,6 +122,25 @@ export default function LoginPage() {
                 </Card>
             </motion.div>
         </div>
+        <motion.div
+            className="absolute bottom-4 left-4 z-10 text-xs"
+            animate={{
+                color: [
+                    "hsl(var(--foreground))",
+                    "hsl(var(--primary))",
+                    "hsl(var(--accent))",
+                    "hsl(var(--foreground))",
+                ]
+            }}
+            transition={{
+                duration: 10,
+                repeat: Infinity,
+                repeatType: "loop",
+                ease: "easeInOut"
+            }}
+        >
+            Developer Hernández Leonardo / Team Hernández Noemi
+        </motion.div>
         <div className="absolute bottom-4 right-4 z-10 text-xs text-slate-500">
             Copyright ViñoPlastic Inyección S.A de C.V
         </div>
