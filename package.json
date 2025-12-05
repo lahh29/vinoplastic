@@ -15,7 +15,8 @@
     "upload:fechas": "node src/scripts/actualizar_fechas_ingreso.js",
     "upload:festivos": "node src/scripts/subir_dias_festivos.js",
     "crear-usuarios": "node src/scripts/crear_usuarios_empleados.js",
-    "forzar-cambio": "node src/scripts/forzar-cambio-password.js"
+    "forzar-cambio": "node src/scripts/forzar-cambio-password.js",
+    "limpiar-usuarios": "node src/scripts/eliminar_usuarios_empleados.js"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.25.0",

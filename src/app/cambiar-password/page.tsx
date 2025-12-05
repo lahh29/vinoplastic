@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,16 +10,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth, useUser, useFirestore } from '@/firebase';
-import { updatePassword } from 'firebase/auth';
+import { useUser, useFirestore } from '@/firebase';
+import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { KeyRound, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 
-// El nuevo esquema ya no pide la contraseña actual.
+// El esquema ahora incluye la contraseña actual.
 const formSchema = z.object({
+  currentPassword: z.string().min(1, 'La contraseña actual es obligatoria.'),
   newPassword: z.string().min(8, 'La nueva contraseña debe tener al menos 8 caracteres.'),
   confirmPassword: z.string(),
 }).refine(data => data.newPassword === data.confirmPassword, {
@@ -34,29 +35,36 @@ export default function ChangePasswordPage() {
   const { toast } = useToast();
   
   const [isLoading, setIsLoading] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      currentPassword: '',
       newPassword: '',
       confirmPassword: '',
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // La sesión del usuario ya está activa, no se necesita re-autenticar.
-    if (!user || !firestore) {
+    if (!user || !user.email || !firestore) {
       toast({ variant: 'destructive', title: 'Error', description: 'No se ha podido verificar la sesión de usuario. Por favor, intenta iniciar sesión de nuevo.' });
       return;
     }
     setIsLoading(true);
 
     try {
-      // 1. Cambiar la contraseña directamente. La sesión activa es autorización suficiente.
+      // 1. Crear credencial para re-autenticar
+      const credential = EmailAuthProvider.credential(user.email, values.currentPassword);
+      
+      // 2. Re-autenticar al usuario
+      await reauthenticateWithCredential(user, credential);
+      
+      // 3. Si la re-autenticación es exitosa, cambiar la contraseña
       await updatePassword(user, values.newPassword);
       
-      // 2. Actualizar el estado en Firestore para no volver a pedir el cambio.
+      // 4. Actualizar el estado en Firestore para no volver a pedir el cambio.
       const userDocRef = doc(firestore, 'usuarios', user.uid);
       await setDoc(userDocRef, { requiresPasswordChange: false }, { merge: true });
 
@@ -66,14 +74,18 @@ export default function ChangePasswordPage() {
         className: "bg-green-100 text-green-800 border-green-300",
       });
 
-      // 3. Redirigir al usuario a la página de inicio.
+      // 5. Redirigir al usuario a la página de inicio.
       router.push('/inicio');
 
     } catch (error: any) {
       console.error("Error al cambiar contraseña:", error.code, error.message);
       
       let description = "Ocurrió un error inesperado. Inténtalo de nuevo.";
-      if (error.code === 'auth/weak-password') {
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        description = "La contraseña actual es incorrecta. Por favor, verifica e intenta de nuevo."
+      } else if (error.code === 'auth/too-many-requests') {
+          description = "Has intentado demasiadas veces. Tu cuenta ha sido bloqueada temporalmente por seguridad."
+      } else if (error.code === 'auth/weak-password') {
           description = "La nueva contraseña es demasiado débil. Por favor, elige una más segura."
       }
       
@@ -99,11 +111,21 @@ export default function ChangePasswordPage() {
                   </motion.div>
                   <CardTitle className="text-center text-2xl font-bold pt-4">Establece tu Nueva Contraseña</CardTitle>
                   <CardDescription className="text-slate-300 pt-1 text-center">
-                      Por tu seguridad, es necesario que reemplaces tu contraseña temporal por una nueva que solo tú conozcas.
+                      Por tu seguridad, es necesario que reemplaces tu contraseña temporal. Ingresa tu contraseña actual (`Vino.2024!`) para continuar.
                   </CardDescription>
               </CardHeader>
               <CardContent>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                     <div className="grid gap-2 text-left">
+                          <Label htmlFor="currentPassword">Contraseña Actual</Label>
+                          <div className="relative">
+                              <Input {...form.register('currentPassword')} id="currentPassword" type={showCurrentPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10" placeholder="Vino.2024!"/>
+                              <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
+                                  {showCurrentPassword ? <EyeOff size={16}/> : <Eye size={16} />}
+                              </button>
+                          </div>
+                          {form.formState.errors.currentPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.currentPassword.message}</p>}
+                      </div>
                      <div className="grid gap-2 text-left">
                           <Label htmlFor="newPassword">Nueva Contraseña</Label>
                           <div className="relative">
@@ -130,4 +152,3 @@ export default function ChangePasswordPage() {
     </div>
   );
 }
-

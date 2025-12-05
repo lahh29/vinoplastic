@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -91,6 +92,11 @@ export default function LoginPage() {
                       <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md" disabled={isLoading}>
                           {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Ingresar'}
                       </Button>
+                      <div className="pt-4 text-center text-sm">
+                        <Link href="/activar" className="text-slate-300 hover:text-primary hover:underline transition-colors">
+                            ¿Eres empleado? Activa tu cuenta aquí.
+                        </Link>
+                      </div>
                   </form>
                 </Card>
             </motion.div>
