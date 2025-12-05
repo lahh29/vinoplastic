@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -73,7 +74,8 @@ export default function ActivateAccountPage() {
     setIsLoading(true);
 
     try {
-      // 1. Verificar si el empleado existe en la Plantilla
+      // Paso 1: Verificar que el empleado existe en la colección 'Plantilla'.
+      // Esta operación es directa y no necesita un índice especial.
       const plantillaDocRef = doc(firestore, 'Plantilla', employeeId);
       const plantillaSnap = await getDoc(plantillaDocRef);
 
@@ -83,16 +85,8 @@ export default function ActivateAccountPage() {
         return;
       }
       
-      // 2. Verificar si ya existe un usuario para este ID
-      const usuariosRef = collection(firestore, 'usuarios');
-      const q = query(usuariosRef, where("id_empleado", "==", employeeId));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        form.setError('employeeId', { type: 'manual', message: 'Este empleado ya tiene una cuenta activada.' });
-        setIsLoading(false);
-        return;
-      }
+      // La verificación de usuario duplicado se manejará de forma natural en el paso de creación de cuenta.
+      // Si el email ya existe, createUserWithEmailAndPassword fallará con un error específico.
       
       const empleado = plantillaSnap.data();
       const generatedEmail = `${employeeId}_empleado@vinoplastic.com`;
@@ -140,14 +134,15 @@ export default function ActivateAccountPage() {
         nombre: employeeData.nombre_completo,
         email: employeeData.email,
         role: 'empleado',
-        requiresPasswordChange: false, // El usuario define su contraseña, no necesita cambio
+        requiresPasswordChange: false, 
       });
       
       setStep(3);
 
     } catch (error: any) {
         if (error.code === 'auth/email-already-in-use') {
-            form.setError('employeeId', { type: 'manual', message: 'Error inesperado: este empleado ya parece tener una cuenta.'});
+            form.setError('employeeId', { type: 'manual', message: 'Este empleado ya tiene una cuenta activada.'});
+            setStep(1); // Regresar al paso 1 para mostrar el error
         } else {
             console.error("Error al crear cuenta:", error);
             toast({ variant: 'destructive', title: 'Error', description: 'No se pudo crear tu cuenta. Intenta de nuevo.' });
@@ -233,3 +228,4 @@ export default function ActivateAccountPage() {
     </div>
   );
 }
+
