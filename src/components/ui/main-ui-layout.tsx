@@ -43,6 +43,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useRoleCheck } from '@/hooks/use-role-check';
 import { AppTour } from './app-tour';
+import { IdleTimeoutDialog } from './idle-timeout-dialog';
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
@@ -277,6 +278,7 @@ export default function MainUILayout({
     <div className="relative flex min-h-screen w-full flex-col bg-transparent">
         <StarsBackground starColor='#fff' speed={0.5} className="absolute inset-0 z-[-1]"/>
         <AppTour />
+        <IdleTimeoutDialog />
         <main className="flex-1 overflow-auto pb-24">
             <div className="h-full p-4 sm:p-6 lg:p-8">
                 {children}
