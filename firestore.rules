@@ -33,20 +33,21 @@ service cloud.firestore {
         return isAdmin() || isLector();
     }
     
+    // Reglas para la activación de la cuenta
+    match /Plantilla/{empleadoId} {
+      allow read: if true; // Permitir lectura pública para verificar ID
+      allow write: if isAdmin(); // Solo admins pueden modificar la plantilla
+    }
+    
     match /usuarios/{userId} {
-      allow read: if true;
-      allow write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
-      allow delete: if isAdmin();
+      allow read: if true; // Permitir lectura para verificar duplicados
+      allow create: if true; // Permitir que cualquiera cree su documento de usuario al registrarse
+      allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == userId);
     }
     
     match /Contratos/{contratoId} {
       allow read: if canRead();
       allow write: if isAdmin();
-    }
-
-    match /Plantilla/{empleadoId} {
-        allow read: if true;
-        allow write: if isAdmin();
     }
 
     match /reports/{reportId} {
