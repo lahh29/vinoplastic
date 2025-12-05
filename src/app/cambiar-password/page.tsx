@@ -47,14 +47,22 @@ export default function ChangePasswordPage() {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!user || !auth) return;
+    if (!user || !auth || !user.email) {
+      toast({ variant: 'destructive', title: 'Error', description: 'No se ha podido verificar la sesión de usuario.' });
+      return;
+    }
     setIsLoading(true);
 
     try {
-      const credential = EmailAuthProvider.credential(user.email!, values.currentPassword);
+      const credential = EmailAuthProvider.credential(user.email, values.currentPassword);
+      
+      // Primero re-autenticar
       await reauthenticateWithCredential(user, credential);
+      
+      // Si la re-autenticación es exitosa, cambiar la contraseña
       await updatePassword(user, values.newPassword);
       
+      // Finalmente, actualizar el estado en Firestore
       const userDocRef = doc(firestore, 'usuarios', user.uid);
       await setDoc(userDocRef, { requiresPasswordChange: false }, { merge: true });
 
@@ -67,13 +75,17 @@ export default function ChangePasswordPage() {
       router.push('/inicio');
 
     } catch (error: any) {
-      console.error(error);
+      console.error("Error al cambiar contraseña:", error.code, error.message);
+      
       let description = "Ocurrió un error inesperado. Inténtalo de nuevo.";
       if (error.code === 'auth/wrong-password') {
           description = "La contraseña actual es incorrecta. Por favor, verifica tus datos."
       } else if (error.code === 'auth/too-many-requests') {
           description = "Has intentado demasiadas veces. Intenta más tarde."
+      } else if (error.code === 'auth/invalid-credential') {
+          description = "La contraseña actual proporcionada no es válida."
       }
+      
       toast({ variant: 'destructive', title: 'Error al cambiar contraseña', description });
     } finally {
       setIsLoading(false);
