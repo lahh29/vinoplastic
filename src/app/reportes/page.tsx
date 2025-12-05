@@ -268,7 +268,7 @@ export default function ReportesPage() {
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {reportTypes.map(report => (
-                    <Card key={report.title} className="flex flex-col justify-between rounded-2xl shadow-lg border-border/50">
+                    <Card key={report.title} className="flex flex-col justify-between rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3 text-xl">
                                 <report.icon className="h-6 w-6 text-primary"/>

@@ -254,7 +254,7 @@ export default function EmpleadosPage() {
         </Button>
       </div>
 
-      <Card className="rounded-2xl shadow-lg bg-card">
+      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Listado de Personal</CardTitle>
           <CardDescription>
@@ -307,7 +307,7 @@ export default function EmpleadosPage() {
 
       {selectedEmpleado && (
         <Dialog open={!!selectedEmpleado} onOpenChange={handleCloseDialog}>
-            <DialogContent className="rounded-2xl sm:max-w-2xl bg-card">
+            <DialogContent className="rounded-2xl sm:max-w-2xl bg-card/80 backdrop-blur-lg border-border">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">{isNewEmpleado ? 'Crear Nuevo Empleado' : 'Editar Empleado'}</DialogTitle>
                     <DialogDescription>

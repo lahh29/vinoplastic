@@ -275,7 +275,7 @@ export default function ContratosPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
-        <Card className="rounded-2xl shadow-lg border-destructive/20 bg-destructive/5">
+        <Card className="rounded-2xl shadow-lg border-destructive/20 bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-semibold">Contratos por Vencer</CardTitle>
                 <AlertTriangle className="h-6 w-6 text-destructive" />
@@ -298,7 +298,7 @@ export default function ContratosPage() {
                 </ScrollArea>
             </CardContent>
         </Card>
-        <Card className="rounded-2xl shadow-lg border-primary/20 bg-primary/5">
+        <Card className="rounded-2xl shadow-lg border-primary/20 bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-semibold">Evaluaciones Próximas</CardTitle>
                 <FileClock className="h-6 w-6 text-primary" />
@@ -325,7 +325,7 @@ export default function ContratosPage() {
         </Card>
       </div>
 
-      <Card className="rounded-2xl shadow-lg">
+      <Card className="rounded-2xl shadow-lg bg-card/60 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Listado de Personal</CardTitle>
           <CardDescription>
@@ -353,7 +353,7 @@ export default function ContratosPage() {
                     <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nombre</TableHead><TableHead>Ingreso</TableHead><TableHead>Vencimiento</TableHead></TableRow></TableHeader>
                     <TableBody>
                         {determinados.map((contrato) => (
-                        <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent transition-colors">
+                        <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent/50 transition-colors">
                             <TableCell>{contrato.id_empleado}</TableCell>
                             <TableCell className="font-medium">{contrato.nombre_completo}</TableCell>
                             <TableCell>{formatDate(contrato.fecha_ingreso_plantilla)}</TableCell>
@@ -370,7 +370,7 @@ export default function ContratosPage() {
                     <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nombre</TableHead><TableHead>Ingreso</TableHead></TableRow></TableHeader>
                     <TableBody>
                         {indeterminados.map((contrato) => (
-                        <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent transition-colors">
+                        <TableRow key={contrato.id} onClick={() => handleRowClick(contrato)} className="cursor-pointer hover:bg-accent/50 transition-colors">
                             <TableCell>{contrato.id_empleado}</TableCell>
                             <TableCell className="font-medium">{contrato.nombre_completo}</TableCell>
                             <TableCell>{formatDate(contrato.fecha_ingreso_plantilla)}</TableCell>
@@ -386,7 +386,7 @@ export default function ContratosPage() {
 
       {selectedContract && (
         <Dialog open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
-            <DialogContent className="sm:max-w-2xl rounded-2xl bg-card">
+            <DialogContent className="sm:max-w-2xl rounded-2xl bg-card/80 backdrop-blur-lg border-border">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">Seguimiento de Evaluaciones</DialogTitle>
                     <DialogDescription className="text-base">

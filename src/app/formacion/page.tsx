@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -104,7 +105,7 @@ export default function FormacionPage() {
         </p>
       </div>
 
-      <Card className="rounded-2xl shadow-lg">
+      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Cumplimiento por Mes</CardTitle>
           <CardDescription>
@@ -120,7 +121,7 @@ export default function FormacionPage() {
           ) : (
             <Accordion type="single" collapsible className="w-full space-y-4">
               {datosAgrupados.map(grupo => (
-                <AccordionItem value={grupo.mes} key={grupo.mes} className="border-b-0 rounded-lg bg-card border shadow-sm">
+                <AccordionItem value={grupo.mes} key={grupo.mes} className="border-b-0 rounded-lg bg-card/80 border shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:no-underline rounded-t-lg">
                     <div className="flex items-center gap-4 w-full">
                         <CalendarCheck className="h-6 w-6 text-primary" />
