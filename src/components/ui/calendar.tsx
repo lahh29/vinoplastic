@@ -62,4 +62,4 @@ function CalendarComponent({
 }
 CalendarComponent.displayName = "Calendar"
 
-export { CalendarComponent }
+export { CalendarComponent as Calendar }
