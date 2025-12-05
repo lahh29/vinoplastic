@@ -36,16 +36,19 @@ async function eliminarUsuariosEmpleados() {
         // Eliminar de Firebase Authentication
         // Firebase recomienda hacer esto en lotes de 1000
         const uidsParaBorrar = usuariosAEliminar.map(u => u.id);
-        const resultadosAuth = await auth.deleteUsers(uidsParaBorrar);
         
-        eliminadosAuth = resultadosAuth.successCount;
-        resultadosAuth.errors.forEach(err => {
-            errores.push(`- Error en Auth para UID ${err.uid}: ${err.error.message}`);
-        });
+        if (uidsParaBorrar.length > 0) {
+            const resultadosAuth = await auth.deleteUsers(uidsParaBorrar);
+            
+            eliminadosAuth = resultadosAuth.successCount;
+            resultadosAuth.errors.forEach(err => {
+                errores.push(`- Error en Auth para UID ${err.uid}: ${err.error.message}`);
+            });
 
-        console.log(`- ✅ ${eliminadosAuth} usuarios eliminados de Firebase Authentication.`);
-        if(resultadosAuth.failureCount > 0) {
-             console.log(`- ❌ Fallo al eliminar ${resultadosAuth.failureCount} usuarios de Firebase Authentication.`);
+            console.log(`- ✅ ${eliminadosAuth} usuarios eliminados de Firebase Authentication.`);
+            if(resultadosAuth.failureCount > 0) {
+                console.log(`- ❌ Fallo al eliminar ${resultadosAuth.failureCount} usuarios de Firebase Authentication.`);
+            }
         }
 
 

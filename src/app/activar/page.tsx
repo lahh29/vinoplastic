@@ -1,9 +1,8 @@
-
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -15,17 +14,16 @@ import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { collection, query, where, getDocs, doc, setDoc, limit, getDoc } from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { collection, query, where, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword, Auth } from 'firebase/auth';
 
-
+// Esquema de validación para ambos pasos
 const formSchema = z.object({
   employeeId: z.string().min(1, 'El ID de empleado es obligatorio.'),
-  email: z.string().email('Ingresa un correo electrónico válido.').optional().or(z.literal('')),
-  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.').optional().or(z.literal('')),
-  confirmPassword: z.string().optional().or(z.literal('')),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.'),
+  confirmPassword: z.string(),
 }).refine(data => {
-    // La validación de la contraseña solo se aplica en el paso 2
+    // La validación de contraseña solo se aplica en el paso 2
     if (data.password || data.confirmPassword) {
         return data.password === data.confirmPassword;
     }
@@ -39,30 +37,43 @@ const formSchema = z.object({
 export default function ActivateAccountPage() {
   const router = useRouter();
   const firestore = useFirestore();
-  const auth = getAuth();
   const { toast } = useToast();
+  
+  const [auth, setAuth] = useState<Auth | null>(null);
+  useEffect(() => {
+    try {
+        const authInstance = getAuth();
+        setAuth(authInstance);
+    } catch (e) {
+        console.error("Firebase Auth no está inicializado.", e);
+    }
+  }, []);
   
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [employeeData, setEmployeeData] = useState<{ id: string; nombre_completo: string; } | null>(null);
+  const [employeeData, setEmployeeData] = useState<{ id: string; nombre_completo: string; email: string; } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
+    defaultValues: {
+        employeeId: '',
+        password: '',
+        confirmPassword: ''
+    }
   });
 
-  const employeeId = useWatch({ control: form.control, name: 'employeeId' });
-
   const handleVerifyId = async () => {
-    setIsLoading(true);
-    if (!firestore || !employeeId) {
-        setIsLoading(false);
+    const employeeId = form.getValues('employeeId');
+    if (!employeeId || !firestore) {
+        form.setError('employeeId', { type: 'manual', message: 'El ID de empleado no puede estar vacío.' });
         return;
-    };
+    }
+    setIsLoading(true);
 
     try {
-      // 1. Verificar que el empleado exista en 'Plantilla'
+      // 1. Verificar si el empleado existe en la Plantilla
       const plantillaDocRef = doc(firestore, 'Plantilla', employeeId);
       const plantillaSnap = await getDoc(plantillaDocRef);
 
@@ -72,11 +83,9 @@ export default function ActivateAccountPage() {
         return;
       }
       
-      const empleado = plantillaSnap.data();
-
-       // 2. Verificar si el usuario ya existe en la colección 'usuarios'
+      // 2. Verificar si ya existe un usuario para este ID
       const usuariosRef = collection(firestore, 'usuarios');
-      const q = query(usuariosRef, where("id_empleado", "==", employeeId), limit(1));
+      const q = query(usuariosRef, where("id_empleado", "==", employeeId));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
@@ -84,14 +93,20 @@ export default function ActivateAccountPage() {
         setIsLoading(false);
         return;
       }
-
-      // Si todo es correcto, avanzar al siguiente paso
-      setEmployeeData({ id: employeeId, nombre_completo: empleado.nombre_completo });
+      
+      const empleado = plantillaSnap.data();
+      const generatedEmail = `${employeeId}_empleado@vinoplastic.com`;
+      
+      setEmployeeData({ 
+        id: employeeId, 
+        nombre_completo: empleado.nombre_completo,
+        email: generatedEmail
+      });
       setStep(2);
 
     } catch (error) {
       console.error("Error al verificar ID:", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Ocurrió un problema al verificar tu ID. Intenta más tarde.' });
+      toast({ variant: 'destructive', title: 'Error de Conexión', description: 'Ocurrió un problema al verificar tu ID. Podría ser un problema de permisos o de índice en la base de datos. Contacta a un administrador.' });
     } finally {
       setIsLoading(false);
     }
@@ -104,34 +119,35 @@ export default function ActivateAccountPage() {
     }
   }
 
-
   const handleCreateAccount = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    if (!firestore || !employeeData || !values.email || !values.password) {
+    
+    if (!firestore || !auth || !employeeData) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Servicios no disponibles o faltan datos.' });
         setIsLoading(false);
         return;
-    };
+    }
 
     try {
-      // 1. Crear usuario en Firebase Authentication
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      // Crear el usuario en Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, employeeData.email, values.password);
       const user = userCredential.user;
 
-      // 2. Crear documento en 'usuarios'
+      // Crear el documento del usuario en Firestore
       const userDocRef = doc(firestore, 'usuarios', user.uid);
       await setDoc(userDocRef, {
         id_empleado: employeeData.id,
         nombre: employeeData.nombre_completo,
-        email: values.email,
+        email: employeeData.email,
         role: 'empleado',
-        requiresPasswordChange: false, // El empleado establece su propia contraseña
+        requiresPasswordChange: false, // El usuario define su contraseña, no necesita cambio
       });
       
-      setStep(3); // Mover a la pantalla de éxito
+      setStep(3);
 
     } catch (error: any) {
         if (error.code === 'auth/email-already-in-use') {
-            form.setError('email', { type: 'manual', message: 'Este correo electrónico ya está en uso.'});
+            form.setError('employeeId', { type: 'manual', message: 'Error inesperado: este empleado ya parece tener una cuenta.'});
         } else {
             console.error("Error al crear cuenta:", error);
             toast({ variant: 'destructive', title: 'Error', description: 'No se pudo crear tu cuenta. Intenta de nuevo.' });
@@ -156,36 +172,31 @@ export default function ActivateAccountPage() {
                       <UserPlus className="h-10 w-10 text-primary"/>
                   </motion.div>
                   <CardTitle className="text-center text-2xl font-bold pt-4">
-                    {step === 1 && 'Activa tu Cuenta de Empleado'}
-                    {step === 2 && 'Completa tu Registro'}
+                    {step === 1 && 'Activa tu Cuenta'}
+                    {step === 2 && 'Crea tu Contraseña'}
                     {step === 3 && '¡Cuenta Activada!'}
                   </CardTitle>
                   <CardDescription className="text-slate-300 pt-1 text-center">
                     {step === 1 && 'Ingresa tu ID de empleado para comenzar.'}
-                    {step === 2 && `Bienvenido, ${employeeData?.nombre_completo}. Ahora crea tus credenciales de acceso.`}
+                    {step === 2 && `¡Hola, ${employeeData?.nombre_completo}! Tu correo será ${employeeData?.email}. Ahora, elige tu contraseña.`}
                     {step === 3 && 'Tu cuenta ha sido creada exitosamente. Ya puedes iniciar sesión.'}
                   </CardDescription>
               </CardHeader>
               <CardContent>
                 {step === 1 && (
-                    <div className="space-y-4">
+                    <form onSubmit={(e) => { e.preventDefault(); onVerifyClick(); }} className="space-y-4">
                         <div className="grid gap-2 text-left">
                             <Label htmlFor="employeeId">ID de Empleado</Label>
                             <Input {...form.register('employeeId')} id="employeeId" placeholder="Ej: 3204" required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
                             {form.formState.errors.employeeId && <p className="text-red-400 text-xs mt-1 flex items-center gap-1"><AlertTriangle size={14}/> {form.formState.errors.employeeId.message}</p>}
                         </div>
-                        <Button onClick={onVerifyClick} className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                        <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading || !firestore}>
                             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Verificar ID'}
                         </Button>
-                    </div>
+                    </form>
                 )}
                 {step === 2 && (
                      <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-4">
-                        <div className="grid gap-2 text-left">
-                            <Label htmlFor="email">Correo Electrónico</Label>
-                            <Input {...form.register('email')} id="email" type="email" placeholder="tu.correo@ejemplo.com" required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
-                            {form.formState.errors.email && <p className="text-red-400 text-xs mt-1">{form.formState.errors.email.message}</p>}
-                        </div>
                          <div className="grid gap-2 text-left">
                             <Label htmlFor="password">Crea tu Contraseña</Label>
                             <div className="relative">
@@ -201,8 +212,8 @@ export default function ActivateAccountPage() {
                             <Input {...form.register('confirmPassword')} id="confirmPassword" type={showPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
                             {form.formState.errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.confirmPassword.message}</p>}
                         </div>
-                        <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Crear Cuenta y Continuar'}
+                        <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading || !auth}>
+                            {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Crear Cuenta y Acceder'}
                         </Button>
                     </form>
                 )}
@@ -222,4 +233,3 @@ export default function ActivateAccountPage() {
     </div>
   );
 }
-
