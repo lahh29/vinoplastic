@@ -160,17 +160,17 @@ export default function ActivateAccountPage() {
                                     >
                                         <UserCheck className="h-8 w-8 text-primary"/>
                                     </motion.div>
-                                    <CardTitle className="text-3xl font-bold tracking-tight">Portal del Empleado</CardTitle>
+                                    <CardTitle className="text-2xl font-bold tracking-tight">Portal de Empleado</CardTitle>
                                     <CardDescription className="text-slate-400 text-base">Ingresa tu ID de nómina para activar tu cuenta.</CardDescription>
                                 </CardHeader>
                                 
                                 <div className="space-y-4 pt-4">
                                     <div className="grid gap-2 text-left">
-                                        <Label htmlFor="employeeId" className="text-sm font-medium text-slate-300">ID de Empleado</Label>
+                                        <Label htmlFor="employeeId" className="text-sm font-medium text-slate-400">Activación</Label>
                                         <Input 
                                             {...form.register('employeeId')} 
                                             id="employeeId" 
-                                            placeholder="Ej: 3204" 
+                                            placeholder="Ingresa tu ID" 
                                             className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 pl-4 py-6 text-lg tracking-widest text-center"
                                             autoComplete="off"
                                         />
@@ -181,7 +181,7 @@ export default function ActivateAccountPage() {
                                         )}
                                     </div>
                                     <Button type="submit" className="w-full h-12 text-md font-semibold bg-white text-black hover:bg-slate-200 transition-all shadow-lg hover:shadow-slate-400/20" disabled={isLoading}>
-                                        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Verificar Identidad <ArrowRight className="ml-2 h-4 w-4"/></>}
+                                        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Valida tu ID <ArrowRight className="ml-2 h-4 w-4"/></>}
                                     </Button>
                                 </div>
                             </form>
@@ -248,10 +248,10 @@ export default function ActivateAccountPage() {
                             </motion.div>
                             <div className="space-y-2">
                                 <CardTitle className="text-2xl font-bold">¡Cuenta Activada!</CardTitle>
-                                <p className="text-slate-300 max-w-xs mx-auto">Has configurado tu acceso correctamente. Ahora puedes ingresar a tu portal.</p>
+                                <p className="text-slate-300 max-w-xs mx-auto">Has configurado tu acceso. Ahora puedes ver tu portal personal.</p>
                             </div>
                             <Button onClick={() => router.push('/login')} className="w-full bg-white text-black hover:bg-slate-200 font-bold h-12 flex items-center gap-2">
-                                Ir al Inicio de Sesión <ArrowRight className="h-4 w-4"/>
+                                Ir a Login <ArrowRight className="h-4 w-4"/>
                             </Button>
                         </motion.div>
                     )}

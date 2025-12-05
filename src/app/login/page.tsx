@@ -13,6 +13,8 @@ import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -97,6 +99,26 @@ export default function LoginPage() {
                             ¿Eres empleado? Activa tu cuenta aquí.
                         </Link>
                       </div>
+                       <div className="text-center text-sm pt-2">
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <button className="text-xs text-slate-400 hover:text-primary hover:underline transition-colors">
+                                        ¿Olvidaste tu contraseña?
+                                    </button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-md bg-card/80 backdrop-blur-lg">
+                                    <DialogHeader className="items-center text-center">
+                                        <div className="p-3 bg-amber-400/10 rounded-full w-fit mb-2">
+                                            <AlertCircle className="h-8 w-8 text-amber-400" />
+                                        </div>
+                                        <DialogTitle className="text-xl">Recuperación de Contraseña</DialogTitle>
+                                        <DialogDescription className="pt-2 text-base">
+                                            Para restablecer tu contraseña, por favor acude personalmente al departamento de Recursos Humanos.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
                   </form>
                 </Card>
             </motion.div>
