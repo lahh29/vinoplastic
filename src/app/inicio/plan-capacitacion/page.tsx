@@ -2,8 +2,9 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Search, Calendar, BarChart3, TrendingUp, Sparkles, Target } from "lucide-react";
+import { Search, Target, Calendar, TrendingUp, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from 'next/link';
 
 const phases = [
   {
@@ -11,7 +12,8 @@ const phases = [
     icon: Search,
     title: "Diagnóstico y Análisis de Brechas",
     subtitle: "El 'Dónde Estamos'",
-    description: "Utilizamos los datos de la plataforma para identificar los puestos y cursos con mayor necesidad de atención, creando una lista de prioridades basada en el cumplimiento actual."
+    description: "Utilizamos los datos de la plataforma para identificar los puestos y cursos con mayor necesidad de atención, creando una lista de prioridades basada en el cumplimiento actual.",
+    href: "/inicio/plan-capacitacion/diagnostico"
   },
   {
     number: 2,
@@ -36,8 +38,7 @@ const phases = [
   },
 ];
 
-const PhaseCard = ({ phase }: { phase: typeof phases[0] }) => {
-  return (
+const PhaseCard = ({ phase }: { phase: typeof phases[0] }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -51,7 +52,7 @@ const PhaseCard = ({ phase }: { phase: typeof phases[0] }) => {
               <phase.icon className="h-6 w-6" />
             </div>
             <div>
-              <CardTitle className="text-xl font-bold">Fase {phase.number}: {phase.title}</CardTitle>
+              <CardTitle className="text-xl font-bold">{phase.title}</CardTitle>
               <CardDescription className="text-base text-primary font-semibold">{phase.subtitle}</CardDescription>
             </div>
           </div>
@@ -63,8 +64,7 @@ const PhaseCard = ({ phase }: { phase: typeof phases[0] }) => {
         </CardContent>
       </Card>
     </motion.div>
-  )
-};
+);
 
 
 export default function PlanAnualCapacitacionPage() {
@@ -79,7 +79,13 @@ export default function PlanAnualCapacitacionPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {phases.map(phase => (
-                    <PhaseCard key={phase.number} phase={phase} />
+                    phase.href ? (
+                        <Link href={phase.href} key={phase.number} className="block h-full hover:no-underline">
+                            <PhaseCard phase={phase} />
+                        </Link>
+                    ) : (
+                        <PhaseCard key={phase.number} phase={phase} />
+                    )
                 ))}
             </div>
 
