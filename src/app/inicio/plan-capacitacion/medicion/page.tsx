@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loader2, TrendingUp, BookCheck, Users, Percent, Calendar } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
+import { Label } from '@/components/ui/label';
 
 // Interfaces
 interface HistorialCurso { id_curso: string; calificacion: number; fecha_aplicacion: string; }
@@ -145,4 +146,3 @@ export default function MedicionPage() {
         </div>
     );
 }
-
