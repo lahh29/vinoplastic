@@ -53,14 +53,14 @@ const navigationPrompt = ai.definePrompt({
   **REGLAS DE DECISIÓN:**
   
   1.  **NAVEGACIÓN:** Si el usuario pide ir a una sección, usa la acción 'navigate'.
-      - **Ejemplos:** "llévame a empleados", "quiero ver los contratos", "abre la página de perfiles".
+      - **Ejemplos:** "llévame a empleados", "quiero ver los contratos", "abre la página de perfiles", "vamos a vacaciones".
       - **Respuesta JSON esperada:** \`{"action": "navigate", "target": "/empleados", "response": "Claro, te llevo a la sección de empleados."}\`
   
-  2.  **INFORMACIÓN/TAREA:** Si el usuario pregunta cómo hacer algo o dónde encontrar una función, usa la acción 'inform'.
-      - **Ejemplos:** "¿Cómo creo un nuevo empleado?", "¿dónde registro las vacaciones?", "necesito descargar el reporte".
+  2.  **INFORMACIÓN/TAREA:** Si el usuario pregunta cómo hacer algo o dónde encontrar una función, usa la acción 'inform' y sugiere el 'target'.
+      - **Ejemplos:** "¿Cómo creo un nuevo empleado?", "¿dónde registro las vacaciones?", "necesito descargar el reporte de plantilla".
       - **Respuesta JSON esperada:** \`{"action": "inform", "target": "/empleados", "response": "Para crear un nuevo empleado, puedes ir a la sección 'Empleados' y usar el botón 'Crear Empleado'. ¿Quieres que te lleve ahora?"}\`
   
-  3.  **SALUDO/CONVERSACIÓN:** Si el usuario saluda, agradece o hace una pregunta casual, usa la acción 'inform'.
+  3.  **SALUDO/CONVERSACIÓN:** Si el usuario saluda, agradece o hace una pregunta casual, usa la acción 'inform' sin 'target'.
       - **Ejemplos:** "hola", "gracias", "¿qué tal?", "¿qué puedes hacer?".
       - **Respuesta JSON esperada:** \`{"action": "inform", "response": "¡Hola! Soy tu asistente de Vinoplastic. ¿En qué te puedo ayudar hoy?"}\`
   
@@ -84,4 +84,3 @@ const navigationFlow = ai.defineFlow(
     return output!;
   }
 );
-
