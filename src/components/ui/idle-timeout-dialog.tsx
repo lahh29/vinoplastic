@@ -18,8 +18,8 @@ import { useAuth } from '@/firebase';
 import { LogOut, Timer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const IDLE_TIMEOUT = 5 * 1000; // 5 segundos para prueba
-const DIALOG_TIMEOUT = 10 * 1000; // 10 segundos para prueba
+const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutos
+const DIALOG_TIMEOUT = 60 * 1000; // 60 segundos
 
 export function IdleTimeoutDialog() {
   const auth = useAuth();
@@ -83,7 +83,6 @@ export function IdleTimeoutDialog() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-card/80 backdrop-blur-lg border-border/50 rounded-2xl"
             >
               <AlertDialogHeader>
                 <AlertDialogTitle className="flex items-center gap-3 text-2xl font-bold">
