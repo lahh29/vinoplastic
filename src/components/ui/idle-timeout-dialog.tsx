@@ -49,7 +49,7 @@ export function IdleTimeoutDialog() {
       intervalRef.current = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
-            clearInterval(intervalRef.current);
+            clearInterval(intervalRef.current!);
             handleLogout();
             return 0;
           }
@@ -78,7 +78,7 @@ export function IdleTimeoutDialog() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black/80"
           />
-          <AlertDialogContent asChild>
+          <AlertDialogContent>
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } }}
