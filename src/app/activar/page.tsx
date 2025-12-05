@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { collection, query, where, getDocs, doc, setDoc, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, limit, getDoc } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 
@@ -63,20 +63,23 @@ export default function ActivateAccountPage() {
 
     try {
       // 1. Verificar que el empleado exista en 'Plantilla'
-      const plantillaSnap = await getDocs(query(collection(firestore, 'Plantilla'), where('id_empleado', '==', employeeId), limit(1)));
+      const plantillaDocRef = doc(firestore, 'Plantilla', employeeId);
+      const plantillaSnap = await getDoc(plantillaDocRef);
 
-      if (plantillaSnap.empty) {
+      if (!plantillaSnap.exists()) {
         form.setError('employeeId', { type: 'manual', message: 'ID de empleado no encontrado.' });
+        setIsLoading(false);
         return;
       }
       
-      const empleado = plantillaSnap.docs[0].data();
+      const empleado = plantillaSnap.data();
 
       // 2. Verificar que el empleado NO tenga ya una cuenta en 'usuarios'
       const usuariosSnap = await getDocs(query(collection(firestore, 'usuarios'), where('id_empleado', '==', employeeId), limit(1)));
 
       if (!usuariosSnap.empty) {
         form.setError('employeeId', { type: 'manual', message: 'Este empleado ya tiene una cuenta activada.' });
+        setIsLoading(false);
         return;
       }
 
