@@ -82,7 +82,7 @@ const AnimatedIcon = ({ children }: { children: React.ReactNode }) => (
 
 const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
     return (
-        <ScrollArea className="h-[70vh] rounded-lg border">
+        <ScrollArea className="h-96 lg:h-[calc(100vh-28rem)] rounded-lg border">
             <Table>
                 <TableHeader className='sticky top-0 bg-background z-10'>
                     <TableRow>
@@ -215,7 +215,7 @@ export default function PortalPage() {
   
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
-      <motion.h1 variants={itemVariants} className="text-4xl font-bold tracking-tight">Bienvenido a tu Portal</motion.h1>
+      <motion.h1 variants={itemVariants} className="text-3xl md:text-4xl font-bold tracking-tight">Bienvenido a tu Portal</motion.h1>
       <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
           <Card className='bg-card/30 backdrop-blur-lg border-white/10'>
             <CardHeader>
@@ -302,3 +302,4 @@ export default function PortalPage() {
     </motion.div>
   );
 }
+
