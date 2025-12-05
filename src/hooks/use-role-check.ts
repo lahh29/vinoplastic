@@ -5,7 +5,6 @@ import { useMemo } from 'react';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldAlert } from 'lucide-react';
 
 interface UserData {
     role: 'admin' | 'lector' | 'empleado';

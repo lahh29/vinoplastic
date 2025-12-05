@@ -40,6 +40,7 @@ import { StarsBackground } from '@/components/animate-ui/components/backgrounds/
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useRoleCheck } from '@/hooks/use-role-check';
 
 
 const adminNavItems = [
@@ -221,6 +222,7 @@ export default function MainUILayout({
   const router = useRouter();
   const pathname = usePathname();
   const firestore = useFirestore();
+  const { isAdmin } = useRoleCheck();
   
   const currentUserInfoRef = useMemoFirebase(
       () => (user ? doc(firestore, 'usuarios', user.uid) : null),
@@ -330,7 +332,7 @@ export default function MainUILayout({
                                       </div>
                                   </DropdownMenuLabel>
                                   <DropdownMenuSeparator />
-                                  {userRole === 'admin' && (
+                                  {isAdmin && (
                                     <DropdownMenuItem asChild>
                                         <Link href="/usuarios">
                                         <Users className="mr-2 h-4 w-4" />
