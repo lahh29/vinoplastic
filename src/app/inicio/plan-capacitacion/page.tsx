@@ -20,7 +20,8 @@ const phases = [
     icon: Target,
     title: "Estrategia y Planificación",
     subtitle: "El 'Hacia Dónde Vamos'",
-    description: "Definimos objetivos SMART (Específicos, Medibles, Alcanzables, Relevantes, con Plazo) y clasificamos los cursos en internos (acción rápida) y externos (requieren aprobación)."
+    description: "Definimos objetivos SMART (Específicos, Medibles, Alcanzables, Relevantes, con Plazo) y clasificamos los cursos en internos (acción rápida) y externos (requieren aprobación).",
+    href: "/inicio/plan-capacitacion/estrategia"
   },
   {
     number: 3,
