@@ -63,8 +63,11 @@ export default function ChangePasswordPage() {
       await updatePassword(user, values.newPassword);
       
       // Finalmente, actualizar el estado en Firestore
-      const userDocRef = doc(firestore, 'usuarios', user.uid);
-      await setDoc(userDocRef, { requiresPasswordChange: false }, { merge: true });
+      if (firestore) {
+        const userDocRef = doc(firestore, 'usuarios', user.uid);
+        await setDoc(userDocRef, { requiresPasswordChange: false }, { merge: true });
+      }
+
 
       toast({
         title: "Contraseña Actualizada",
@@ -78,12 +81,10 @@ export default function ChangePasswordPage() {
       console.error("Error al cambiar contraseña:", error.code, error.message);
       
       let description = "Ocurrió un error inesperado. Inténtalo de nuevo.";
-      if (error.code === 'auth/wrong-password') {
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
           description = "La contraseña actual es incorrecta. Por favor, verifica tus datos."
       } else if (error.code === 'auth/too-many-requests') {
           description = "Has intentado demasiadas veces. Intenta más tarde."
-      } else if (error.code === 'auth/invalid-credential') {
-          description = "La contraseña actual proporcionada no es válida."
       }
       
       toast({ variant: 'destructive', title: 'Error al cambiar contraseña', description });
@@ -108,13 +109,13 @@ export default function ChangePasswordPage() {
                         </motion.div>
                         <CardTitle className="text-2xl font-bold pt-4">Actualización de Contraseña</CardTitle>
                         <CardDescription className="text-slate-300 pt-1">
-                            Por tu seguridad, es necesario que actualices la contraseña temporal que te fue asignada.
+                            Por tu seguridad, es necesario que actualices tu contraseña. Ingresa tu contraseña actual y define una nueva.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                            <div className="grid gap-2 text-left">
-                                <Label htmlFor="currentPassword">Contraseña Actual (Temporal)</Label>
+                                <Label htmlFor="currentPassword">Contraseña Actual</Label>
                                 <Input {...form.register('currentPassword')} id="currentPassword" type="password" required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
                                 {form.formState.errors.currentPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.currentPassword.message}</p>}
                             </div>

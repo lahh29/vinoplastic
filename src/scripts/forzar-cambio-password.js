@@ -6,7 +6,7 @@ const serviceAccount = require('../../serviceAccountKey.json');
 // UID del usuario al que quieres forzar el cambio de contraseña.
 // Encuéntralo en Firebase Console > Authentication.
 // POR DEFECTO, ESTÁ EL UID DEL ADMINISTRADOR.
-const USER_UID_TO_RESET = "wE0RDmidGBdqTkLO5FqFrIpg6M52"; 
+const USER_UID_TO_RESET = "Z6rLLILLgrWNY7q4kPjpWboZOQ63"; 
 
 // --- 2. INICIALIZACIÓN ---
 if (!admin.apps.length) {
