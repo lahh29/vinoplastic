@@ -94,12 +94,12 @@ export default function LoginPage() {
                       <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md" disabled={isLoading}>
                           {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Ingresar'}
                       </Button>
-                      <div className="pt-4 text-center text-sm">
+                      <div className="pt-1 text-center text-sm">
                         <Link href="/activar" className="text-slate-300 hover:text-primary hover:underline transition-colors">
                             ¿Eres empleado? Activa tu cuenta aquí.
                         </Link>
                       </div>
-                       <div className="text-center text-sm pt-2">
+                       <div className="text-center text-sm pt-1">
                             <Dialog>
                                 <DialogTrigger asChild>
                                     <button className="text-xs text-slate-400 hover:text-primary hover:underline transition-colors">
