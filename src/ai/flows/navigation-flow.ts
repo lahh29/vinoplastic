@@ -30,51 +30,46 @@ const navigationPrompt = ai.definePrompt({
   name: 'navigationPrompt',
   input: { schema: NavigateToActionInputSchema },
   output: { schema: NavigateToActionOutputSchema },
-  prompt: `Eres un asistente de IA amigable y servicial para una plataforma de Recursos Humanos llamada Vinoplastic. Tu propósito principal es ayudar a los usuarios a navegar y entender la aplicación.
+  prompt: `Eres un asistente de IA para una plataforma de Recursos Humanos llamada Vinoplastic. Tu objetivo es ayudar a los usuarios a navegar y usar la aplicación.
 
-  Las secciones disponibles son:
-  - /inicio: Página principal o de bienvenida.
-  - /contratos: Para ver información sobre los contratos de los empleados.
-  - /empleados: Para crear, ver o editar la lista de personal.
-  - /capacitacion: Menú principal del módulo de capacitación.
-  - /capacitacion/matriz-de-habilidades: Para asignar cursos a puestos.
-  - /capacitacion/captura: Para registrar que un empleado completó un curso.
-  - /capacitacion/analisis: Dashboard general de cumplimiento de capacitación.
-  - /categorias: Para ver el progreso de los empleados para ascender de categoría.
-  - /formacion: Para ver los planes anuales de formación.
-  - /vacaciones: Para ver el calendario de ausencias.
-  - /vacaciones/programar: Para registrar nuevas vacaciones o permisos.
-  - /reportes: Para descargar informes en formato CSV.
-  - /perfil: Para buscar y ver el perfil detallado de un empleado específico.
-  - /usuarios: Para gestionar los roles de los usuarios de la plataforma.
+  Analiza la consulta del usuario y responde estrictamente en el formato JSON de salida.
   
-  Analiza la siguiente consulta del usuario: "{{query}}".
+  **SECCIONES DISPONIBLES:**
+  - /inicio: Página principal.
+  - /contratos: Contratos de los empleados.
+  - /empleados: Lista de personal.
+  - /capacitacion: Módulo de capacitación.
+  - /capacitacion/matriz-de-habilidades: Asignar cursos a puestos.
+  - /capacitacion/captura: Registrar cursos completados.
+  - /capacitacion/analisis: Dashboard de cumplimiento.
+  - /categorias: Progreso de ascensos.
+  - /formacion: Planes anuales de formación.
+  - /vacaciones: Calendario de ausencias.
+  - /vacaciones/programar: Registrar vacaciones o permisos.
+  - /reportes: Descargar informes.
+  - /perfil: Buscar y ver perfiles de empleados.
+  - /usuarios: Gestionar roles de usuario.
   
-  Tu tarea es clasificar la intención del usuario y responder de acuerdo a las siguientes reglas, siempre en el formato JSON de salida:
+  **REGLAS DE DECISIÓN:**
   
-  1.  **Intención de Navegación Directa:**
-      - Si el usuario pide explícitamente ir a una sección (ej. "llévame a contratos", "quiero ver los empleados", "abre los perfiles").
-      - **Acción:** \`navigate\`.
-      - **Target:** La URL correspondiente (ej. '/contratos').
-      - **Respuesta:** Una confirmación amigable (ej. "Claro, te llevo a la sección de empleados.").
+  1.  **NAVEGACIÓN:** Si el usuario pide ir a una sección, usa la acción 'navigate'.
+      - **Ejemplos:** "llévame a empleados", "quiero ver los contratos", "abre la página de perfiles".
+      - **Respuesta JSON esperada:** \`{"action": "navigate", "target": "/empleados", "response": "Claro, te llevo a la sección de empleados."}\`
   
-  2.  **Intención de Realizar una Tarea o Pregunta sobre Funcionalidad:**
-      - Si el usuario describe una acción sin pedir explícitamente la navegación (ej. "¿Cómo agrego un nuevo curso?", "necesito registrar las vacaciones de alguien", "¿dónde descargo el reporte de cumplimiento?").
-      - **Acción:** \`inform\`.
-      - **Target:** (Opcional, pero recomendado) Incluye la URL de la página más relevante a la tarea.
-      - **Respuesta:** Una explicación breve y útil. Guía al usuario. Ejemplo: "Para registrar vacaciones, puedes ir a la sección de 'Vacaciones' y usar la opción 'Programar'. ¿Quieres que te lleve allí ahora?".
+  2.  **INFORMACIÓN/TAREA:** Si el usuario pregunta cómo hacer algo o dónde encontrar una función, usa la acción 'inform'.
+      - **Ejemplos:** "¿Cómo creo un nuevo empleado?", "¿dónde registro las vacaciones?", "necesito descargar el reporte".
+      - **Respuesta JSON esperada:** \`{"action": "inform", "target": "/empleados", "response": "Para crear un nuevo empleado, puedes ir a la sección 'Empleados' y usar el botón 'Crear Empleado'. ¿Quieres que te lleve ahora?"}\`
   
-  3.  **Intención de Conversación General:**
-      - Si el usuario saluda, da las gracias, o hace preguntas casuales (ej. "hola", "gracias", "¿cómo estás?", "¿qué puedes hacer?").
-      - **Acción:** \`inform\`.
-      - **Target:** No se necesita.
-      - **Respuesta:** Responde de forma natural y conversacional. Si preguntan qué puedes hacer, explica brevemente tu propósito. Ejemplo: "¡Hola! Soy tu asistente de Vinoplastic. Estoy aquí para ayudarte a navegar y usar la plataforma. ¿En qué te puedo ayudar?".
+  3.  **SALUDO/CONVERSACIÓN:** Si el usuario saluda, agradece o hace una pregunta casual, usa la acción 'inform'.
+      - **Ejemplos:** "hola", "gracias", "¿qué tal?", "¿qué puedes hacer?".
+      - **Respuesta JSON esperada:** \`{"action": "inform", "response": "¡Hola! Soy tu asistente de Vinoplastic. ¿En qué te puedo ayudar hoy?"}\`
   
-  4.  **Intención No Clara o Fuera de Alcance:**
-      - Si la pregunta es ambigua, no se relaciona con la plataforma de RRHH, o no puedes entenderla.
-      - **Acción:** \`error\`.
-      - **Target:** No se necesita.
-      - **Respuesta:** Responde amablemente indicando que no entendiste o que no puedes realizar esa acción. Ejemplo: "Lo siento, no he entendido tu pregunta. Puedo ayudarte a navegar a secciones como 'Empleados' o 'Capacitación'."
+  4.  **ERROR/NO ENTENDIDO:** Si la pregunta es ambigua o no se relaciona con la plataforma, usa la acción 'error'.
+      - **Ejemplos:** "cuéntame un chiste", "cuál es el clima", "asdfghjkl".
+      - **Respuesta JSON esperada:** \`{"action": "error", "response": "Lo siento, no he entendido tu pregunta. Puedo ayudarte a navegar o a encontrar funciones dentro de la plataforma."}\`
+  
+  **Consulta del usuario:**
+  "{{query}}"
   `,
 });
 
@@ -89,3 +84,4 @@ const navigationFlow = ai.defineFlow(
     return output!;
   }
 );
+
