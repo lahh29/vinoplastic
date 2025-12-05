@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -63,30 +64,18 @@ export default function ActivateAccountPage() {
       const idLimpio = employeeId.trim(); // Limpiamos espacios
 
       // A. Buscar en la colección 'Plantilla' por el campo 'id_empleado'
-      const plantillaRef = collection(firestore, 'Plantilla');
-      const qPlantilla = query(plantillaRef, where("id_empleado", "==", idLimpio), limit(1));
-      const plantillaSnap = await getDocs(qPlantilla);
+      const plantillaRef = doc(firestore, 'Plantilla', idLimpio);
+      const plantillaSnap = await getDoc(plantillaRef);
 
-      if (plantillaSnap.empty) {
+      if (!plantillaSnap.exists()) {
         form.setError('employeeId', { type: 'manual', message: 'ID no encontrado en la plantilla de empleados.' });
         setIsLoading(false);
         return;
       }
       
-      const datosEmpleado = plantillaSnap.docs[0].data();
+      const datosEmpleado = plantillaSnap.data();
 
-      // B. Verificar que NO tenga cuenta ya creada en 'usuarios'
-      const usuariosRef = collection(firestore, 'usuarios');
-      const qUsuario = query(usuariosRef, where("id_empleado", "==", idLimpio), limit(1));
-      const usuarioSnap = await getDocs(qUsuario);
-
-      if (!usuarioSnap.empty) {
-        form.setError('employeeId', { type: 'manual', message: 'Este ID de empleado ya tiene una cuenta activa.' });
-        setIsLoading(false);
-        return;
-      }
-
-      // C. Generar el Email Institucional Automáticamente
+      // B. Generar el Email Institucional Automáticamente
       // Formato: id_empleado_empleado@vinoplastic.com
       const emailGenerado = `${idLimpio}_empleado@vinoplastic.com`;
 
