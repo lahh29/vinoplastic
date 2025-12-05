@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Target, Calendar, TrendingUp, Sparkles } from "lucide-react";
+import { Search, Target, Calendar, TrendingUp, Sparkles, Link as LinkIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from 'next/link';
 
@@ -28,7 +28,8 @@ const phases = [
     icon: Calendar,
     title: "Ejecución y Seguimiento",
     subtitle: "El 'Cómo lo Hacemos'",
-    description: "Creamos un cronograma anual por trimestres. Cada curso impartido se registra en la plataforma, actualizando los dashboards en tiempo real para un seguimiento continuo del progreso."
+    description: "Cada curso impartido se registra en la plataforma, actualizando los dashboards en tiempo real para un seguimiento continuo del progreso hacia los objetivos.",
+    href: "/capacitacion/captura"
   },
   {
     number: 4,
@@ -44,9 +45,8 @@ export default function PlanAnualCapacitacionPage() {
 
     const PhaseCard = ({ phase }: { phase: typeof phases[0] }) => (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: phase.number * 0.1 }}
+          whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+          transition={{ type: "spring", stiffness: 300 }}
           className="h-full"
         >
           <Card className="h-full flex flex-col rounded-2xl shadow-lg hover:shadow-primary/10 border border-transparent hover:border-primary/20 transition-all duration-300">
