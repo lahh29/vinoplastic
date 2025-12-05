@@ -38,36 +38,37 @@ const phases = [
   },
 ];
 
-const PhaseCard = ({ phase }: { phase: typeof phases[0] }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: phase.number * 0.1 }}
-      className="h-full"
-    >
-      <Card className="h-full flex flex-col rounded-2xl shadow-lg hover:shadow-primary/10 border border-transparent hover:border-primary/20 transition-all duration-300">
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 bg-primary/10 text-primary p-3 rounded-full">
-              <phase.icon className="h-6 w-6" />
-            </div>
-            <div>
-              <CardTitle className="text-xl font-bold">{phase.title}</CardTitle>
-              <CardDescription className="text-base text-primary font-semibold">{phase.subtitle}</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="flex-1">
-          <p className="text-muted-foreground leading-relaxed">
-            {phase.description}
-          </p>
-        </CardContent>
-      </Card>
-    </motion.div>
-);
-
 
 export default function PlanAnualCapacitacionPage() {
+
+    const PhaseCard = ({ phase }: { phase: typeof phases[0] }) => (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: phase.number * 0.1 }}
+          className="h-full"
+        >
+          <Card className="h-full flex flex-col rounded-2xl shadow-lg hover:shadow-primary/10 border border-transparent hover:border-primary/20 transition-all duration-300">
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 bg-primary/10 text-primary p-3 rounded-full">
+                  <phase.icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl font-bold">{phase.title}</CardTitle>
+                  <CardDescription className="text-base text-primary font-semibold">{phase.subtitle}</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <p className="text-muted-foreground leading-relaxed">
+                {phase.description}
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+    );
+
     return (
         <div className="space-y-12">
             <div className="max-w-4xl">
@@ -78,15 +79,18 @@ export default function PlanAnualCapacitacionPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {phases.map(phase => (
-                    phase.href ? (
+                {phases.map(phase => {
+                    const card = <PhaseCard phase={phase} />;
+                    return phase.href ? (
                         <Link href={phase.href} key={phase.number} className="block h-full hover:no-underline">
-                            <PhaseCard phase={phase} />
+                            {card}
                         </Link>
                     ) : (
-                        <PhaseCard key={phase.number} phase={phase} />
-                    )
-                ))}
+                        <div key={phase.number} className="block h-full">
+                            {card}
+                        </div>
+                    );
+                })}
             </div>
 
              <motion.div
