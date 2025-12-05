@@ -74,13 +74,12 @@ export default function ActivateAccountPage() {
       
       const empleado = plantillaSnap.data();
 
-      // 2. Verificar que el empleado NO tenga ya una cuenta en 'usuarios'
-      // Esta consulta requiere un índice en Firestore: (collection: usuarios, field: id_empleado, order: ascending)
+       // 2. Verificar si el usuario ya existe en la colección 'usuarios'
       const usuariosRef = collection(firestore, 'usuarios');
       const q = query(usuariosRef, where("id_empleado", "==", employeeId), limit(1));
-      const usuariosSnap = await getDocs(q);
+      const querySnapshot = await getDocs(q);
 
-      if (!usuariosSnap.empty) {
+      if (!querySnapshot.empty) {
         form.setError('employeeId', { type: 'manual', message: 'Este empleado ya tiene una cuenta activada.' });
         setIsLoading(false);
         return;
