@@ -81,7 +81,7 @@ export default function ChangePasswordPage() {
       console.error("Error al cambiar contraseña:", error.code, error.message);
       
       let description = "Ocurrió un error inesperado. Inténtalo de nuevo.";
-      if (error.code === 'auth/wrong-password') {
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
           description = "La contraseña actual es incorrecta. Por favor, verifícala e inténtalo de nuevo."
       } else if (error.code === 'auth/too-many-requests') {
           description = "Has intentado demasiadas veces. Por seguridad, tu cuenta ha sido bloqueada temporalmente. Intenta más tarde."
@@ -111,13 +111,13 @@ export default function ChangePasswordPage() {
                         </motion.div>
                         <CardTitle className="text-2xl font-bold pt-4">Crea tu Nueva Contraseña</CardTitle>
                         <CardDescription className="text-slate-300 pt-1">
-                            Por seguridad, es necesario que definas una contraseña personal para tu cuenta.
+                            Por seguridad, es necesario que definas una contraseña personal para tu cuenta. Ingresa tu contraseña actual para continuar.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                             <div className="grid gap-2 text-left">
-                                <Label htmlFor="currentPassword">Contraseña Actual (Temporal)</Label>
+                                <Label htmlFor="currentPassword">Contraseña Actual</Label>
                                 <div className="relative">
                                     <Input {...form.register('currentPassword')} id="currentPassword" type={showCurrentPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
                                     <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
@@ -153,3 +153,5 @@ export default function ChangePasswordPage() {
     </div>
   );
 }
+
+    
