@@ -87,6 +87,7 @@ interface UserData {
     email: string;
     nombre?: string;
     role: 'admin' | 'lector' | 'empleado';
+    requiresPasswordChange?: boolean;
 }
 
 const getDate = (timestamp: any): Date | null => {
@@ -237,8 +238,10 @@ export default function MainUILayout({
   React.useEffect(() => {
     if (!isUserLoading && !user) {
       router.push('/login');
+    } else if (currentUserData?.requiresPasswordChange && pathname !== '/cambiar-password') {
+      router.replace('/cambiar-password');
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, currentUserData, pathname]);
 
   const handleLogout = () => {
     if (auth) {
@@ -272,6 +275,11 @@ export default function MainUILayout({
         return pathname === href;
     }
     return pathname.startsWith(href);
+  }
+  
+  // No renderizar el layout si es necesario cambiar la contraseña
+  if (currentUserData?.requiresPasswordChange) {
+      return children;
   }
 
   return (

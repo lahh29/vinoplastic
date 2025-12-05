@@ -67,7 +67,8 @@ async function crearUsuariosDesdePlantilla() {
                     id_empleado: id_empleado,
                     nombre: empleado.nombre_completo,
                     email: email,
-                    role: 'empleado'
+                    role: 'empleado',
+                    requiresPasswordChange: true // Nueva bandera
                 });
 
                 usuariosCreados++;

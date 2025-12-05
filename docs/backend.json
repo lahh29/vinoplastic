@@ -111,7 +111,8 @@
         "properties": {
             "nombre": { "type": "string" },
             "email": { "type": "string", "format": "email" },
-            "role": { "type": "string", "enum": ["admin", "lector", "empleado"] }
+            "role": { "type": "string", "enum": ["admin", "lector", "empleado"] },
+            "requiresPasswordChange": { "type": "boolean", "description": "Flag to force password change on first login." }
         },
         "required": ["email", "role"]
     },
