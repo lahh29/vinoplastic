@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -14,6 +15,8 @@ import { Loader2 } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { AlertCircle } from 'lucide-react';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -122,25 +125,11 @@ export default function LoginPage() {
                 </Card>
             </motion.div>
         </div>
-        <motion.div
-            className="absolute bottom-4 left-4 z-10 text-xs"
-            animate={{
-                color: [
-                    "hsl(var(--foreground))",
-                    "hsl(var(--primary))",
-                    "hsl(var(--accent))",
-                    "hsl(var(--foreground))",
-                ]
-            }}
-            transition={{
-                duration: 10,
-                repeat: Infinity,
-                repeatType: "loop",
-                ease: "easeInOut"
-            }}
-        >
-            Developer Hernández Leonardo / Team Hernández Noemi
-        </motion.div>
+         <div className="absolute bottom-4 left-4 z-10">
+            <InteractiveHoverButton>
+                Developer Hernández Leonardo / Team Hernández Noemi
+            </InteractiveHoverButton>
+        </div>
         <div className="absolute bottom-4 right-4 z-10 text-xs text-slate-500">
             Copyright ViñoPlastic Inyección S.A de C.V
         </div>
