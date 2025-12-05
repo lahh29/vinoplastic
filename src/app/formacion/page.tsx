@@ -105,7 +105,7 @@ export default function FormacionPage() {
         </p>
       </div>
 
-      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
+      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm" data-tour="formacion-tabla">
         <CardHeader>
           <CardTitle>Cumplimiento por Mes</CardTitle>
           <CardDescription>

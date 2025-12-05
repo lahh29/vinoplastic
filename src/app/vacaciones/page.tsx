@@ -108,7 +108,7 @@ export default function VacacionesPage() {
                         Una vista general de las ausencias del personal.
                     </p>
                 </div>
-                <Link href="/vacaciones/programar">
+                <Link href="/vacaciones/programar" data-tour="vacaciones-programar">
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Programar Ausencia
@@ -116,7 +116,7 @@ export default function VacacionesPage() {
                 </Link>
             </div>
             
-            <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
+            <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm" data-tour="vacaciones-calendario">
                 <CardHeader>
                     <CardTitle>Calendario de Ausencias</CardTitle>
                     <CardDescription>Eventos programados para todo el personal.</CardDescription>
@@ -145,7 +145,7 @@ export default function VacacionesPage() {
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
+                <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm" data-tour="vacaciones-proximas">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Plane className="h-5 w-5 text-primary" />Próximas Ausencias</CardTitle>
                         <CardDescription>Personal fuera en los próximos 7 días.</CardDescription>

@@ -275,7 +275,7 @@ export default function ContratosPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
-        <Card className="rounded-2xl shadow-lg border-destructive/20 bg-card/60 backdrop-blur-sm">
+        <Card className="rounded-2xl shadow-lg border-destructive/20 bg-card/60 backdrop-blur-sm" data-tour="contratos-vencer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-semibold">Contratos por Vencer</CardTitle>
                 <AlertTriangle className="h-6 w-6 text-destructive" />
@@ -298,7 +298,7 @@ export default function ContratosPage() {
                 </ScrollArea>
             </CardContent>
         </Card>
-        <Card className="rounded-2xl shadow-lg border-primary/20 bg-card/60 backdrop-blur-sm">
+        <Card className="rounded-2xl shadow-lg border-primary/20 bg-card/60 backdrop-blur-sm" data-tour="contratos-evaluaciones">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-semibold">Evaluaciones Próximas</CardTitle>
                 <FileClock className="h-6 w-6 text-primary" />
@@ -325,7 +325,7 @@ export default function ContratosPage() {
         </Card>
       </div>
 
-      <Card className="rounded-2xl shadow-lg bg-card/60 backdrop-blur-sm">
+      <Card className="rounded-2xl shadow-lg bg-card/60 backdrop-blur-sm" data-tour="contratos-tabla">
         <CardHeader>
           <CardTitle>Listado de Personal</CardTitle>
           <CardDescription>

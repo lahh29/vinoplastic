@@ -248,13 +248,13 @@ export default function EmpleadosPage() {
               Administra la información del personal de la empresa.
             </p>
         </div>
-        <Button onClick={() => handleOpenDialog(null)} className="rounded-full shadow-lg hover:shadow-xl transition-shadow">
+        <Button onClick={() => handleOpenDialog(null)} className="rounded-full shadow-lg hover:shadow-xl transition-shadow" data-tour="empleados-crear">
             <PlusCircle className="mr-2 h-5 w-5" />
             Crear Empleado
         </Button>
       </div>
 
-      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
+      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm" data-tour="empleados-tabla">
         <CardHeader>
           <CardTitle>Listado de Personal</CardTitle>
           <CardDescription>

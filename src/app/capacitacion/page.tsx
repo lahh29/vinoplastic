@@ -12,11 +12,11 @@ import { BookMarked, BarChart3, Briefcase, ClipboardPlus, BookCopy } from 'lucid
 import { motion } from 'framer-motion';
 
 const navLinks = [
-    { href: "/capacitacion/matriz-de-habilidades", icon: BookMarked, title: "Matriz de Habilidades" },
-    { href: "/capacitacion/captura", icon: ClipboardPlus, title: "Captura de Cursos" },
-    { href: "/capacitacion/analisis", icon: BarChart3, title: "Análisis de Cumplimiento" },
-    { href: "/capacitacion/analisis-por-puesto", icon: Briefcase, title: "Análisis por Puesto" },
-    { href: "/capacitacion/analisis-por-curso", icon: BookCopy, title: "Análisis por Curso" },
+    { href: "/capacitacion/matriz-de-habilidades", icon: BookMarked, title: "Matriz de Habilidades", tourId: "capacitacion-matriz" },
+    { href: "/capacitacion/captura", icon: ClipboardPlus, title: "Captura de Cursos", tourId: "capacitacion-captura" },
+    { href: "/capacitacion/analisis", icon: BarChart3, title: "Análisis de Cumplimiento", tourId: "capacitacion-analisis" },
+    { href: "/capacitacion/analisis-por-puesto", icon: Briefcase, title: "Análisis por Puesto", tourId: "capacitacion-por-puesto" },
+    { href: "/capacitacion/analisis-por-curso", icon: BookCopy, title: "Análisis por Curso", tourId: "capacitacion-por-curso" },
 ]
 
 export default function CapacitacionPage() {
@@ -31,7 +31,7 @@ export default function CapacitacionPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {navLinks.map((item) => (
-             <Link key={item.href} href={item.href} className="block hover:no-underline group">
+             <Link key={item.href} href={item.href} className="block hover:no-underline group" data-tour={item.tourId}>
                 <motion.div
                     whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
                     transition={{ type: "spring", stiffness: 300 }}

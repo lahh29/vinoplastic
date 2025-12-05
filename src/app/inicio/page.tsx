@@ -25,10 +25,10 @@ interface UserData {
 }
 
 const navLinks = [
-    { href: "/vacaciones", icon: CalendarClock, title: "Gestión de Vacaciones", description: "Visualiza el calendario de ausencias y programa las vacaciones del personal." },
-    { href: "/reportes", icon: BarChart, title: "Reportes y Diagnósticos", description: "Genera informes y obtén una visión general del estado del personal." },
-    { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto." },
-    { href: "/perfil", icon: User, title: "Perfil de Empleado", description: "Consulta el perfil detallado de un empleado." }
+    { href: "/vacaciones", icon: CalendarClock, title: "Gestión de Vacaciones", description: "Visualiza el calendario de ausencias y programa las vacaciones del personal.", tourId: "inicio-vacaciones" },
+    { href: "/reportes", icon: BarChart, title: "Reportes y Diagnósticos", description: "Genera informes y obtén una visión general del estado del personal.", tourId: "inicio-reportes" },
+    { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto.", tourId: "inicio-carrera" },
+    { href: "/perfil", icon: User, title: "Perfil de Empleado", description: "Consulta el perfil detallado de un empleado.", tourId: "inicio-perfil" }
 ];
 
 
@@ -69,7 +69,7 @@ export default function InicioPage() {
 
   return (
     <div className="h-full w-full">
-      <div className="space-y-4 mb-8">
+      <div className="space-y-4 mb-8" data-tour="inicio-header">
         <h1 className="text-4xl font-bold tracking-tight">
             Bienvenido, {userName}
         </h1>
@@ -80,7 +80,7 @@ export default function InicioPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {navLinks.map((item) => (
-             <Link key={item.href} href={item.href} className="block hover:no-underline group">
+             <Link key={item.href} href={item.href} className="block hover:no-underline group" data-tour={item.tourId}>
                 <motion.div
                     whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
                     transition={{ type: "spring", stiffness: 300 }}

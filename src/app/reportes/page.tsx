@@ -39,31 +39,36 @@ const reportTypes = [
         icon: Users,
         title: "Plantilla General",
         description: "Descarga un listado completo de todos los empleados activos, incluyendo sus puestos y departamentos.",
-        id: "plantilla"
+        id: "plantilla",
+        tourId: "reporte-plantilla"
     },
     {
         icon: BookCheck,
         title: "Cumplimiento de Capacitación",
         description: "Genera un reporte detallado del porcentaje de cumplimiento y los cursos pendientes de cada empleado.",
-        id: "cumplimiento"
+        id: "cumplimiento",
+        tourId: "reporte-cumplimiento"
     },
     {
         icon: History,
         title: "Historial de Cursos",
         description: "Exporta el historial completo de todos los cursos tomados por cada empleado, con fechas y calificaciones.",
-        id: "historial"
+        id: "historial",
+        tourId: "reporte-historial"
     },
     {
         icon: Building,
         title: "Reporte por Departamento",
         description: "Consulta el progreso general de capacitación agrupado por cada departamento de la empresa.",
-        id: "departamento"
+        id: "departamento",
+        tourId: "reporte-departamento"
     },
     {
         icon: TrendingUp,
         title: "Cambios de Categoría",
         description: "Exporta un informe con los empleados elegibles para promoción y el estado de su plan de carrera.",
-        id: "categorias"
+        id: "categorias",
+        tourId: "reporte-categorias"
     }
 ]
 
@@ -268,7 +273,7 @@ export default function ReportesPage() {
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {reportTypes.map(report => (
-                    <Card key={report.title} className="flex flex-col justify-between rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
+                    <Card key={report.title} className="flex flex-col justify-between rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm" data-tour={report.tourId}>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3 text-xl">
                                 <report.icon className="h-6 w-6 text-primary"/>
