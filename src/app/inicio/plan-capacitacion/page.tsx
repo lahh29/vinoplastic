@@ -36,7 +36,8 @@ const phases = [
     icon: TrendingUp,
     title: "Medición y Ajuste",
     subtitle: "El 'Cómo Mejoramos'",
-    description: "Al final de cada ciclo (trimestre), revisamos los resultados contra los objetivos. Analizamos las desviaciones para entender las causas y ajustamos el plan para el siguiente periodo, asegurando la mejora continua."
+    description: "Al final de cada ciclo (trimestre), revisamos los resultados contra los objetivos. Analizamos las desviaciones para entender las causas y ajustamos el plan para el siguiente periodo, asegurando la mejora continua.",
+    href: "/inicio/plan-capacitacion/medicion"
   },
 ];
 
