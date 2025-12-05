@@ -11,15 +11,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth, useUser, useFirestore } from '@/firebase';
-import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { updatePassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
-import { KeyRound, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { KeyRound, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 
+// El nuevo schema ya no pide la contraseña actual.
 const formSchema = z.object({
-  currentPassword: z.string().min(1, 'La contraseña actual es requerida.'),
   newPassword: z.string().min(8, 'La nueva contraseña debe tener al menos 8 caracteres.'),
   confirmPassword: z.string(),
 }).refine(data => data.newPassword === data.confirmPassword, {
@@ -29,46 +29,35 @@ const formSchema = z.object({
 
 export default function ChangePasswordPage() {
   const router = useRouter();
-  const auth = useAuth();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   
   const [isLoading, setIsLoading] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      currentPassword: '',
       newPassword: '',
       confirmPassword: '',
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!user || !auth || !user.email) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Error', description: 'No se ha podido verificar la sesión de usuario. Por favor, intenta iniciar sesión de nuevo.' });
       return;
     }
     setIsLoading(true);
 
     try {
-      // 1. Crear la credencial para la re-autenticación.
-      const credential = EmailAuthProvider.credential(user.email, values.currentPassword);
-      
-      // 2. Re-autenticar al usuario con la credencial proporcionada.
-      await reauthenticateWithCredential(user, credential);
-      
-      // 3. Si la re-autenticación es exitosa, se procede a cambiar la contraseña.
+      // 1. Cambiar la contraseña directamente. La sesión activa es autorización suficiente.
       await updatePassword(user, values.newPassword);
       
-      // 4. Finalmente, actualizar el estado en Firestore para no volver a pedir el cambio.
-      if (firestore) {
-        const userDocRef = doc(firestore, 'usuarios', user.uid);
-        await setDoc(userDocRef, { requiresPasswordChange: false }, { merge: true });
-      }
+      // 2. Actualizar el estado en Firestore para no volver a pedir el cambio.
+      const userDocRef = doc(firestore, 'usuarios', user.uid);
+      await setDoc(userDocRef, { requiresPasswordChange: false }, { merge: true });
 
       toast({
         title: "Contraseña Actualizada",
@@ -76,15 +65,15 @@ export default function ChangePasswordPage() {
         className: "bg-green-100 text-green-800 border-green-300",
       });
 
-      // 5. Redirigir al usuario a la página de inicio.
+      // 3. Redirigir al usuario a la página de inicio.
       router.push('/inicio');
 
     } catch (error: any) {
       console.error("Error al cambiar contraseña:", error.code, error.message);
       
       let description = "Ocurrió un error inesperado. Inténtalo de nuevo.";
-      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-          description = "La contraseña actual es incorrecta. Por favor, verifica tus datos."
+      if (error.code === 'auth/weak-password') {
+          description = "La contraseña es demasiado débil. Por favor, elige una más segura."
       } else if (error.code === 'auth/too-many-requests') {
           description = "Has intentado demasiadas veces. Intenta más tarde."
       }
@@ -109,24 +98,14 @@ export default function ChangePasswordPage() {
                         <motion.div whileHover={{scale: 1.1, rotate: 5}} className="mx-auto bg-primary/20 p-3 rounded-full w-fit">
                             <KeyRound className="h-10 w-10 text-primary"/>
                         </motion.div>
-                        <CardTitle className="text-2xl font-bold pt-4">Actualización de Contraseña</CardTitle>
+                        <CardTitle className="text-2xl font-bold pt-4">Crea tu Nueva Contraseña</CardTitle>
                         <CardDescription className="text-slate-300 pt-1">
-                            Por tu seguridad, es necesario que actualices tu contraseña. Ingresa tu contraseña actual y define una nueva.
+                            Por seguridad, es necesario que definas una contraseña personal para tu cuenta.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                            <div className="grid gap-2 text-left">
-                                <Label htmlFor="currentPassword">Contraseña Actual</Label>
-                                <div className="relative">
-                                    <Input {...form.register('currentPassword')} id="currentPassword" type={showCurrentPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
-                                    <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
-                                        {showCurrentPassword ? <EyeOff size={16}/> : <Eye size={16} />}
-                                    </button>
-                                </div>
-                                {form.formState.errors.currentPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.currentPassword.message}</p>}
-                            </div>
-                            <div className="grid gap-2 text-left">
                                 <Label htmlFor="newPassword">Nueva Contraseña</Label>
                                 <div className="relative">
                                     <Input {...form.register('newPassword')} id="newPassword" type={showNewPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
@@ -143,7 +122,7 @@ export default function ChangePasswordPage() {
                             </div>
 
                             <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
-                                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Actualizar Contraseña'}
+                                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Establecer Contraseña y Continuar'}
                             </Button>
                         </form>
                     </CardContent>
