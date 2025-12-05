@@ -16,6 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { useIdleTimer } from '@/hooks/use-idle-timer';
 import { useAuth } from '@/firebase';
 import { LogOut, Timer } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const IDLE_TIMEOUT = 5 * 1000; // 5 segundos para prueba
 const DIALOG_TIMEOUT = 10 * 1000; // 10 segundos para prueba
@@ -68,29 +69,47 @@ export function IdleTimeoutDialog() {
   }, [isIdle, handleLogout]);
 
   return (
-    <AlertDialog open={isIdle}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <Timer className="h-6 w-6" />
-            ¿Sigues ahí?
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Tu sesión está a punto de cerrarse por inactividad.
-            Serás desconectado en {countdown} segundos.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <Progress value={(countdown / (DIALOG_TIMEOUT / 1000)) * 100} className="w-full" />
-        <AlertDialogFooter>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Cerrar Sesión
-          </Button>
-          <AlertDialogAction onClick={handleStay}>
-            Permanecer Conectado
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <AnimatePresence>
+      {isIdle && (
+        <AlertDialog open={isIdle}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80"
+          />
+          <AlertDialogContent asChild>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-card/80 backdrop-blur-lg border-border/50 rounded-2xl"
+            >
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-3 text-2xl font-bold">
+                  <Timer className="h-7 w-7 text-primary" />
+                  ¿Sigues ahí?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="pt-2 text-base">
+                  Tu sesión está a punto de cerrarse por inactividad. Serás desconectado en {countdown} segundos.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="py-4">
+                <Progress value={(countdown / (DIALOG_TIMEOUT / 1000)) * 100} className="w-full h-2" />
+              </div>
+              <AlertDialogFooter>
+                <Button variant="ghost" onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Cerrar Sesión Ahora
+                </Button>
+                <AlertDialogAction onClick={handleStay} className="bg-primary hover:bg-primary/90">
+                  Permanecer Conectado
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </motion.div>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    </AnimatePresence>
   );
 }
