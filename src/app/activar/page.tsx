@@ -153,31 +153,35 @@ export default function ActivateAccountPage() {
                         >
                             <form onSubmit={form.handleSubmit(handleVerifyId)} className="space-y-6">
                                 <CardHeader className="p-0 text-center">
-                                    <motion.div whileHover={{scale: 1.1}} className="mx-auto bg-primary/20 p-4 rounded-full w-fit mb-4">
+                                    <motion.div 
+                                      whileHover={{scale: 1.1, rotate: -5}}
+                                      transition={{ type: 'spring', stiffness: 300}}
+                                      className="mx-auto bg-primary/20 p-4 rounded-full w-fit mb-4 border-2 border-primary/30 shadow-lg shadow-primary/20"
+                                    >
                                         <UserCheck className="h-8 w-8 text-primary"/>
                                     </motion.div>
-                                    <CardTitle className="text-2xl font-bold">Portal del Empleado</CardTitle>
-                                    <CardDescription className="text-slate-400">Ingresa tu ID de nómina para comenzar.</CardDescription>
+                                    <CardTitle className="text-3xl font-bold tracking-tight">Portal del Empleado</CardTitle>
+                                    <CardDescription className="text-slate-400 text-base">Ingresa tu ID de nómina para activar tu cuenta.</CardDescription>
                                 </CardHeader>
                                 
                                 <div className="space-y-4 pt-4">
                                     <div className="grid gap-2 text-left">
-                                        <Label htmlFor="employeeId" className="text-sm font-medium text-slate-200">ID de Empleado</Label>
+                                        <Label htmlFor="employeeId" className="text-sm font-medium text-slate-300">ID de Empleado</Label>
                                         <Input 
                                             {...form.register('employeeId')} 
                                             id="employeeId" 
                                             placeholder="Ej: 3204" 
-                                            className="bg-white/5 border-white/10 text-white placeholder:text-slate-600 pl-4 py-6 text-lg tracking-widest"
+                                            className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 pl-4 py-6 text-lg tracking-widest text-center"
                                             autoComplete="off"
                                         />
                                         {form.formState.errors.employeeId && (
-                                            <p className="text-red-400 text-xs mt-1 flex items-center gap-1 animate-pulse">
-                                                <AlertTriangle size={12}/> {form.formState.errors.employeeId.message}
+                                            <p className="text-red-400 text-xs mt-1 flex items-center gap-1.5 animate-pulse">
+                                                <AlertTriangle size={14}/> {form.formState.errors.employeeId.message}
                                             </p>
                                         )}
                                     </div>
-                                    <Button type="submit" className="w-full h-12 text-md font-semibold bg-white text-black hover:bg-slate-200 transition-all" disabled={isLoading}>
-                                        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Verificar Identidad'}
+                                    <Button type="submit" className="w-full h-12 text-md font-semibold bg-white text-black hover:bg-slate-200 transition-all shadow-lg hover:shadow-slate-400/20" disabled={isLoading}>
+                                        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Verificar Identidad <ArrowRight className="ml-2 h-4 w-4"/></>}
                                     </Button>
                                 </div>
                             </form>
