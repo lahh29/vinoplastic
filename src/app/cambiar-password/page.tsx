@@ -35,7 +35,8 @@ export default function ChangePasswordPage() {
   const { toast } = useToast();
   
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,26 +49,26 @@ export default function ChangePasswordPage() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!user || !auth || !user.email) {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se ha podido verificar la sesión de usuario.' });
+      toast({ variant: 'destructive', title: 'Error', description: 'No se ha podido verificar la sesión de usuario. Por favor, intenta iniciar sesión de nuevo.' });
       return;
     }
     setIsLoading(true);
 
     try {
+      // 1. Crear la credencial para la re-autenticación.
       const credential = EmailAuthProvider.credential(user.email, values.currentPassword);
       
-      // Primero re-autenticar
+      // 2. Re-autenticar al usuario con la credencial proporcionada.
       await reauthenticateWithCredential(user, credential);
       
-      // Si la re-autenticación es exitosa, cambiar la contraseña
+      // 3. Si la re-autenticación es exitosa, se procede a cambiar la contraseña.
       await updatePassword(user, values.newPassword);
       
-      // Finalmente, actualizar el estado en Firestore
+      // 4. Finalmente, actualizar el estado en Firestore para no volver a pedir el cambio.
       if (firestore) {
         const userDocRef = doc(firestore, 'usuarios', user.uid);
         await setDoc(userDocRef, { requiresPasswordChange: false }, { merge: true });
       }
-
 
       toast({
         title: "Contraseña Actualizada",
@@ -75,6 +76,7 @@ export default function ChangePasswordPage() {
         className: "bg-green-100 text-green-800 border-green-300",
       });
 
+      // 5. Redirigir al usuario a la página de inicio.
       router.push('/inicio');
 
     } catch (error: any) {
@@ -116,22 +118,27 @@ export default function ChangePasswordPage() {
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                            <div className="grid gap-2 text-left">
                                 <Label htmlFor="currentPassword">Contraseña Actual</Label>
-                                <Input {...form.register('currentPassword')} id="currentPassword" type="password" required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
+                                <div className="relative">
+                                    <Input {...form.register('currentPassword')} id="currentPassword" type={showCurrentPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
+                                    <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
+                                        {showCurrentPassword ? <EyeOff size={16}/> : <Eye size={16} />}
+                                    </button>
+                                </div>
                                 {form.formState.errors.currentPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.currentPassword.message}</p>}
                             </div>
                             <div className="grid gap-2 text-left">
                                 <Label htmlFor="newPassword">Nueva Contraseña</Label>
                                 <div className="relative">
-                                    <Input {...form.register('newPassword')} id="newPassword" type={showPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
-                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
-                                        {showPassword ? <EyeOff size={16}/> : <Eye size={16} />}
+                                    <Input {...form.register('newPassword')} id="newPassword" type={showNewPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
+                                    <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
+                                        {showNewPassword ? <EyeOff size={16}/> : <Eye size={16} />}
                                     </button>
                                 </div>
                                 {form.formState.errors.newPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.newPassword.message}</p>}
                             </div>
                              <div className="grid gap-2 text-left">
                                 <Label htmlFor="confirmPassword">Confirmar Nueva Contraseña</Label>
-                                <Input {...form.register('confirmPassword')} id="confirmPassword" type={showPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
+                                <Input {...form.register('confirmPassword')} id="confirmPassword" type={showNewPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
                                 {form.formState.errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.confirmPassword.message}</p>}
                             </div>
 
