@@ -123,6 +123,9 @@ export default function LoginPage() {
                 </Card>
             </motion.div>
         </div>
+        <div className="absolute bottom-4 right-4 z-10 text-xs text-slate-500">
+            Copyright ViñoPlastic Inyección S.A de C.V
+        </div>
     </div>
   );
 }
