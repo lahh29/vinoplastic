@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "upload:cursos": "node subir_cursos_firebase.js",
     "upload:fechas": "node src/scripts/actualizar_fechas_ingreso.js",
-    "upload:festivos": "node src/scripts/subir_dias_festivos.js"
+    "upload:festivos": "node src/scripts/subir_dias_festivos.js",
+    "crear-usuarios": "node src/scripts/crear_usuarios_empleados.js"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.25.0",
