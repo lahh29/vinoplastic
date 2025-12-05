@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -66,12 +66,12 @@ export default function EstrategiaPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <motion.div initial={{opacity:0, x: -20}} animate={{opacity:1, x:0}} transition={{delay: 0.1}}>
-            <Card className="rounded-2xl">
+            <Card className="rounded-2xl flex flex-col">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-3"><Lightbulb className="text-amber-400"/>Definir Objetivos SMART</CardTitle>
                     <CardDescription>Establece las metas principales para este ciclo de capacitación.</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1">
                     <div className="space-y-3">
                         <Label htmlFor="objetivos">Objetivos del Trimestre/Año</Label>
                         <Textarea 
@@ -90,6 +90,9 @@ export default function EstrategiaPage() {
                         </div>
                     </div>
                 </CardContent>
+                <CardFooter className="flex justify-end">
+                    <Button><Save className="mr-2 h-4 w-4"/>Guardar Objetivos</Button>
+                </CardFooter>
             </Card>
         </motion.div>
         <motion.div initial={{opacity:0, x: 20}} animate={{opacity:1, x:0}} transition={{delay: 0.2}}>
