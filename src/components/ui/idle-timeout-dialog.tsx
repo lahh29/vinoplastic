@@ -17,8 +17,8 @@ import { useIdleTimer } from '@/hooks/use-idle-timer';
 import { useAuth } from '@/firebase';
 import { LogOut, Timer } from 'lucide-react';
 
-const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutos
-const DIALOG_TIMEOUT = 60 * 1000; // 60 segundos
+const IDLE_TIMEOUT = 5 * 1000; // 5 segundos para prueba
+const DIALOG_TIMEOUT = 10 * 1000; // 10 segundos para prueba
 
 export function IdleTimeoutDialog() {
   const auth = useAuth();
