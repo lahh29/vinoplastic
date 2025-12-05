@@ -11,7 +11,6 @@ export const AppTour = () => {
 
   useEffect(() => {
     setIsClient(true);
-    // Solo se ejecuta en el cliente
     const tourCompleted = localStorage.getItem('vinoplastic_tour_completed');
     if (!tourCompleted) {
       // Pequeño retraso para asegurar que la UI esté montada
@@ -27,7 +26,6 @@ export const AppTour = () => {
 
     if (finishedStatuses.includes(status)) {
       setRunTour(false);
-      // Solo marcar como completado cuando el tour realmente termina o se salta
       localStorage.setItem('vinoplastic_tour_completed', 'true');
     }
   };
@@ -57,7 +55,17 @@ export const AppTour = () => {
         },
         tooltip: {
             borderRadius: 'var(--radius)',
+            border: '1px solid hsl(var(--border))',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+            backdropFilter: 'blur(4px)',
+            background: 'hsl(var(--background) / 0.8)',
         },
+        tooltipContent: {
+            padding: '1rem',
+        },
+        floater: {
+            filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2))',
+        }
       }}
       locale={{
         back: 'Atrás',

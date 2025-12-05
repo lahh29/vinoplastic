@@ -5,7 +5,7 @@ export const tourSteps: Step[] = [
   // --- INICIO ---
   {
     target: 'body',
-    content: '¡Bienvenido a GestionaFácil HR! Este rápido recorrido te mostrará las funciones principales de la plataforma.',
+    content: '¡Bienvenido a la plataforma de Recursos Humanos! Este rápido recorrido te mostrará las funciones principales de la plataforma.',
     title: 'Bienvenida',
     placement: 'center',
     disableBeacon: true,
