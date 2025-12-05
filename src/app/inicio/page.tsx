@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
-import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock, User, BarChart, HardHat, Loader2 } from 'lucide-react';
+import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock, User, BarChart, HardHat, Loader2, Target as TargetIcon } from 'lucide-react';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import React, { useMemo, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
@@ -28,7 +28,8 @@ const navLinks = [
     { href: "/vacaciones", icon: CalendarClock, title: "Gestión de Vacaciones", description: "Visualiza el calendario de ausencias y programa las vacaciones del personal.", tourId: "inicio-vacaciones" },
     { href: "/reportes", icon: BarChart, title: "Reportes y Diagnósticos", description: "Genera informes y obtén una visión general del estado del personal.", tourId: "inicio-reportes" },
     { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto.", tourId: "inicio-carrera" },
-    { href: "/perfil", icon: User, title: "Perfil de Empleado", description: "Consulta el perfil detallado de un empleado.", tourId: "inicio-perfil" }
+    { href: "/perfil", icon: User, title: "Perfil de Empleado", description: "Consulta el perfil detallado de un empleado.", tourId: "inicio-perfil" },
+    { href: "/inicio/plan-capacitacion", icon: TargetIcon, title: "Plan Anual de Capacitación", description: "Diseña y gestiona el plan estratégico de capacitación basado en datos.", tourId: "inicio-plan-capacitacion" }
 ];
 
 
