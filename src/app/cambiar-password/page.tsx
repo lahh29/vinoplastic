@@ -98,58 +98,64 @@ export default function ChangePasswordPage() {
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black p-4">
         <StarsBackground starColor="#fff" speed={0.5} className="absolute inset-0 z-0"/>
-        <div className="relative z-10 flex flex-col items-center text-center text-white">
-             <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: -20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-             >
-                <Card className="w-full max-w-md bg-black/30 border-white/20 text-white shadow-3xl backdrop-blur-lg p-6 sm:p-8">
-                    <CardHeader>
-                        <motion.div whileHover={{scale: 1.1, rotate: 5}} className="mx-auto bg-primary/20 p-3 rounded-full w-fit">
-                            <KeyRound className="h-10 w-10 text-primary"/>
-                        </motion.div>
-                        <CardTitle className="text-2xl font-bold pt-4">Crea tu Nueva Contraseña</CardTitle>
-                        <CardDescription className="text-slate-300 pt-1">
-                            Por seguridad, es necesario que definas una contraseña personal para tu cuenta. Ingresa tu contraseña actual para continuar.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <div className="grid gap-2 text-left">
-                                <Label htmlFor="currentPassword">Contraseña Actual</Label>
-                                <div className="relative">
-                                    <Input {...form.register('currentPassword')} id="currentPassword" type={showCurrentPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
-                                    <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
-                                        {showCurrentPassword ? <EyeOff size={16}/> : <Eye size={16} />}
-                                    </button>
-                                </div>
-                                {form.formState.errors.currentPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.currentPassword.message}</p>}
-                            </div>
-                           <div className="grid gap-2 text-left">
-                                <Label htmlFor="newPassword">Nueva Contraseña</Label>
-                                <div className="relative">
-                                    <Input {...form.register('newPassword')} id="newPassword" type={showNewPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
-                                    <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
-                                        {showNewPassword ? <EyeOff size={16}/> : <Eye size={16} />}
-                                    </button>
-                                </div>
-                                {form.formState.errors.newPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.newPassword.message}</p>}
-                            </div>
-                             <div className="grid gap-2 text-left">
-                                <Label htmlFor="confirmPassword">Confirmar Nueva Contraseña</Label>
-                                <Input {...form.register('confirmPassword')} id="confirmPassword" type={showNewPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
-                                {form.formState.errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.confirmPassword.message}</p>}
-                            </div>
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="relative z-10 w-full max-w-md"
+        >
+          <Card className="w-full bg-black/30 border-white/20 text-white shadow-3xl backdrop-blur-lg p-6 sm:p-8">
+              <CardHeader>
+                  <motion.div whileHover={{scale: 1.1, rotate: 5}} className="mx-auto bg-primary/20 p-3 rounded-full w-fit">
+                      <KeyRound className="h-10 w-10 text-primary"/>
+                  </motion.div>
+                  <CardTitle className="text-center text-2xl font-bold pt-4">Crea tu Nueva Contraseña</CardTitle>
+                  <CardDescription className="text-slate-300 pt-1 text-center">
+                      Por seguridad, define una contraseña personal. Ingresa tu contraseña temporal (`Vino.2024!`) para continuar.
+                  </CardDescription>
+              </CardHeader>
+              <CardContent>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                      <div className="grid gap-2 text-left">
+                          <Label htmlFor="currentPassword">Contraseña Actual</Label>
+                          <div className="relative">
+                              <Input 
+                                  {...form.register('currentPassword')} 
+                                  id="currentPassword" 
+                                  type={showCurrentPassword ? "text" : "password"} 
+                                  required 
+                                  className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"
+                                  placeholder="Vino.2024!"
+                              />
+                              <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
+                                  {showCurrentPassword ? <EyeOff size={16}/> : <Eye size={16} />}
+                              </button>
+                          </div>
+                          {form.formState.errors.currentPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.currentPassword.message}</p>}
+                      </div>
+                     <div className="grid gap-2 text-left">
+                          <Label htmlFor="newPassword">Nueva Contraseña</Label>
+                          <div className="relative">
+                              <Input {...form.register('newPassword')} id="newPassword" type={showNewPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500 pr-10"/>
+                              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
+                                  {showNewPassword ? <EyeOff size={16}/> : <Eye size={16} />}
+                              </button>
+                          </div>
+                          {form.formState.errors.newPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.newPassword.message}</p>}
+                      </div>
+                       <div className="grid gap-2 text-left">
+                          <Label htmlFor="confirmPassword">Confirmar Nueva Contraseña</Label>
+                          <Input {...form.register('confirmPassword')} id="confirmPassword" type={showNewPassword ? "text" : "password"} required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
+                          {form.formState.errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{form.formState.errors.confirmPassword.message}</p>}
+                      </div>
 
-                            <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
-                                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Establecer Contraseña y Continuar'}
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
-             </motion.div>
-        </div>
+                      <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Establecer Contraseña y Continuar'}
+                      </Button>
+                  </form>
+              </CardContent>
+          </Card>
+        </motion.div>
     </div>
   );
 }
