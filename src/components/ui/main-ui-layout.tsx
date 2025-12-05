@@ -17,7 +17,8 @@ import {
   Bell,
   FileClock,
   AlertTriangle,
-  CalendarClock
+  CalendarClock,
+  RotateCcw
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
@@ -243,6 +244,11 @@ export default function MainUILayout({
       auth.signOut();
     }
   };
+  
+  const handleResetTour = () => {
+    localStorage.removeItem('vinoplastic_tour_completed');
+    window.location.reload();
+  };
 
   const isLoading = isUserLoading || isRoleLoading;
 
@@ -346,6 +352,11 @@ export default function MainUILayout({
                                         </Link>
                                     </DropdownMenuItem>
                                   )}
+                                  <DropdownMenuItem onClick={handleResetTour}>
+                                        <RotateCcw className="mr-2 h-4 w-4" />
+                                        <span>Reiniciar Tour</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
                                   <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
                                       <LogOut className="mr-2 h-4 w-4" />
                                       <span>Cerrar sesión</span>
