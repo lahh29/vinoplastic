@@ -31,13 +31,15 @@ export default function DiagnosticoPage() {
     const isLoading = l1 || l2 || l3 || l4;
 
     const analisisPrioridades = useMemo(() => {
-        if (isLoading) return { puestosCriticos: [], cursosCriticos: [] };
+        if (isLoading || !empleados || !perfiles || !historiales || !catalogoCursos) {
+            return { puestosCriticos: [], cursosCriticos: [] };
+        }
 
         // 1. Puestos Críticos
-        const historialesMap = new Map(historiales?.map(h => [h.id_empleado, new Set(h.cursos?.filter(c => c.calificacion >= 70).map(c => c.id_curso))]));
+        const historialesMap = new Map(historiales.map(h => [h.id_empleado, new Set(h.cursos?.filter(c => c.calificacion >= 70).map(c => c.id_curso))]));
         
-        const cumplimientoPorPuesto = perfiles?.map(perfil => {
-            const empleadosEnPuesto = empleados?.filter(e => e.puesto.titulo === perfil.nombre_puesto) || [];
+        const cumplimientoPorPuesto = perfiles.map(perfil => {
+            const empleadosEnPuesto = empleados.filter(e => e.puesto.titulo === perfil.nombre_puesto);
             if (empleadosEnPuesto.length === 0) return null;
 
             const cursosObligatorios = new Set(perfil.cursos_obligatorios);
@@ -55,14 +57,14 @@ export default function DiagnosticoPage() {
                 cumplimiento: totalPorcentaje / empleadosEnPuesto.length,
                 empleadosCount: empleadosEnPuesto.length
             };
-        }).filter(p => p !== null && p.cumplimiento < 100);
+        }).filter((p): p is { nombre: string; cumplimiento: number; empleadosCount: number; } => p !== null && p.cumplimiento < 100);
 
-        const puestosCriticos = (cumplimientoPorPuesto as any[])?.sort((a,b) => a.cumplimiento - b.cumplimiento).slice(0,10);
+        const puestosCriticos = cumplimientoPorPuesto.sort((a,b) => a.cumplimiento - b.cumplimiento).slice(0,10);
 
         // 2. Cursos Críticos
         const asignacionesPorCurso: Record<string, { total: number, completados: number }> = {};
-        perfiles?.forEach(perfil => {
-            const empleadosEnPuesto = empleados?.filter(e => e.puesto.titulo === perfil.nombre_puesto);
+        perfiles.forEach(perfil => {
+            const empleadosEnPuesto = empleados.filter(e => e.puesto.titulo === perfil.nombre_puesto);
             perfil.cursos_obligatorios.forEach(cursoId => {
                 if(!asignacionesPorCurso[cursoId]) {
                     asignacionesPorCurso[cursoId] = { total: 0, completados: 0};
@@ -77,7 +79,7 @@ export default function DiagnosticoPage() {
             });
         });
         
-        const catalogoMap = new Map(catalogoCursos?.map(c => [c.id_curso, c.nombre_oficial]));
+        const catalogoMap = new Map(catalogoCursos.map(c => [c.id_curso, c.nombre_oficial]));
 
         const cumplimientoPorCurso = Object.entries(asignacionesPorCurso).map(([id_curso, data]) => ({
             nombre: catalogoMap.get(id_curso) || `Curso ID: ${id_curso}`,
