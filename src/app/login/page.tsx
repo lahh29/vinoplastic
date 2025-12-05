@@ -11,7 +11,7 @@ import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Zap } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { AlertCircle } from 'lucide-react';
@@ -126,9 +126,23 @@ export default function LoginPage() {
             </motion.div>
         </div>
          <div className="absolute bottom-4 left-4 z-10">
-            <InteractiveHoverButton>
-                Developer Hernández Leonardo / Team Hernández Noemi
-            </InteractiveHoverButton>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <InteractiveHoverButton>
+                        <Zap className="h-4 w-4" />
+                    </InteractiveHoverButton>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-xs bg-card/80 backdrop-blur-lg text-center p-8">
+                     <DialogHeader>
+                        <DialogTitle className="text-lg font-bold">Equipo de Desarrollo</DialogTitle>
+                        <DialogDescription className="text-sm text-muted-foreground pt-2">
+                            Developer Hernández Leonardo
+                            <br/>
+                            Team Hernández Noemi
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
         </div>
         <div className="absolute bottom-4 right-4 z-10 text-xs text-slate-500">
             Copyright ViñoPlastic Inyección S.A de C.V
