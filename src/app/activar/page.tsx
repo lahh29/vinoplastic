@@ -15,16 +15,22 @@ import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, limit } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 
 const formSchema = z.object({
   employeeId: z.string().min(1, 'El ID de empleado es obligatorio.'),
-  email: z.string().email('Ingresa un correo electrónico válido.'),
-  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.'),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
+  email: z.string().email('Ingresa un correo electrónico válido.').optional().or(z.literal('')),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.').optional().or(z.literal('')),
+  confirmPassword: z.string().optional().or(z.literal('')),
+}).refine(data => {
+    // La validación de la contraseña solo se aplica en el paso 2
+    if (data.password || data.confirmPassword) {
+        return data.password === data.confirmPassword;
+    }
+    return true;
+}, {
   message: "Las contraseñas no coinciden.",
   path: ["confirmPassword"],
 });
@@ -43,17 +49,20 @@ export default function ActivateAccountPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange',
   });
 
   const employeeId = useWatch({ control: form.control, name: 'employeeId' });
 
   const handleVerifyId = async () => {
     setIsLoading(true);
-    if (!firestore) return;
+    if (!firestore || !employeeId) {
+        setIsLoading(false);
+        return;
+    };
 
     try {
       // 1. Verificar que el empleado exista en 'Plantilla'
-      const plantillaRef = doc(firestore, 'Plantilla', employeeId);
       const plantillaSnap = await getDocs(query(collection(firestore, 'Plantilla'), where('id_empleado', '==', employeeId), limit(1)));
 
       if (plantillaSnap.empty) {
@@ -64,8 +73,7 @@ export default function ActivateAccountPage() {
       const empleado = plantillaSnap.docs[0].data();
 
       // 2. Verificar que el empleado NO tenga ya una cuenta en 'usuarios'
-      const usuariosRef = query(collection(firestore, 'usuarios'), where('id_empleado', '==', employeeId), limit(1));
-      const usuariosSnap = await getDocs(usuariosRef);
+      const usuariosSnap = await getDocs(query(collection(firestore, 'usuarios'), where('id_empleado', '==', employeeId), limit(1)));
 
       if (!usuariosSnap.empty) {
         form.setError('employeeId', { type: 'manual', message: 'Este empleado ya tiene una cuenta activada.' });
@@ -83,10 +91,21 @@ export default function ActivateAccountPage() {
       setIsLoading(false);
     }
   };
+  
+  const onVerifyClick = async () => {
+    const isValid = await form.trigger("employeeId");
+    if(isValid) {
+        handleVerifyId();
+    }
+  }
+
 
   const handleCreateAccount = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    if (!firestore || !employeeData) return;
+    if (!firestore || !employeeData || !values.email || !values.password) {
+        setIsLoading(false);
+        return;
+    };
 
     try {
       // 1. Crear usuario en Firebase Authentication
@@ -100,7 +119,7 @@ export default function ActivateAccountPage() {
         nombre: employeeData.nombre_completo,
         email: values.email,
         role: 'empleado',
-        requiresPasswordChange: false, // Ya establece su contraseña definitiva
+        requiresPasswordChange: false, // El empleado establece su propia contraseña
       });
       
       setStep(3); // Mover a la pantalla de éxito
@@ -144,16 +163,16 @@ export default function ActivateAccountPage() {
               </CardHeader>
               <CardContent>
                 {step === 1 && (
-                    <form onSubmit={form.handleSubmit(handleVerifyId)} className="space-y-4">
+                    <div className="space-y-4">
                         <div className="grid gap-2 text-left">
                             <Label htmlFor="employeeId">ID de Empleado</Label>
                             <Input {...form.register('employeeId')} id="employeeId" placeholder="Ej: 3204" required className="bg-white/5 border-white/20 text-white placeholder:text-slate-500"/>
                             {form.formState.errors.employeeId && <p className="text-red-400 text-xs mt-1 flex items-center gap-1"><AlertTriangle size={14}/> {form.formState.errors.employeeId.message}</p>}
                         </div>
-                        <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                        <Button onClick={onVerifyClick} className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
                             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Verificar ID'}
                         </Button>
-                    </form>
+                    </div>
                 )}
                 {step === 2 && (
                      <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-4">
@@ -198,4 +217,3 @@ export default function ActivateAccountPage() {
     </div>
   );
 }
-
