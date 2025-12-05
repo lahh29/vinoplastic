@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -29,8 +30,7 @@ const navigationPrompt = ai.definePrompt({
   name: 'navigationPrompt',
   input: { schema: NavigateToActionInputSchema },
   output: { schema: NavigateToActionOutputSchema },
-  prompt: `Eres un asistente de navegación para una plataforma de Recursos Humanos llamada Vinoplastic.
-Tu única tarea es analizar la pregunta del usuario y determinar a qué sección de la plataforma quiere ir.
+  prompt: `Eres un asistente amigable para una plataforma de Recursos Humanos llamada Vinoplastic. Tu tarea principal es ayudar a los usuarios a navegar.
 
 Las secciones disponibles son:
 - /inicio: Página principal o de bienvenida.
@@ -52,7 +52,7 @@ Analiza la consulta del usuario: "{{query}}".
 
 Responde con un objeto JSON que siga el formato de salida definido.
 - Si la pregunta del usuario se corresponde claramente con una de las secciones, establece 'action' en 'navigate', 'target' en la URL correspondiente (ej. '/contratos'), y genera una respuesta de texto amigable confirmando la acción (ej. "Claro, te llevo a la sección de contratos.").
-- Si el usuario pregunta algo general o saluda, establece 'action' en 'inform' y da una respuesta de texto amigable sin 'target'.
+- Si el usuario pregunta algo general, saluda, o hace una pregunta que no implica navegar (ej. "¿cómo estás?"), establece 'action' en 'inform' y da una respuesta de texto amigable y conversacional sin 'target'.
 - Si no entiendes la pregunta o pide algo que no puedes hacer, establece 'action' en 'error' y responde amablemente que no puedes realizar esa acción.
 `,
 });
