@@ -41,6 +41,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useRoleCheck } from '@/hooks/use-role-check';
+import { AIAssistant } from '@/components/ui/ai-assistant';
 
 
 const adminNavItems = [
@@ -274,6 +275,9 @@ export default function MainUILayout({
                 {children}
             </div>
         </main>
+        
+        <AIAssistant />
+
         <motion.div 
             className="fixed inset-x-0 bottom-6 z-50"
             initial={{ opacity: 0, y: 20 }}
@@ -357,3 +361,4 @@ export default function MainUILayout({
     </div>
   );
 }
+
