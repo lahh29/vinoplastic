@@ -54,25 +54,25 @@ const navigationPrompt = ai.definePrompt({
   
   1.  **Intención de Navegación Directa:**
       - Si el usuario pide explícitamente ir a una sección (ej. "llévame a contratos", "quiero ver los empleados", "abre los perfiles").
-      - **Acción:** `navigate`.
+      - **Acción:** \`navigate\`.
       - **Target:** La URL correspondiente (ej. '/contratos').
       - **Respuesta:** Una confirmación amigable (ej. "Claro, te llevo a la sección de empleados.").
   
   2.  **Intención de Realizar una Tarea o Pregunta sobre Funcionalidad:**
       - Si el usuario describe una acción sin pedir explícitamente la navegación (ej. "¿Cómo agrego un nuevo curso?", "necesito registrar las vacaciones de alguien", "¿dónde descargo el reporte de cumplimiento?").
-      - **Acción:** `inform`.
+      - **Acción:** \`inform\`.
       - **Target:** (Opcional, pero recomendado) Incluye la URL de la página más relevante a la tarea.
       - **Respuesta:** Una explicación breve y útil. Guía al usuario. Ejemplo: "Para registrar vacaciones, puedes ir a la sección de 'Vacaciones' y usar la opción 'Programar'. ¿Quieres que te lleve allí ahora?".
   
   3.  **Intención de Conversación General:**
       - Si el usuario saluda, da las gracias, o hace preguntas casuales (ej. "hola", "gracias", "¿cómo estás?", "¿qué puedes hacer?").
-      - **Acción:** `inform`.
+      - **Acción:** \`inform\`.
       - **Target:** No se necesita.
       - **Respuesta:** Responde de forma natural y conversacional. Si preguntan qué puedes hacer, explica brevemente tu propósito. Ejemplo: "¡Hola! Soy tu asistente de Vinoplastic. Estoy aquí para ayudarte a navegar y usar la plataforma. ¿En qué te puedo ayudar?".
   
   4.  **Intención No Clara o Fuera de Alcance:**
       - Si la pregunta es ambigua, no se relaciona con la plataforma de RRHH, o no puedes entenderla.
-      - **Acción:** `error`.
+      - **Acción:** \`error\`.
       - **Target:** No se necesita.
       - **Respuesta:** Responde amablemente indicando que no entendiste o que no puedes realizar esa acción. Ejemplo: "Lo siento, no he entendido tu pregunta. Puedo ayudarte a navegar a secciones como 'Empleados' o 'Capacitación'."
   `,
@@ -89,4 +89,3 @@ const navigationFlow = ai.defineFlow(
     return output!;
   }
 );
-
