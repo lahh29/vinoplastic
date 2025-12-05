@@ -8,6 +8,7 @@ import { AlertTriangle, BookX, Loader2, ArrowDown, Briefcase } from 'lucide-reac
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
+import { Badge } from '@/components/ui/badge';
 
 // Interfaces
 interface Empleado { id: string; puesto: { titulo: string; }; id_empleado: string; }
@@ -158,4 +159,3 @@ export default function DiagnosticoPage() {
         </div>
     );
 }
-
