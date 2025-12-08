@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -19,6 +20,9 @@ interface Pregunta {
 }
 
 const QuestionCard = ({ pregunta }: { pregunta: Pregunta }) => {
+    // Encuentra el texto de la respuesta correcta usando la clave
+    const correctAnswerText = pregunta.options[pregunta.correctAnswerKey as keyof typeof pregunta.options];
+
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <Card className="h-full">
@@ -26,29 +30,23 @@ const QuestionCard = ({ pregunta }: { pregunta: Pregunta }) => {
                     <CardTitle className="text-base font-semibold leading-snug">{pregunta.question}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-2 text-sm">
-                        {Object.entries(pregunta.options).map(([key, value]) => {
-                            const isCorrect = key === pregunta.correctAnswerKey;
-                            return (
-                                <div 
-                                    key={key} 
-                                    className={cn(
-                                        "p-2 rounded-md flex items-start gap-2",
-                                        isCorrect ? "bg-green-500/10 border border-green-500/30 text-green-700 dark:text-green-300" : "bg-secondary/50"
-                                    )}
-                                >
-                                    <span className={cn("font-bold", isCorrect && "text-green-600 dark:text-green-400")}>{key}.</span>
-                                    <span className="flex-1">{value}</span>
-                                    {isCorrect && <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />}
-                                </div>
-                            );
-                        })}
-                    </div>
+                     {correctAnswerText ? (
+                        <div className="p-3 rounded-md bg-green-500/10 border border-green-500/30 text-green-800 dark:text-green-300 flex items-start gap-2">
+                             <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
+                            <span className="flex-1 text-sm font-medium">{correctAnswerText}</span>
+                        </div>
+                    ) : (
+                         <div className="p-3 rounded-md bg-destructive/10 border border-destructive/30 text-destructive flex items-start gap-2">
+                            <HelpCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                            <span className="flex-1 text-sm font-medium">Respuesta no encontrada.</span>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </motion.div>
     )
 }
+
 
 export default function BancoDePreguntasPage() {
     const firestore = useFirestore();
