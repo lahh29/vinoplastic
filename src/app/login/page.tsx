@@ -126,9 +126,7 @@ export default function LoginPage() {
          <div className="absolute bottom-4 left-4 z-10">
             <Dialog>
                 <DialogTrigger asChild>
-                    <InteractiveHoverButton>
-                        <Zap className="h-5 w-5" />
-                    </InteractiveHoverButton>
+                    <InteractiveHoverButton />
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-xs rounded-3xl p-0 overflow-hidden bg-transparent border-none shadow-2xl">
                      <motion.div 
