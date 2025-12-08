@@ -1,21 +1,25 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CalendarCheck, ChevronsUpDown, Loader2 } from 'lucide-react';
+import { CalendarCheck, ChevronsUpDown, Loader2, Save, BookCopy, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { motion } from 'framer-motion';
 
+// --- Interfaces ---
 interface PlanFormacion {
   id: string; // Document ID
   id_registro: string;
@@ -36,11 +40,62 @@ interface GrupoMes {
 
 const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
+// --- Componente de Tarjeta de Mes ---
+const MonthCard = ({ mes, anio, cursosPlaneados, onPlanificar, isLoading }: { mes: string, anio: number, cursosPlaneados: CursoCatalogo[], onPlanificar: () => void, isLoading: boolean }) => (
+    <motion.div whileHover={{ y: -5 }} className="h-full">
+        <Card className="flex flex-col h-full rounded-2xl shadow-md border-border/50 bg-card/60 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold">{mes}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+                {isLoading ? <div className="text-center p-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground"/></div> :
+                cursosPlaneados.length > 0 ? (
+                    <ScrollArea className="h-40">
+                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                            {cursosPlaneados.map(curso => <li key={curso.id}>{curso.nombre_oficial}</li>)}
+                        </ul>
+                    </ScrollArea>
+                ) : (
+                    <div className="flex h-full items-center justify-center text-center">
+                        <p className="text-sm text-muted-foreground italic">Aún no hay cursos planeados.</p>
+                    </div>
+                )}
+            </CardContent>
+            <CardFooter>
+                <Button variant="outline" className="w-full" onClick={onPlanificar}>
+                    <CalendarPlus className="mr-2 h-4 w-4" />
+                    Planificar Cursos
+                </Button>
+            </CardFooter>
+        </Card>
+    </motion.div>
+);
+
+interface CursoCatalogo {
+  id: string; // Document ID from Firestore
+  id_curso: string;
+  nombre_oficial: string;
+}
+
+// --- Componente Principal ---
 export default function FormacionPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const [activeMonth, setActiveMonth] = useState<string | null>(null);
+  const [selectedCursos, setSelectedCursos] = useState<Set<string>>(new Set());
+  const [isSaving, setIsSaving] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
+  const programaRef = useMemoFirebase(() => collection(firestore, 'programa_anual'), [firestore]);
   const formacionRef = useMemoFirebase(() => collection(firestore, 'plan_formacion'), [firestore]);
-  const { data: planes, isLoading } = useCollection<PlanFormacion>(formacionRef);
+
+  const { data: catalogoCursos, isLoading: loadingCursos } = useCollection<CursoCatalogo>(catalogoCursosRef);
+  const { data: programas, isLoading: loadingProgramas } = useCollection<ProgramaMes>(programaRef);
+  const { data: planes, isLoading: loadingPlanes } = useCollection<PlanFormacion>(formacionRef);
+
+  const isLoading = loadingCursos || loadingProgramas || loadingPlanes;
 
   const datosAgrupados = useMemo(() => {
     if (!planes) return [];
@@ -56,9 +111,8 @@ export default function FormacionPage() {
     });
 
     return MESES_ORDENADOS
-      .filter(mes => grupos[mes]) // Solo incluir meses que tienen datos
       .map(mes => {
-        const planesDelMes = grupos[mes];
+        const planesDelMes = grupos[mes] || [];
         const entregados = planesDelMes.filter(p => p.estatus === 'ENTREGADO').length;
         const total = planesDelMes.length;
         return {
@@ -68,17 +122,29 @@ export default function FormacionPage() {
           entregados,
           cumplimiento: total > 0 ? (entregados / total) * 100 : 0,
         };
-      });
+      }).filter(grupo => grupo.total > 0); // Solo mostrar meses con planes
   }, [planes]);
+
+  const filteredDatosAgrupados = useMemo(() => {
+    if (!searchQuery) return datosAgrupados;
+    const queryLower = searchQuery.toLowerCase();
+
+    return datosAgrupados.map(grupo => {
+        const planesFiltrados = grupo.planes.filter(plan =>
+            plan.nombre_empleado.toLowerCase().includes(queryLower) ||
+            plan.departamento.toLowerCase().includes(queryLower) ||
+            plan.area.toLowerCase().includes(queryLower)
+        );
+        return { ...grupo, planes: planesFiltrados };
+    }).filter(grupo => grupo.planes.length > 0);
+  }, [datosAgrupados, searchQuery]);
+
 
   const handleStatusChange = async (plan: PlanFormacion, nuevoEstatus: boolean) => {
     if (!firestore) return;
     
     const docRef = doc(firestore, 'plan_formacion', plan.id);
     const estatusString = nuevoEstatus ? 'ENTREGADO' : 'SIN ENTREGAR';
-
-    // Optimistic UI update (optional but good for UX)
-    // This part would require more complex state management, so we'll rely on Firestore's real-time update for now.
 
     try {
         setDocumentNonBlocking(docRef, { estatus: estatusString }, { merge: true });
@@ -98,7 +164,7 @@ export default function FormacionPage() {
 
   return (
     <div className="space-y-8">
-      <div className="max-w-4xl">
+      <div>
         <h1 className="text-4xl font-bold tracking-tight">Plan de Formación Anual</h1>
         <p className="mt-2 text-lg text-muted-foreground">
           Seguimiento del cumplimiento de entrega de planes de formación auditables.
@@ -107,10 +173,23 @@ export default function FormacionPage() {
 
       <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm" data-tour="formacion-tabla">
         <CardHeader>
-          <CardTitle>Cumplimiento por Mes</CardTitle>
-          <CardDescription>
-            Haz clic en un mes para ver el detalle de los planes de formación.
-          </CardDescription>
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+            <div>
+              <CardTitle>Cumplimiento por Mes</CardTitle>
+              <CardDescription>
+                Haz clic en un mes para ver el detalle de los planes de formación.
+              </CardDescription>
+            </div>
+            <div className="relative w-full sm:max-w-xs">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                  placeholder="Buscar empleado, depto, área..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+              />
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -119,8 +198,8 @@ export default function FormacionPage() {
               <p className="ml-4 text-muted-foreground">Cargando datos de formación...</p>
             </div>
           ) : (
-            <Accordion type="single" collapsible className="w-full space-y-4">
-              {datosAgrupados.map(grupo => (
+            <Accordion type="single" collapsible className="w-full space-y-4" defaultValue={filteredDatosAgrupados[0]?.mes}>
+              {filteredDatosAgrupados.map(grupo => (
                 <AccordionItem value={grupo.mes} key={grupo.mes} className="border-b-0 rounded-lg bg-card/80 border shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:no-underline rounded-t-lg">
                     <div className="flex items-center gap-4 w-full">
