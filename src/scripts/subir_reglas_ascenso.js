@@ -493,6 +493,15 @@ const reglasBrutas = [
     "min_examen_teorico": 70,
     "min_cobertura_matriz": 90,
     "orden_jerarquico": 1
+  },
+  {
+    "puesto_actual": "AUXILIAR DE METROLOGÍA",
+    "puesto_siguiente": "METRÓLOGO C",
+    "meses_minimos": 8,
+    "min_evaluacion_desempeno": 80,
+    "min_examen_teorico": 70,
+    "min_cobertura_matriz": 70,
+    "orden_jerarquico": 1
   }
 ];
 
@@ -524,11 +533,15 @@ async function subirReglas() {
             fecha_actualizacion: new Date()
         };
 
-        batch.set(docRef, datosFinales);
+        batch.set(docRef, datosFinales, { merge: true });
     });
 
-    await batch.commit();
-    console.log("✅ Reglas de ascenso actualizadas correctamente.");
+    try {
+        await batch.commit();
+        console.log("✅ Reglas de ascenso actualizadas correctamente.");
+    } catch (error) {
+        console.error("❌ Error al subir las reglas:", error);
+    }
 }
 
 subirReglas();
