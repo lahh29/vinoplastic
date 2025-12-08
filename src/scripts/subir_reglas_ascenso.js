@@ -2,7 +2,7 @@
 const admin = require("firebase-admin");
 
 // --- 1. CONFIGURACIÓN ---
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = require("../../serviceAccountKey.json");
 const nombreColeccion = "reglas_ascenso"; // Nueva colección específica para esto
 
 // Inicializar Firebase

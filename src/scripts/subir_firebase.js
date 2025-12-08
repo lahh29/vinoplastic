@@ -1,9 +1,10 @@
+
 const admin = require("firebase-admin");
 const fs = require('fs');
 
 // 1. CARGA TUS CREDENCIALES
 // Asegúrate de que el archivo serviceAccountKey.json esté en la carpeta
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = require("../../serviceAccountKey.json");
 
 // 2. CARGA EL ARCHIVO DE DATOS
 const datos = require("./salida_firebase.json");
@@ -29,7 +30,7 @@ async function subirDatos() {
     }
 
     // B. Definir la referencia del documento
-    // Usamos 'nombre_puesto' como ID para que sea fácil de leer en la base de datos
+    // Usamos 'nombre_puesto' como ID del documento para que sea fácil de leer en la base de datos
     // Ejemplo: perfiles_puestos/ANALISTA DE CAPACITACIÓN
     const docRef = db.collection("perfiles_puesto").doc(item.nombre_puesto);
 

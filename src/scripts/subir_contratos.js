@@ -1,8 +1,9 @@
+
 const admin = require('firebase-admin');
 const fs = require('fs');
 
 // 1. Configuración de Firebase
-const serviceAccount = require('./serviceAccountKey.json');
+const serviceAccount = require('../../serviceAccountKey.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -64,7 +65,7 @@ function procesarCalificacion(scoreStr) {
 
 async function uploadContratos() {
     try {
-        const rawData = fs.readFileSync('./contratos.json', 'utf8');
+        const rawData = fs.readFileSync('./datos/contratos.json', 'utf8');
         const contratos = JSON.parse(rawData);
         
         const batch = db.batch();

@@ -6,7 +6,7 @@ const fs = require('fs');
 
 // 1. Carga tu llave de servicio
 try {
-    var serviceAccount = require('./serviceAccountKey.json');
+    var serviceAccount = require('../../serviceAccountKey.json');
 } catch (e) {
     console.error("❌ Error: No se encontró 'serviceAccountKey.json'.");
     process.exit(1);
@@ -78,11 +78,11 @@ async function iniciarCarga() {
 
     // 1. Subir Catálogo Maestro
     // El campo ID en el JSON es 'id_curso'
-    await subirColeccion('maestro_cursos.json', COL_CATALOGO, 'id_curso');
+    await subirColeccion('./datos/maestro_cursos.json', COL_CATALOGO, 'id_curso');
 
     // 2. Subir Historial de Empleados
     // El campo ID en el JSON es 'id_empleado'
-    await subirColeccion('historial_empleados.json', COL_HISTORIAL, 'id_empleado');
+    await subirColeccion('./datos/historial_empleados.json', COL_HISTORIAL, 'id_empleado');
 
     console.log("\n==========================================");
     console.log("🎉 ¡TODO LISTO! La información está en la nube.");

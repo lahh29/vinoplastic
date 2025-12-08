@@ -1,7 +1,8 @@
+
 const admin = require("firebase-admin");
 
 // --- 1. CONFIGURACIÓN ---
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = require("../../serviceAccountKey.json");
 const nombreColeccion = "plan_formacion";
 
 // Inicializar Firebase

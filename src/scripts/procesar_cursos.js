@@ -1,10 +1,11 @@
+
 const fs = require('fs');
 const admin = require('firebase-admin'); // Opcional: si quieres subirlo directo, ver nota al final.
 
 // 1. CARGAR ARCHIVOS
 // Asegúrate de que los nombres coincidan con tus archivos locales
-const maestro = require('./maestro_cursos.json');
-const taller = require('./cursos_taller.json'); // Renombré 'cursos taller.json' a 'cursos_taller.json' para evitar errores de sintaxis
+const maestro = require('../datos/maestro_cursos.json');
+const taller = require('../datos/cursos_taller.json'); // Renombré 'cursos taller.json' a 'cursos_taller.json' para evitar errores de sintaxis
 
 // 2. FUNCIÓN DE NORMALIZACIÓN
 // Esta función es clave para que coincidan textos con pequeñas diferencias (tildes, mayúsculas, espacios)
@@ -68,7 +69,7 @@ const resultadoFinal = Object.keys(perfilesMap).map(puesto => {
 
 // 6. GUARDAR RESULTADO EN JSON (Para revisión antes de subir)
 const jsonSalida = JSON.stringify(resultadoFinal, null, 2);
-fs.writeFileSync('salida_firebase.json', jsonSalida);
+fs.writeFileSync('./datos/salida_firebase.json', jsonSalida);
 
 console.log("✅ Proceso terminado.");
 console.log(`🔹 Se generaron ${resultadoFinal.length} perfiles de puesto.`);

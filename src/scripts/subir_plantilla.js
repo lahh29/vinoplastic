@@ -1,10 +1,11 @@
+
 const admin = require('firebase-admin');
 const fs = require('fs');
 
 // 1. Configuración de Firebase
 // (Si ya inicializaste la app en otro script corriendo simultáneamente, esto podría variar, 
 // pero para correrlo por separado está perfecto así).
-const serviceAccount = require('./serviceAccountKey.json');
+const serviceAccount = require('../../serviceAccountKey.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -29,7 +30,7 @@ function normalizarDepartamento(depto) {
 // 3. Función principal
 async function uploadPlantilla() {
     try {
-        const rawData = fs.readFileSync('./plantilla_qro.json', 'utf8');
+        const rawData = fs.readFileSync('./datos/plantilla_qro.json', 'utf8');
         const empleados = JSON.parse(rawData);
         
         const batch = db.batch();
