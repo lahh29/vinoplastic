@@ -5,10 +5,10 @@ const serviceAccount = require('../../serviceAccountKey.json');
 // --- 1. CONFIGURACIÓN ---
 // UID del usuario al que quieres modificar.
 // Encuéntralo en Firebase Console > Authentication.
-const USER_UID_TO_MODIFY = "Z6rLLILLgrWNY7q4kPjpWboZOQ63"; 
+const USER_UID_TO_MODIFY = "BRp1QrnbZcYededVUZh6OxnW0822"; 
 
 // Cambia esto a `true` para forzar el cambio, o `false` para desactivarlo.
-const REQUIRES_CHANGE = false; 
+const REQUIRES_CHANGE = true; 
 
 // --- 2. INICIALIZACIÓN ---
 if (!admin.apps.length) {
