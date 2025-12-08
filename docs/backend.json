@@ -148,13 +148,9 @@
       "properties": {
         "puestoId": { "type": "string", "description": "Links to a 'PerfilPuesto' ID." },
         "nombre_examen": { "type": "string" },
-        "preguntaIds": {
-          "type": "array",
-          "description": "An array of document IDs from the 'preguntas_limpias' collection.",
-          "items": { "type": "string" }
-        }
+        "cantidad_preguntas": { "type": "number", "description": "The number of questions to be randomly selected from the question bank." }
       },
-      "required": ["puestoId", "nombre_examen", "preguntaIds"]
+      "required": ["puestoId", "nombre_examen", "cantidad_preguntas"]
     },
     "IntentoExamen": {
       "title": "Intento de Examen",
