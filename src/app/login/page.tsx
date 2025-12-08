@@ -11,7 +11,7 @@ import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { Loader2, Zap, AlertCircle, Code, PaintBrush } from 'lucide-react';
+import { Loader2, Zap, AlertCircle } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 
@@ -121,39 +121,6 @@ export default function LoginPage() {
                   </form>
                 </Card>
             </motion.div>
-        </div>
-         <div className="absolute bottom-4 left-4 z-10">
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full text-slate-400 hover:text-white hover:bg-white/10">
-                        <Zap className="h-5 w-5" />
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-xs rounded-3xl p-0 overflow-hidden bg-transparent border-none shadow-2xl">
-                     <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1, duration: 0.5, ease: 'easeOut' }}
-                        className="bg-gradient-to-br from-slate-900 via-black to-slate-900 p-8 text-center text-white"
-                      >
-                        <DialogHeader>
-                            <DialogTitle className="text-xl font-bold">Equipo de Desarrollo</DialogTitle>
-                        </DialogHeader>
-                        <div className="flex justify-center gap-8 my-6">
-                            <motion.div whileHover={{scale: 1.1}} className="flex flex-col items-center gap-2">
-                                <div className="p-3 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600"><Code className="h-6 w-6 text-white"/></div>
-                                <span className="text-xs font-bold uppercase tracking-wider">Developer</span>
-                                <span className="text-sm text-slate-300">Hernández Leonardo</span>
-                            </motion.div>
-                             <motion.div whileHover={{scale: 1.1}} className="flex flex-col items-center gap-2">
-                                <div className="p-3 rounded-full bg-gradient-to-br from-pink-500 to-rose-500"><PaintBrush className="h-6 w-6 text-white"/></div>
-                                <span className="text-xs font-bold uppercase tracking-wider">Team</span>
-                                <span className="text-sm text-slate-300">Hernández Noemi</span>
-                            </motion.div>
-                        </div>
-                    </motion.div>
-                </DialogContent>
-            </Dialog>
         </div>
         <div className="absolute bottom-4 right-4 z-10 text-xs text-slate-500">
             Copyright ViñoPlastic Inyección S.A de C.V
