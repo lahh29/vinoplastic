@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, where, getDocs, limit, serverTimestamp, addDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, limit, serverTimestamp, addDoc, getDoc, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -227,4 +227,3 @@ export default function ExamenPage() {
     </div>
   );
 }
-
