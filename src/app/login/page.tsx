@@ -14,7 +14,6 @@ import { motion } from 'framer-motion';
 import { Loader2, Zap, AlertCircle, Code, PaintBrush } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -126,9 +125,9 @@ export default function LoginPage() {
          <div className="absolute bottom-4 left-4 z-10">
             <Dialog>
                 <DialogTrigger asChild>
-                    <InteractiveHoverButton>
-                        <Zap className="h-5 w-5 text-neutral-400 transition-colors duration-300 group-hover:text-neutral-50" />
-                    </InteractiveHoverButton>
+                    <Button variant="ghost" size="icon" className="rounded-full text-slate-400 hover:text-white hover:bg-white/10">
+                        <Zap className="h-5 w-5" />
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-xs rounded-3xl p-0 overflow-hidden bg-transparent border-none shadow-2xl">
                      <motion.div 
