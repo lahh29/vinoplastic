@@ -91,7 +91,7 @@ export default function BancoDePreguntasPage() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <ScrollArea className="h-[calc(100vh-24rem)] pr-4">
+                    <ScrollArea className="h-[calc(100vh-22rem)] pr-4">
                         {isLoading ? (
                              <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>
                         ) : (
