@@ -63,7 +63,7 @@ const parseDate = (date: any): Date | null => {
 
 const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status: EstatusPromocion, message: string, esElegibleParaExamen: boolean } => {
     if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto.', esElegibleParaExamen: false };
-    if (!regla) return { status: 'Máxima Categoría', message: 'Este puesto no tiene una categoría superior definida.', esElegibleParaExamen: false };
+    if (!regla) return { status: 'Máxima Categoría', message: 'Este puesto no tiene una categoría superior definida en el plan de carrera.', esElegibleParaExamen: false };
 
     const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : parseDate(empleado.fecha_ingreso);
     if (!fechaCambio) return { status: 'Pendiente', message: 'Falta registrar la fecha de último cambio o ingreso.', esElegibleParaExamen: false };
@@ -96,6 +96,35 @@ const AnimatedIcon = ({ children }: { children: React.ReactNode }) => (
         {children}
     </motion.div>
 );
+
+const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
+    return (
+        <ScrollArea className="h-[70vh] rounded-lg border">
+            <Table>
+                <TableHeader className='sticky top-0 bg-background z-10'>
+                    <TableRow>
+                        <TableHead>Curso</TableHead>
+                        <TableHead className="text-center w-32">Calificación</TableHead>
+                        <TableHead className="text-right w-32">Estado</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {cursos.map(({ curso, estado, calificacion }) => (
+                        <TableRow key={curso.id}>
+                            <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
+                            <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
+                            <TableCell className="text-right">
+                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                    {cursos.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
+                </TableBody>
+            </Table>
+        </ScrollArea>
+    );
+};
+
 
 export default function PortalPage() {
   const firestore = useFirestore();
@@ -292,4 +321,3 @@ export default function PortalPage() {
     </motion.div>
   );
 }
-
