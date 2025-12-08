@@ -1,15 +1,16 @@
 
 "use client";
+import React from 'react';
+import { cn } from "@/lib/utils";
 
-import { Zap } from "lucide-react"
-import { cn } from "@/lib/utils"
-
-export function InteractiveHoverButton({
-  className,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+// Make the component a forwardRef component
+export const InteractiveHoverButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+>(({ className, children, ...props }, ref) => {
   return (
     <button
+      ref={ref} // Forward the ref to the button element
       className={cn(
         "group relative grid overflow-hidden rounded-full px-3 py-1 shadow-[0_1000px_0_0_hsl(0_0%_20%)_inset] transition-colors duration-200",
         className
@@ -21,8 +22,11 @@ export function InteractiveHoverButton({
       </span>
       <span className="backdrop absolute inset-px rounded-full bg-neutral-950/40 duration-200" />
       <span className="z-10 flex items-center justify-center gap-2">
-        <Zap className="h-5 w-5 text-neutral-400 transition-colors duration-300 group-hover:text-neutral-50" />
+        {children}
       </span>
     </button>
   );
-}
+});
+
+// Assign a display name for better debugging
+InteractiveHoverButton.displayName = "InteractiveHoverButton";

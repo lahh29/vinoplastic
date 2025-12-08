@@ -11,7 +11,7 @@ import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { Loader2, Zap, AlertCircle, Code, PaintBrush, UserSquare } from 'lucide-react';
+import { Loader2, Zap, AlertCircle, Code, PaintBrush } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
@@ -126,7 +126,9 @@ export default function LoginPage() {
          <div className="absolute bottom-4 left-4 z-10">
             <Dialog>
                 <DialogTrigger asChild>
-                    <InteractiveHoverButton />
+                    <InteractiveHoverButton>
+                        <Zap className="h-5 w-5 text-neutral-400 transition-colors duration-300 group-hover:text-neutral-50" />
+                    </InteractiveHoverButton>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-xs rounded-3xl p-0 overflow-hidden bg-transparent border-none shadow-2xl">
                      <motion.div 
