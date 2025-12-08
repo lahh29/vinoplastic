@@ -11,9 +11,12 @@ import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { Loader2, Zap, AlertCircle } from 'lucide-react';
+import { Loader2, Zap, AlertCircle, Sparkles } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { ShinyButton } from '@/components/ui/shiny-button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,6 +44,42 @@ export default function LoginPage() {
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black">
         <StarsBackground starColor="#fff" speed={0.5} className="absolute inset-0 z-0"/>
+
+        <div className="absolute top-4 left-4 z-10">
+            <Dialog>
+                <DialogTrigger asChild>
+                    <ShinyButton>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Equipo de Desarrollo
+                    </ShinyButton>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-xs bg-card/80 backdrop-blur-lg text-center p-8">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold">Equipo de Desarrollo</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center gap-4 py-4">
+                        <div className="text-center">
+                            <Avatar className="w-20 h-20 mx-auto mb-2 border-2 border-primary">
+                                <AvatarImage src="https://github.com/LeoHdez.png" alt="Leonardo Hernández" />
+                                <AvatarFallback>LH</AvatarFallback>
+                            </Avatar>
+                            <p className="font-bold">Leonardo Hernández</p>
+                            <p className="text-sm text-muted-foreground">Developer</p>
+                        </div>
+                        <div className="text-center">
+                            <Avatar className="w-20 h-20 mx-auto mb-2 border-2 border-primary">
+                                <AvatarImage src="https://github.com/Noemi-H.png" alt="Noemi Hernández" />
+                                <AvatarFallback>NH</AvatarFallback>
+                            </Avatar>
+                            <p className="font-bold">Noemi Hernández</p>
+                            <p className="text-sm text-muted-foreground">Team</p>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
+
+
         <div className="relative z-10 flex flex-col items-center text-center text-white p-4">
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
