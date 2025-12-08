@@ -35,18 +35,18 @@ service cloud.firestore {
     
     // Reglas para la activación de la cuenta
     match /Plantilla/{empleadoId} {
-      allow read: if true; // Permitir lectura pública para verificar ID
-      allow write: if isAdmin(); // Solo admins pueden modificar la plantilla
+      allow read: if canRead() || isEmpleado(); 
+      allow write: if isAdmin();
     }
     
     match /usuarios/{userId} {
-      allow read: if true; // Permitir lectura para verificar duplicados
-      allow create: if true; // Permitir que cualquiera cree su documento de usuario al registrarse
+      allow read: if canRead() || (request.auth != null && request.auth.uid == userId);
+      allow create: if true; 
       allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == userId);
     }
     
     match /Contratos/{contratoId} {
-      allow read: if canRead();
+      allow read: if canRead() || (isEmpleado() && getUserData().id_empleado == contratoId);
       allow write: if isAdmin();
     }
 
@@ -61,7 +61,7 @@ service cloud.firestore {
     }
     
     match /preguntas_limpias/{preguntaId} {
-        allow read: if isSignedIn(); // Empleados y admins pueden leer las preguntas para los exámenes.
+        allow read: if isSignedIn(); 
     }
 
     match /perfiles_puesto/{puestoId} {
@@ -70,7 +70,7 @@ service cloud.firestore {
     }
     
     match /examenes/{puestoId} {
-        allow read: if isSignedIn(); // Empleados y admins necesitan leer qué preguntas tiene su examen.
+        allow read: if isSignedIn();
         allow write: if isAdmin();
     }
 
@@ -83,13 +83,12 @@ service cloud.firestore {
     match /Promociones/{empleadoId} {
       allow list: if canRead();
       allow get: if canRead() || (isEmpleado() && getUserData().id_empleado == empleadoId);
-      allow write: if isAdmin(); // También podría ser el propio empleado si actualiza un intento
+      allow write: if isAdmin();
     }
     
     match /Promociones/{empleadoId}/intentos_examen/{intentoId} {
         allow read: if canRead();
-        // El empleado solo puede crear un nuevo intento para sí mismo.
-        allow create: if isEmpleado() && request.auth.uid == get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.uid && request.resource.data.id_empleado == getUserData().id_empleado;
+        allow create: if isEmpleado() && getUserData().id_empleado == empleadoId;
         allow write: if isAdmin();
     }
 
