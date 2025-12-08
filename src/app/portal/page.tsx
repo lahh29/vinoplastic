@@ -6,7 +6,7 @@ import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@
 import { collection, query, where, limit, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, User, Briefcase, BookOpen, CheckCircle2, Clock, Award, Target, CalendarDays, Sparkles, BookUp } from 'lucide-react';
+import { Loader2, User, Briefcase, BookOpen, CheckCircle2, Clock, Award, Target, CalendarDays, Sparkles, BookUp, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -17,6 +17,18 @@ import { motion, Variants } from 'framer-motion';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
+import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 // Interfaces
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
@@ -49,24 +61,29 @@ const parseDate = (date: any): Date | null => {
   return null;
 };
 
-const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status: EstatusPromocion, message: string } => {
-    if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto.' };
-    if (!regla) return { status: 'Máxima Categoría', message: 'Este puesto no tiene una categoría superior definida en el plan de carrera.' };
+const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status: EstatusPromocion, message: string, esElegibleParaExamen: boolean } => {
+    if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto.', esElegibleParaExamen: false };
+    if (!regla) return { status: 'Máxima Categoría', message: 'Este puesto no tiene una categoría superior definida.', esElegibleParaExamen: false };
 
     const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : parseDate(empleado.fecha_ingreso);
-    if (!fechaCambio) return { status: 'Pendiente', message: 'Se necesita registrar la fecha del último cambio o de ingreso.' };
+    if (!fechaCambio) return { status: 'Pendiente', message: 'Falta registrar la fecha de último cambio o ingreso.', esElegibleParaExamen: false };
 
     const mesesDesdeCambio = differenceInMonths(new Date(), fechaCambio);
-    if (mesesDesdeCambio < regla.meses_minimos) return { status: 'En Progreso', message: `En período de espera. Necesita ${regla.meses_minimos} meses y tiene ${mesesDesdeCambio}.` };
+    if (mesesDesdeCambio < regla.meses_minimos) return { status: 'En Progreso', message: `Necesitas ${regla.meses_minimos} meses en tu puesto actual. Llevas ${mesesDesdeCambio}.`, esElegibleParaExamen: false };
     
-    const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
-    if (evaluacionDesempeno === undefined || evaluacionDesempeno < regla.min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Evaluación de desempeño pendiente o inferior a ${regla.min_evaluacion_desempeno}.` };
+    if (empleado.coberturaCursos < regla.min_cobertura_matriz) return { status: 'Requiere Atención', message: `Tu cobertura de cursos es ${empleado.coberturaCursos.toFixed(0)}%, se requiere ${regla.min_cobertura_matriz}%.`, esElegibleParaExamen: false };
 
-    if (regla.min_examen_teorico && (empleado.promocionData?.examen_teorico === undefined || empleado.promocionData.examen_teorico < regla.min_examen_teorico)) return { status: 'Requiere Atención', message: `Examen teórico pendiente o inferior a ${regla.min_examen_teorico}.` };
+    const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
+    if (evaluacionDesempeno === undefined || evaluacionDesempeno < regla.min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Tu evaluación de desempeño (${evaluacionDesempeno ?? 'N/A'}) es inferior al ${regla.min_evaluacion_desempeno} requerido.`, esElegibleParaExamen: false };
     
-    if (empleado.coberturaCursos < regla.min_cobertura_matriz) return { status: 'Requiere Atención', message: `Cobertura de cursos insuficiente. Requiere ${regla.min_cobertura_matriz}% y tiene ${empleado.coberturaCursos.toFixed(0)}%.` };
+    if (regla.min_examen_teorico) {
+        const examenScore = empleado.promocionData?.examen_teorico;
+        if(examenScore === undefined || examenScore < regla.min_examen_teorico) {
+            return { status: 'Requiere Atención', message: 'Tienes pendiente el examen teórico o tu calificación es menor a la requerida.', esElegibleParaExamen: true };
+        }
+    }
     
-    return { status: 'Elegible', message: 'Cumple con todos los criterios para ser evaluado para promoción.' };
+    return { status: 'Elegible', message: '¡Felicidades! Cumples todos los requisitos para ser considerado para una promoción.', esElegibleParaExamen: false };
 };
 const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-500 text-white', 'En Progreso': 'bg-blue-500 text-white', 'Máxima Categoría': 'bg-purple-500 text-white', 'Requiere Atención': 'bg-orange-500 text-white', 'Pendiente': 'bg-gray-400 text-white', 'No Apto': 'bg-zinc-600 text-white' };
 
@@ -79,35 +96,6 @@ const AnimatedIcon = ({ children }: { children: React.ReactNode }) => (
         {children}
     </motion.div>
 );
-
-const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
-    return (
-        <ScrollArea className="h-96 lg:h-[calc(100vh-28rem)] rounded-lg border">
-            <Table>
-                <TableHeader className='sticky top-0 bg-background z-10'>
-                    <TableRow>
-                        <TableHead>Curso</TableHead>
-                        <TableHead className="text-center w-32">Calificación</TableHead>
-                        <TableHead className="text-right w-32">Estado</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {cursos.map(({ curso, estado, calificacion }) => (
-                        <TableRow key={curso.id}>
-                            <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
-                            <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
-                            <TableCell className="text-right">
-                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                    {cursos.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
-                </TableBody>
-            </Table>
-        </ScrollArea>
-    );
-};
-
 
 export default function PortalPage() {
   const firestore = useFirestore();
@@ -180,8 +168,7 @@ export default function PortalPage() {
     const parts = [];
     if (duracion.years && duracion.years > 0) parts.push(`${duracion.years} años`);
     if (duracion.months && duracion.months > 0) parts.push(`${duracion.months} meses`);
-    if (duracion.days && duracion.days > 0) parts.push(`${duracion.days} días`);
-    if(parts.length === 0) return "Menos de un día";
+    if (parts.length === 0) return "Menos de un mes";
 
     return parts.join(', ');
   }, [empleadoPerfil]);
@@ -196,9 +183,6 @@ export default function PortalPage() {
   if (!empleadoPerfil) {
     return <div className="flex h-full items-center justify-center"><p className="text-lg text-muted-foreground">No se encontró un perfil de empleado asociado a tu cuenta.</p></div>;
   }
-
-  const cursosPendientes = empleadoPerfil.cursosConEstado.filter(c => c.estado === 'Pendiente');
-  const cursosCompletados = empleadoPerfil.cursosConEstado.filter(c => c.estado !== 'Pendiente');
 
   const containerVariants: Variants = {
       hidden: { opacity: 0 },
@@ -234,6 +218,40 @@ export default function PortalPage() {
           </Card>
       </motion.div>
       
+      {statusInfo?.esElegibleParaExamen && (
+          <motion.div variants={itemVariants}>
+              <Card className="bg-primary/10 border-primary/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3 text-primary"><BookUp/>¡Acción Requerida!</CardTitle>
+                    <CardDescription>Cumples con los requisitos para presentar tu examen de promoción.</CardDescription>
+                  </CardHeader>
+                  <CardFooter>
+                     <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button>
+                                Iniciar Examen de Promoción <ArrowRight className="ml-2 h-4 w-4"/>
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>¿Estás listo para comenzar?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Una vez que inicies, tendrás un tiempo limitado para completar el examen. Asegúrate de estar en un lugar tranquilo y sin interrupciones.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction asChild>
+                                    <Link href="/portal/examen">Sí, comenzar ahora</Link>
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                  </CardFooter>
+              </Card>
+          </motion.div>
+      )}
+
       <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
           <Card className="h-full bg-card/30 backdrop-blur-lg border-white/10"><CardHeader><CardTitle className="text-lg flex items-center gap-2"><AnimatedIcon><CalendarDays/></AnimatedIcon> Antigüedad</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{antiguedad || 'N/A'}</p></CardContent></Card>
@@ -263,42 +281,14 @@ export default function PortalPage() {
         </motion.div>
       </motion.div>
 
-      <motion.div variants={containerVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
-            <Card className='bg-card/30 backdrop-blur-lg border-white/10 h-full'>
-              <CardHeader><CardTitle className="text-xl flex items-center gap-3"><Clock className="text-red-500" />Cursos Pendientes</CardTitle></CardHeader>
-              <CardContent>
-                {cursosPendientes.length > 0 ? (
-                    <div className="space-y-3">
-                        {cursosPendientes.map(({curso}) => (
-                            <div key={curso.id} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                                <span className="font-medium text-sm">{curso.nombre_oficial}</span>
-                                <Button size="sm" variant="outline" disabled><BookUp className="mr-2 h-4 w-4"/> Ver Material</Button>
-                            </div>
-                        ))}
-                    </div>
-                ) : <p className="text-center text-muted-foreground py-10">¡Felicidades! No tienes cursos pendientes.</p>}
-              </CardContent>
-            </Card>
-        </motion.div>
-         <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
+       <motion.div variants={itemVariants}>
             <Card className='bg-card/30 backdrop-blur-lg border-white/10 h-full'>
               <CardHeader><CardTitle className="text-xl flex items-center gap-3"><CheckCircle2 className="text-green-500" />Historial de Cursos</CardTitle></CardHeader>
               <CardContent>
-                <ScrollArea className="h-72">
-                    <Table>
-                        <TableHeader><TableRow><TableHead>Curso</TableHead><TableHead className="text-right">Calificación</TableHead></TableRow></TableHeader>
-                        <TableBody>
-                            {cursosCompletados.length > 0 ? cursosCompletados.map(({curso, calificacion}) => (
-                                <TableRow key={curso.id}><TableCell className="font-medium">{curso.nombre_oficial}</TableCell><TableCell className="text-right font-mono">{calificacion}</TableCell></TableRow>
-                            )) : <TableRow><TableCell colSpan={2} className="text-center h-24 text-muted-foreground">No has completado cursos.</TableCell></TableRow>}
-                        </TableBody>
-                    </Table>
-                </ScrollArea>
+                <CursosTable cursos={empleadoPerfil.cursosConEstado} />
               </CardContent>
             </Card>
         </motion.div>
-      </motion.div>
     </motion.div>
   );
 }
