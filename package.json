@@ -14,7 +14,8 @@
     "upload:cursos": "node subir_cursos_firebase.js",
     "upload:fechas": "node src/scripts/actualizar_fechas_ingreso.js",
     "upload:festivos": "node src/scripts/subir_dias_festivos.js",
-    "limpiar-usuarios": "node src/scripts/eliminar_usuarios_empleados.js"
+    "limpiar-usuarios": "node src/scripts/eliminar_usuarios_empleados.js",
+    "crear:examenes": "node src/scripts/crear_examenes_produccion.js"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.25.0",
