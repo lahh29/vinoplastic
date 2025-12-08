@@ -14,8 +14,6 @@ import { motion } from 'framer-motion';
 import { Loader2, Zap, AlertCircle, Code, PaintBrush, UserSquare } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
-
 
 export default function LoginPage() {
   const router = useRouter();
@@ -127,11 +125,11 @@ export default function LoginPage() {
          <div className="absolute bottom-4 left-4 z-10">
             <Dialog>
                 <DialogTrigger asChild>
-                    <InteractiveHoverButton>
-                        <Zap className="h-4 w-4" />
-                    </InteractiveHoverButton>
+                    <Button variant="ghost" size="icon" className="group h-10 w-10 rounded-full bg-black/20 backdrop-blur-sm border border-white/20 hover:border-primary/50 transition-colors">
+                        <Zap className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
+                    </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-sm rounded-3xl p-0 overflow-hidden bg-transparent border-white/20">
+                <DialogContent className="sm:max-w-xs rounded-3xl p-0 overflow-hidden bg-transparent border-none shadow-2xl">
                      <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -141,15 +139,15 @@ export default function LoginPage() {
                         <DialogHeader>
                             <DialogTitle className="text-xl font-bold">Equipo de Desarrollo</DialogTitle>
                         </DialogHeader>
-                        <div className="flex justify-center gap-6 my-6">
+                        <div className="flex justify-center gap-8 my-6">
                             <motion.div whileHover={{scale: 1.1}} className="flex flex-col items-center gap-2">
-                                <div className="p-3 rounded-full bg-primary/20"><Code className="h-6 w-6 text-primary"/></div>
-                                <span className="text-xs font-bold">Developer</span>
+                                <div className="p-3 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600"><Code className="h-6 w-6 text-white"/></div>
+                                <span className="text-xs font-bold uppercase tracking-wider">Developer</span>
                                 <span className="text-sm text-slate-300">Hernández Leonardo</span>
                             </motion.div>
                              <motion.div whileHover={{scale: 1.1}} className="flex flex-col items-center gap-2">
-                                <div className="p-3 rounded-full bg-accent/20"><PaintBrush className="h-6 w-6 text-accent"/></div>
-                                <span className="text-xs font-bold">Team</span>
+                                <div className="p-3 rounded-full bg-gradient-to-br from-pink-500 to-rose-500"><PaintBrush className="h-6 w-6 text-white"/></div>
+                                <span className="text-xs font-bold uppercase tracking-wider">Team</span>
                                 <span className="text-sm text-slate-300">Hernández Noemi</span>
                             </motion.div>
                         </div>
