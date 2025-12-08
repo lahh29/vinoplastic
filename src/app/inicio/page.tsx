@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
-import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock, User, BarChart, HardHat, Loader2, Target as TargetIcon, CalendarDays } from 'lucide-react';
+import { ClipboardList, BookCopy, AlertTriangle, FileDown, GitBranch, CalendarClock, User, BarChart, HardHat, Loader2, Target as TargetIcon, CalendarDays, Sparkles, HelpCircle } from 'lucide-react';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import React, { useMemo, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
@@ -30,7 +30,8 @@ const navLinks = [
     { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto.", tourId: "inicio-carrera" },
     { href: "/perfil", icon: User, title: "Perfil de Empleado", description: "Consulta el perfil detallado de un empleado.", tourId: "inicio-perfil" },
     { href: "/inicio/plan-capacitacion", icon: TargetIcon, title: "Plan Anual de Capacitación", description: "Diseña y gestiona el plan estratégico de capacitación basado en datos.", tourId: "inicio-plan-capacitacion" },
-    { href: "/programa", icon: CalendarDays, title: "Programa", description: "Visualiza los cursos asignados a cada puesto para la planeación mensual.", tourId: "inicio-programa" }
+    { href: "/programa", icon: CalendarDays, title: "Programa", description: "Visualiza los cursos asignados a cada puesto para la planeación mensual.", tourId: "inicio-programa" },
+    { href: "/diagnostico/banco-de-preguntas", icon: HelpCircle, title: "Banco de Preguntas", description: "Consulta y busca en el catálogo completo de preguntas para exámenes.", tourId: "inicio-banco-preguntas" }
 ];
 
 
