@@ -1,0 +1,2066 @@
+[
+  {
+    "PREGUNTA ": "¿Cuál es el uso correcto de las navajas?",
+    "OPCIÓN A ": "Cortar en dirección a tu cuerpo y manteniendo los dedos cerca y sobre el filo de la navaja?",
+    "OPCIÓN B ": "Colocar el tapón a la navaja después de utilizarla",
+    "OPCIÓN C": "Rebabear del centro hacia afuera y en dirección al piso. Manteniendo los dedos alejados del filo",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Como se valida el filo de la navaja?",
+    "OPCIÓN A ": "Cuando la navaja se atora o ya no corta la pieza",
+    "OPCIÓN B ": "Cuando la navaja se rompe ",
+    "OPCIÓN C": "Cuando la navaja corta los dedos",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un Aspecto Ambiental?",
+    "OPCIÓN A ": "Es un componente esencial de la gestión ambiental de cualquier organización, ya que permite identificar, evaluar y controlar los impactos de sus actividades",
+    "OPCIÓN B ": "Elementos de las actividades, productos o servicios que pueden interactuar con el medio ambiente",
+    "OPCIÓN C": "Cambio en el medio ambiente ya sea adverso o beneficioso como resultado de las actividades",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un Impacto Ambiental?",
+    "OPCIÓN A ": "Elementos de las actividades, productos o servicios que pueden interactuar con el medio ambiente",
+    "OPCIÓN B ": "Cambio en el medio ambiente ya sea adverso o beneficioso como resultado de las actividades",
+    "OPCIÓN C": "Consecuencia o efecto que produce una acción, evento o fuerza sobre algo o alguien",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Contaminación de suelo, es ejemplo de: ",
+    "OPCIÓN A ": "Impacto ambiental",
+    "OPCIÓN B ": "Aspecto ambiental ",
+    "OPCIÓN C": "Consecuencia",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Generación de ruido, es ejemplo de: ",
+    "OPCIÓN A ": "Impacto ambiental",
+    "OPCIÓN B ": "Aspecto ambiental ",
+    "OPCIÓN C": "Consecuencia",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es la IATF 16949:2016?",
+    "OPCIÓN A ": "Agrupación de fabricantes de automóviles y sus respectivas asociaciones de comercio",
+    "OPCIÓN B ": "Es la norma de sistemas de gestión de la calidad (SGC) específica para la industria del automóvil",
+    "OPCIÓN C": "International Automotive Task Force",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante estar certificado en la norma IATF 16949:2016?",
+    "OPCIÓN A ": "Porque formamos parte de cadena de suministro automotriz y no podríamos proveer si no la tuviéramos ",
+    "OPCIÓN B ": "Para atracción de clientes eléctricos",
+    "OPCIÓN C": "Para poder realizar ventas en otros países",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es la diferencia entre basura y residuo?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "La basura es desperdicio y los residuos se pueden reciclar",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Menciona algunos ejemplos de residuos peligrosos que generamos en Viñoplastic",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Aceite hidráulico, agua con aceite, filtros de aire, lámparas y balastros, batrías, latas de pintura, aerosoles",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Menciona algunos ejemplos de residuos sólidos que generamos en Viñoplastic",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Orgánicos, inorgánicos, papel, cartón, madera, pet, latas de aluminio, metales y playo",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un “Riesgo de Trabajo”?",
+    "OPCIÓN A ": "Accidentes y enfermedades a que están expuestos los trabajadores en el ejercicio o con motivo del trabajo",
+    "OPCIÓN B ": "Todo estado patológico derivado de la acción continua de una causa que tenga su origen o motivo en el trabajo",
+    "OPCIÓN C": "Toda lesión orgánica o perturbación funcional producida repentinamente en ejercicio o con motivo del trabajo.                                                                       ",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un “Accidente de Trabajo”?",
+    "OPCIÓN A ": "Suceso inesperado que causa daño o lesión",
+    "OPCIÓN B ": "Todo estado patológico derivado de la acción continua de una causa que tenga su origen o motivo en el trabajo",
+    "OPCIÓN C": "Toda lesión orgánica o perturbación funcional producida repentinamente en ejercicio o con motivo del trabajo.                                                                       ",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una “Enfermedad de Trabajo”?",
+    "OPCIÓN A ": "Todo estado patológico derivado de la acción continua de una causa que tenga su origen  o motivo en el trabajo",
+    "OPCIÓN B ": "Toda lesión orgánica o perturbación funcional producida repentinamente en ejercicio o con motivo del trabajo.                                                                       ",
+    "OPCIÓN C": "Accidentes y enfermedades a que están expuestos los trabajadores en el ejercicio o con motivo del trabajo",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es el “EPP?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Equipo de Protección Personal ",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve el “EPP?",
+    "OPCIÓN A ": "Para cumplir con la Norma IATF 16949:2016",
+    "OPCIÓN B ": "Para evitar sanciones",
+    "OPCIÓN C": "Proteger de posibles lesiones y/o riesgos ",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Son algunas de las medidas de prohibición dentro de las instalaciones de Viñoplastic",
+    "OPCIÓN A ": "Prohibido uso de celulares, prohibido uso de maquillaje, accesorios y audífonos, prohibido comer en áreas de trabajo",
+    "OPCIÓN B ": "Prohibido ingresar herramientas, prohibido ingerir alimentos, prohibido ir al baño en horas de trabajo",
+    "OPCIÓN C": "Prohibido el uso de cofia, bata y botas de seguridad",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es calidad?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "La calidad es una propiedad inherente de cualquier cosa que permite que la misma sea valorada con respecto a cualquier otra de su misma especie",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles son los tres tipos de auditorías que tenemos en Viñoplastic?",
+    "OPCIÓN A ": "Auditoría de calidad, Auditoría de seguridad laboral y Auditoría de proveedores",
+    "OPCIÓN B ": "Auditoría interna, Auditoría por cliente y Auditoría por organismo certificador",
+    "OPCIÓN C": "No tenemos auditorías",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es la Política Integral de Viñoplastic?",
+    "OPCIÓN A ": "En Viñoplastic inyección tenemos el compromiso de satisfacer las necesidades de nuestros clientes cumpliendo con los requisitos de calidad, legales, ambientales y reglamentarios aplicables a las partes plásticas, comprometidos con el medio ambiente y con la prevención de la contaminación, desde el recibo de materias primas hasta el embarque de nuestros productos, manteniendo un  enfoque de mejora continua",
+    "OPCIÓN B ": "Conjunto de principios, estrategias y acciones que un gobierno, organización o empresa adopta para proteger el medio ambiente y promover la sostenibilidad. ",
+    "OPCIÓN C": "La satisfacción del cliente cumpliendo con los requisitos de calidad establecidos dentro de un proceso de mejora continua.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es la Misión de Viñoplastic?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Satisfacer las necesidades de nuestros clientes con excelencia, proporcionando soluciones integrales e innovadoras.",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es la Visión de Viñoplastic?",
+    "OPCIÓN A ": "Ser reconocidos como lideres en la inyección de plástico, representando para nuestros clientes la mejor alternativa del mercado, logrando de esta manera un creciente volumen y participación con nuestros clientes",
+    "OPCIÓN B ": "La satisfacción del cliente cumpliendo con los requisitos de calidad establecidos dentro de un proceso de mejora continua.",
+    "OPCIÓN C": "Ser el líder mundial en negocios sostenibles, demostrando cómo su modelo de negocio orientado a un propósito impulsa el desempeño superior.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es la finalidad de la carpeta de proceso?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Apoyarte a realizar de manera correcta las actividades",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles de los siguientes documentos son los que tu debes revisar en la carpeta de proceso?",
+    "OPCIÓN A ": "Hoja técnica de material\nInstrucciones de inspección\nDiagrama de colada caliente\nPlan de control\nHoja de moldeo",
+    "OPCIÓN B ": "Instrucciones de trabajo\nInstrucción de inspección\nEspecificación de empaque\nHoja de moldeo\nAlertas de calidad",
+    "OPCIÓN C": "Capacitación y retroalimentación\nAlertas de calidad\nInstrucción general de arranque\nEspecificación de empaque\nPrograma de robot",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿En qué momentos deben leer las instrucciones de trabajo?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Al iniciar labores",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué utilizas la hoja de moldeo?",
+    "OPCIÓN A ": "Evaluar la eficiencia de tu maquina utilizando el ciclo y obtener la clave de la resina y descripción de la resina",
+    "OPCIÓN B ": "Para saber cuántas cavidades tiene el molde y el número de máquina",
+    "OPCIÓN C": "Para conocer cuales es la presión con la que está trabajando la unidad de inyección y conocer el proceso de la máquina",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles son algunos de los empaques que se utilizan en Viñoplastic ",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Cja plástica, caja de cartón, bolsas",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Dónde deberás colocar la carpeta de proceso en caso de un paro de maquina o termino de producción?",
+    "OPCIÓN A ": "En el escritorio de RPS",
+    "OPCIÓN B ": "En la mesa de trabajo ",
+    "OPCIÓN C": "En el escritorio de Check List ",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuántos lotes dura una alerta?",
+    "OPCIÓN A ": "3",
+    "OPCIÓN B ": "10",
+    "OPCIÓN C": "5",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una Instrucción de inspección?",
+    "OPCIÓN A ": "Te indica que tipo de empaque que debes utilizar",
+    "OPCIÓN B ": "Encontramos cuales son los atributos y variables de la pieza, por lo que es de ayuda para darle el visto bueno.",
+    "OPCIÓN C": "Surgen por reclamos del cliente y se especifican las acciones que se toman.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una Especificación de empaque?",
+    "OPCIÓN A ": "Te indica que tipo de empaque que debes utilizar",
+    "OPCIÓN B ": "Encontramos todos los parámetros de la maquina (Ciclos, refrigeración, temperatura, presión etc.)",
+    "OPCIÓN C": "Encontramos cuales son los atributos y variables de la pieza, por lo que es de ayuda para darle el visto bueno.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una Hoja de moldeo?",
+    "OPCIÓN A ": "Encontramos cuales son los atributos y variables de la pieza, por lo que es de ayuda para darle el visto bueno.",
+    "OPCIÓN B ": "Su finalidad es explicar paso a paso, lo que debes hacer en cada uno de los productos a trabajar",
+    "OPCIÓN C": "Encontramos todos los parámetros de la maquina (Ciclos, refrigeración, temperatura, presión etc.)",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una Alerta de calidad?",
+    "OPCIÓN A ": "Encontramos cuales son los atributos y variables de la pieza, por lo que es de ayuda para darle el visto bueno.",
+    "OPCIÓN B ": "Surgen por reclamos del cliente y se especifican las acciones que se toman.",
+    "OPCIÓN C": "Te indica que tipo de empaque que debes utilizar",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una Instrucción de trabajo?",
+    "OPCIÓN A ": "Su finalidad es explicar paso a paso, lo que debes hacer en cada uno de los productos a trabajar",
+    "OPCIÓN B ": "Encontramos todos los parámetros de la maquina (Ciclos, refrigeración, temperatura, presión etc.)",
+    "OPCIÓN C": "Su finalidad es explicar paso a paso, lo que debes hacer en cada uno de los productos a trabajar",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuánto tiempo representa o equivale cada cuadro pequeño?",
+    "OPCIÓN A ": "30 minutos",
+    "OPCIÓN B ": "15 minutos ",
+    "OPCIÓN C": "1 hora",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve el cuadro de “causa de paro”?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Para identificar los motivos por los cuales se paro la maquina",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve el cuadro de “defectos encontrados ”?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Para reportar que defectos tuvieron las piezas durante el turno",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve el pigmento o máster?",
+    "OPCIÓN A ": "Para medir la temperatura exacta de las piezas",
+    "OPCIÓN B ": "Para ajustar las tonalidades de los colores",
+    "OPCIÓN C": "Para dar color al plástico ",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Son 3 nombres de plásticos (polímeros) que usamos en la planta",
+    "OPCIÓN A ": "Flexible, Ingeniería, Opacos",
+    "OPCIÓN B ": "Polipropileno, Polietileno, Poliestireno",
+    "OPCIÓN C": "Gris, Negro y Blanco",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Son ejemplos de piezas de scrap",
+    "OPCIÓN A ": "Llenado incompleto, Manchas, Rechupes, Ráfaga, Fuera de tono, Burbujas",
+    "OPCIÓN B ": "Manchas, color uniforme y quemadura ",
+    "OPCIÓN C": "Piezas del sector domestico ",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué son los acrónimos?",
+    "OPCIÓN A ": "Son palabras formadas por siglas o abreviaturas. por lo que cada sigla o abreviación representa una palabra",
+    "OPCIÓN B ": "Son los encargados de darle tonalidad a la pieza",
+    "OPCIÓN C": "Son un tipo de plástico",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Poseen propiedades térmicas, químicas y mecánicas, por lo que se consideran plásticos de…",
+    "OPCIÓN A ": "Automotriz",
+    "OPCIÓN B ": "Baja calidad",
+    "OPCIÓN C": "Ingenieria",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué son las propiedades Mecánicas en los plásticos?",
+    "OPCIÓN A ": "Determinan el grado de luz que puede dejar pasar un cuerpo a través de el.",
+    "OPCIÓN B ": "Consiste en determinar el grado de resistencia, que presenta un plástico al doblarse",
+    "OPCIÓN C": "Describen cómo los materiales responden al calor, incluyendo su capacidad para conducir, almacenar y transferir calor",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué son las propiedades Ópticas en los plásticos?",
+    "OPCIÓN A ": "Determinan el grado de luz que puede dejar pasar un cuerpo a través de el.",
+    "OPCIÓN B ": "Describen cómo los materiales responden al calor, incluyendo su capacidad para conducir, almacenar y transferir calor",
+    "OPCIÓN C": "Consiste en determinar el grado de resistencia, que presenta un plástico al doblarse",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un catálogo de fallas?",
+    "OPCIÓN A ": "Historial de fallas que ha presentado o puede presentar una pieza.",
+    "OPCIÓN B ": "Prueba de flamabilidad a las resinas anualmente",
+    "OPCIÓN C": "Reclamación o protesta que se hace ante una autoridad a causa de un desacuerdo o inconformidad.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una queja?",
+    "OPCIÓN A ": "Documento para la aprobación temporal de algún material o proceso que no cumpla con los requerimientos preestablecidos considerando que la variación no debe afectar la funcionalidad y apariencia del producto",
+    "OPCIÓN B ": "Señal o aviso de un peligro.",
+    "OPCIÓN C": "Reclamación o protesta que se hace ante una autoridad a causa de un desacuerdo o inconformidad.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una alerta?",
+    "OPCIÓN A ": "Señal o aviso de un peligro.",
+    "OPCIÓN B ": "Señal o aviso de un peligro.",
+    "OPCIÓN C": "Historial de fallas que ha presentado o puede presentar una pieza.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es un requisito específico del cliente BOS?",
+    "OPCIÓN A ": "Empaque antiestático  en todas las piezas",
+    "OPCIÓN B ": "Prueba de flamabilidad a las resinas anualmente",
+    "OPCIÓN C": "Uso de polifoam blanco",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es un requisito específico del cliente GRAMMER?",
+    "OPCIÓN A ": "Empaque antiestático  en todas las piezas",
+    "OPCIÓN B ": "Prueba de flamabilidad a las resinas anualmente",
+    "OPCIÓN C": "Uso de polifoam blanco",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿A qué se le conoce como desviación?",
+    "OPCIÓN A ": "Documento para la aprobación temporal de algún material o proceso que no cumpla con los requerimientos preestablecidos considerando que la variación no debe afectar la funcionalidad y apariencia del producto",
+    "OPCIÓN B ": "Incumplimiento de los requisitos especificados",
+    "OPCIÓN C": "Lugar de segregación de materiales y/o productos sujetos a alguna prueba o inspección para determinar su estado de inspección y prueba",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es cuarentena?",
+    "OPCIÓN A ": "Lugar de segregación de materiales y/o productos sujetos a alguna prueba o inspección para determinar su estado de inspección y prueba",
+    "OPCIÓN B ": "Material y/o producto que No cumple satisfactoriamente los requisitos especificados.",
+    "OPCIÓN C": "Material y/o producto en espera de disposición de conformidad o no conformidad con respecto a los requisitos especificados",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿A qué se le conoce como producto no conforme?",
+    "OPCIÓN A ": "Incumplimiento de los requisitos especificados",
+    "OPCIÓN B ": "Material y/o producto que No cumple satisfactoriamente los requisitos especificados.",
+    "OPCIÓN C": "Palabra inglesa que se traduce como chatarra o residuo",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Se le conoce como material y producto en cuarentena a…",
+    "OPCIÓN A ": "Todo el scrap que se desecha en el turno ",
+    "OPCIÓN B ": "Todo producto liberado en almacén",
+    "OPCIÓN C": "Material y/o producto en espera de disposición de conformidad o no conformidad con respecto a los requisitos especificados",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿A qué se le conoce como no conformidad?",
+    "OPCIÓN A ": "Incumplimiento de los requisitos especificados",
+    "OPCIÓN B ": "Falta de requerimientos",
+    "OPCIÓN C": "Fallas de producción ",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es scrap?",
+    "OPCIÓN A ": "Palabra inglesa que se traduce como chatarra o residuo",
+    "OPCIÓN B ": "Piezas para entrega ",
+    "OPCIÓN C": "Producción final del turno",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de identificación se le coloca al producto sospechoso?",
+    "OPCIÓN A ": "MATERIAL ACEPTADO (RG-ASC-013)",
+    "OPCIÓN B ": "MATERIAL LIBERADO\n(RG-ASC-015)",
+    "OPCIÓN C": "MATERIA CRITICA Y/O PRODUCTO EN OBSERVACION (RG-ASC-086)",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Se puede reutilizar el material molido en piezas automotrices?",
+    "OPCIÓN A ": "No",
+    "OPCIÓN B ": "Sí  ",
+    "OPCIÓN C": "Depende la pieza",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué piezas se pueden fabricar con material molido en Viñoplastic?",
+    "OPCIÓN A ": "Piezas automotrices que no sean de vista ",
+    "OPCIÓN B ": "Ninguna ",
+    "OPCIÓN C": "Cubetas, cajas de herramientas, bancos, botes para basura ",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Con tus propias palabras define: EMPAQUE",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Libre",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve la etiqueta Verde?",
+    "OPCIÓN A ": "5.\nColor de etiqueta que se le coloca a las piezas del lado LH (izquierdo)",
+    "OPCIÓN B ": "2.\nIdentifica al material aceptado y ya puede enviarse al cliente (RG-ASC-013)",
+    "OPCIÓN C": "4.\nColor de etiqueta que se le coloca a las piezas del lado RH (derecho)",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve la etiqueta Verde o Blanca de material aceptado?",
+    "OPCIÓN A ": "3.\nIdentifica el material al cual le falta un proceso (RG-ASC-015)",
+    "OPCIÓN B ": "2.\nIdentifica al material aceptado y ya puede enviarse al cliente (RG-ASC-013)",
+    "OPCIÓN C": "5.\nColor de etiqueta que se le coloca a las piezas del lado LH (izquierdo)",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve la etiqueta Blanca?",
+    "OPCIÓN A ": "5.\nColor de etiqueta que se le coloca a las piezas del lado LH (izquierdo)",
+    "OPCIÓN B ": "1.\nSirve para identificar el PRODUCTO NO CONFORME (RG-ASC-086) ",
+    "OPCIÓN C": "4.\nColor de etiqueta que se le coloca a las piezas del lado RH (derecho)",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve la etiqueta Roja?",
+    "OPCIÓN A ": "3.\nIdentifica el material al cual le falta un proceso (RG-ASC-015)",
+    "OPCIÓN B ": "1.\nSirve para identificar el PRODUCTO NO CONFORME (RG-ASC-086) ",
+    "OPCIÓN C": "3.\nIdentifica el material al cual le falta un proceso (RG-ASC-015)",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve la etiqueta Amarilla?",
+    "OPCIÓN A ": "3.\nIdentifica el material al cual le falta un proceso (RG-ASC-015)",
+    "OPCIÓN B ": "2.\nIdentifica al material aceptado y ya puede enviarse al cliente (RG-ASC-013)",
+    "OPCIÓN C": "1.\nSirve para identificar el PRODUCTO NO CONFORME (RG-ASC-086) ",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles son los tipos de separadores que utilizamos en Viñoplastic?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "CON ACOMODO, BOLSAS, A GRANEL, BLISTER, REJILLA",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuándo utilizamos empaques especiales?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "CUANDO EL CLIENTE LO PIDE",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de bolsas utilizamos en Viñoplastic?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "BOLSA DE POLIPAPEL Y POLIPROPILENO, SEPARADOR DE PLÁSTICO Y ANTIESTATICO, POLIFOAM ROSA Y BLANCO, SEPARADOR DE CARTON CRAFT, LAMINADO BLANCO",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para cuál cliente utilizamos empaques antiestáticos?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "KOSTAL",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Menciona las 4 familias de productos que se inyectan en Viñoplastic",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Automotrices, Electricos, Enseres domesticos, Varios",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de certificación debemos tener para poder trabajar para la Industria automotriz?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "AITF 16949:2016",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de certificación debemos tener para inyectar partes eléctricas?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "UL",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Menciona 3 clientes de la industria automotriz",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "KOSTAL,GRAMMER,BOS,VALEO,MAGNETI MARELLI",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Menciona 3 clientes a los que les hacemos partes eléctricas",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "APEX, BLEIGRENS, TURMIX, BYRNE, VACMAN, ROBOT",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Menciona 3 clientes denominados “varios”",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "ACISA, DIEHL CONTROL, HUT, SIESA, ARAVEN, ALFA, VISAPACK, NILFISK ",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es el objetivo de la Norma VDA 16?",
+    "OPCIÓN A ": "Este documento VDA cubre las superficies decorativas de los accesorios y piezas funcionales para exteriores e interiores de automóviles.",
+    "OPCIÓN B ": "Este documento VDA representa un documento de formación, para asegurar la conformidad, dentro del aplicación, de referencias acordadas.",
+    "OPCIÓN C": "La evaluación de las partes decorativas debe realizarse de acuerdo con el ángulo de montaje",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Menciona los puntos que toma en cuenta la Norma VDA 16 para la inspección visual ",
+    "OPCIÓN A ": "Distancia\nIluminación\nZona de ensamble\nPeriodo de observación",
+    "OPCIÓN B ": "Tonalidad\nTamaño\nCalidad\n",
+    "OPCIÓN C": "Empaque\nEtiquetado\nCantidad\nTonalidad",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuántas vistas tiene cada pieza?",
+    "OPCIÓN A ": "2",
+    "OPCIÓN B ": "4",
+    "OPCIÓN C": "3",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿En qué documento puedes revisar y/o apoyarte para realizar una adecuada inspección visual de las piezas cuando estás a pie de máquina?",
+    "OPCIÓN A ": "Instrucción de empaque",
+    "OPCIÓN B ": "Instrucción de trabajo",
+    "OPCIÓN C": "Alertas de calidad",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Describe las principales las características de la Zona de vista A",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Superficies en áreas que son inmediatamente visible // Superficie que es más evidente para el cliente y que puede ser funcional o critica",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Describe las principales las características de la Zona de vista B",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Superficies que se encuentran en un área, o no se notan en una posición normal. (arco de observación <45 °) // Es la superficie menos visible al cliente en una posición normal, pero que sin embargo puede ser vista desde otras posiciones o funciones",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Describe las principales las características de la Zona de vista C",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Superficies cubiertas después del montaje // superficie que no es visible para el cliente",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Dónde se encuentran ubicados los kits antiderrames? ",
+    "OPCIÓN A ": "En las oficinas administrativas. ",
+    "OPCIÓN B ": "En Nave 1 y Nave 3. ",
+    "OPCIÓN C": "En la entrada principal.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué se debe hacer primero al detectar un derrame grave de aceite?",
+    "OPCIÓN A ": "Usar un trapo para limpiarlo.",
+    "OPCIÓN B ": "Activar el paro de emergencia y reforzar la contención.",
+    "OPCIÓN C": "Colocar un recipiente debajo de la fuga.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En un derrame de aceite ¿Qué debe hacerse después de limpiar el área afectada con aserrín?",
+    "OPCIÓN A ": "Tirar el aserrín al bote de basura más cercano.",
+    "OPCIÓN B ": "Dejar el aserrín en el piso hasta que se evapore la sustancia.",
+    "OPCIÓN C": "Recoger el aserrín con escoba y recogedor, colocarlo en un costal, y etiquetarlo como contaminado.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué se debe hacer primero al detectar un derrame de aceite?",
+    "OPCIÓN A ": "Llenar la bitácora de incidentes.",
+    "OPCIÓN B ": "Evaluar el tipo de derrame y actuar según el caso.",
+    "OPCIÓN C": "Aplicar desengrasante inmediatamente.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Además de las máquinas de inyección, en qué otras áreas de Viñoplastic pueden ocurrir derrames de aceite?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Mantenimiento, Taller de moldes, Almacén (montacargas)",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿La bitácora de incidentes solo se llena cuando el derrame es grave? (Si/No) ¿Por qué?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "No, se debellenar cada que se utilice el kit antiderrame",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué Equipo de Protección personal estas Obligado a utilizar de acuerdo con tu puesto de trabajo?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Bata, cofia, manga y gaunte amarillo, guante blanco, faja",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Es una obligación del trabajador utilizar su Equipo de Protección Personal como se instruyó en la capacitación",
+    "OPCIÓN A ": "FALSE",
+    "OPCIÓN B ": "TRUE",
+    "OPCIÓN C": "Ninguna",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de EPP nos ayuda a proteger de posibles riesgos nuestra cabeza?",
+    "OPCIÓN A ": "Lentes, goggles, careta para soldador, Gafas de soldadura",
+    "OPCIÓN B ": "Overol, Mandil, Bata, Peto",
+    "OPCIÓN C": "Cascos dieléctricos/ contra impactos, cofias, capuchas",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de EPP nos ayuda a proteger de posibles riesgos nuestro rostro y ojos?",
+    "OPCIÓN A ": "Lentes, goggles, careta para soldador, Gafas de soldadura",
+    "OPCIÓN B ": "Guantes dieléctricos/ contra temperaturas extremas , Mangas ",
+    "OPCIÓN C": "Lentes, goggles, careta para soldador, Gafas de soldadura",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de EPP nos ayuda a proteger de posibles riesgos nuestros oídos?",
+    "OPCIÓN A ": "Overol, Mandil, Bata, Peto",
+    "OPCIÓN B ": "Tapones auditivos, Conchas acústicas",
+    "OPCIÓN C": "Lentes, goggles, careta para soldador, Gafas de soldadura",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de EPP nos ayuda a proteger de posibles riesgos nuestro aparato respiratorio?",
+    "OPCIÓN A ": "Cubre bocas, Respirador contra gases, Mascarilla desechabl",
+    "OPCIÓN B ": "Guantes dieléctricos/ contra temperaturas extremas , Mangas ",
+    "OPCIÓN C": "Lentes, goggles, careta para soldador, Gafas de soldadura",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de EPP nos ayuda a proteger de posibles riesgos nuestras extremidades superiores?",
+    "OPCIÓN A ": "Lentes, goggles, careta para soldador, Gafas de soldadura",
+    "OPCIÓN B ": "Overol, Mandil, Bata, Peto",
+    "OPCIÓN C": "Guantes dieléctricos/ contra temperaturas extremas , Mangas ",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de EPP nos ayuda a proteger de posibles riesgos nuestro tronco del cuerpo?",
+    "OPCIÓN A ": "Overol, Mandil, Bata, Peto",
+    "OPCIÓN B ": "Tapones auditivos, Conchas acústicas",
+    "OPCIÓN C": "Cascos dieléctricos/ contra impactos, cofias, capuchas",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En un pictograma la figura geométrica de un Circulo significa: ",
+    "OPCIÓN A ": "Descripción de una acción que puede provocar riesgo ",
+    "OPCIÓN B ": "Proporciona información para casos de emergencia",
+    "OPCIÓN C": "Prohibición de una acción",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En un pictograma la figura geométrica de un Circulo con una linea en diagonal significa: ",
+    "OPCIÓN A ": "Descripción de una acción que puede provocar riesgo ",
+    "OPCIÓN B ": "Prohibición de una acción",
+    "OPCIÓN C": "Advertencia de un peligro",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En un pictograma la figura geométrica de un Triángulo  significa: ",
+    "OPCIÓN A ": "Advertencia de un peligro",
+    "OPCIÓN B ": "Descripción de una acción que puede provocar riesgo ",
+    "OPCIÓN C": "Proporciona información para casos de emergencia",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En un pictograma la figura geométrica de un Cuadrado / Rectángulo  significa: ",
+    "OPCIÓN A ": "Descripción de una acción que puede provocar riesgo ",
+    "OPCIÓN B ": "Prohibición de una acción",
+    "OPCIÓN C": "Proporciona información para casos de emergencia",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "De acuerdo con la NOM-026-STPS- 2008. Colores y señales de seguridad. El color rojo se relaciona con:",
+    "OPCIÓN A ": "Obligación ",
+    "OPCIÓN B ": "Información ",
+    "OPCIÓN C": "Prohibición ",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "De acuerdo con la NOM-026-STPS- 2008. Colores y señales de seguridad. El color azul se relaciona con:",
+    "OPCIÓN A ": "Obligación ",
+    "OPCIÓN B ": "Advertencia",
+    "OPCIÓN C": "Información ",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "De acuerdo con la NOM-026-STPS- 2008. Colores y señales de seguridad. El color verde se relaciona con:",
+    "OPCIÓN A ": "Advertencia",
+    "OPCIÓN B ": "Información ",
+    "OPCIÓN C": "Prohibición ",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "De acuerdo con la NOM-026-STPS- 2008. Colores y señales de seguridad. El color amarillo se relaciona con:",
+    "OPCIÓN A ": "Advertencia",
+    "OPCIÓN B ": "Obligación ",
+    "OPCIÓN C": "Prohibición ",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "De acuerdo con la NOM-026-STPS- 2008. Colores y señales de seguridad. Las tuberías en color ROJO contienen…",
+    "OPCIÓN A ": "Agua de proceso",
+    "OPCIÓN B ": "Agua contra incendio",
+    "OPCIÓN C": "Fluido peligroso ",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "De acuerdo con la NOM-026-STPS- 2008. Colores y señales de seguridad. Las tuberías en color VERDE contienen…",
+    "OPCIÓN A ": "Agua de proceso",
+    "OPCIÓN B ": "Agua contra incendio",
+    "OPCIÓN C": "Fluido peligroso ",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "De acuerdo con la NOM-026-STPS- 2008. Colores y señales de seguridad. Las tuberías en color AMARILLO contienen…",
+    "OPCIÓN A ": "Agua de proceso",
+    "OPCIÓN B ": "Agua contra incendio",
+    "OPCIÓN C": "Fluido peligroso ",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una carga manual?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Cualquier operación de transporte o sujeción de una carga por parte de uno o varios trabajadores, como el levantamiento, la colocación, el empuje, la tracción o el desplazamiento.",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles son las lesiones mas comunes por realizar incorrectamente cargas manuales?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Lumbalgia, Hernia, Ganglión, Síndrome cervical",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Explica con tus palabras ¿cuál es la manera correcta para realizar una carga manual?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "1. Preparación:\nEvalúa la carga: Asegúrate de que la carga no sea demasiado pesada para ti y que puedas manejarla con seguridad.\nAsegura un buen agarre: Sujeta la carga firmemente con ambas manos, utilizando asas si están disponibles.\nPosición de los pies: Separa los pies a la anchura de los hombros para tener una base estable.\nAcércate a la carga: Colócate lo más cerca posible de la carga para minimizar la distancia que debes levantarla.\n2. Levantamiento:\nFlexiona las rodillas: Mantén la espalda recta y dobla las rodillas como si fueras a sentarte, manteniendo la carga cerca del cuerpo.\nLevanta con las piernas: Utiliza la fuerza de las piernas para levantarte, manteniendo la espalda recta y la carga cerca del cuerpo.\nEvita giros: No gires el tronco durante el levantamiento; en su lugar, mueve los pies para cambiar de dirección.\nMantén la carga cerca: Mantén la carga cerca del cuerpo durante todo el movimiento para reducir la tensión en la espalda.\n3. Colocación:\nAcércate al destino: Camina con la carga cerca del cuerpo, evitando giros bruscos.\nFlexiona las rodillas: Baja la carga utilizando la misma técnica que para levantarla, manteniendo la espalda recta.\nLibera la carga: Coloca la carga suavemente en su destino, evitando soltarla de golpe.",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué tipo de EPP debes utilizar al realizar cargas manuales?",
+    "OPCIÓN A ": "Faja / cinturón lumbar ",
+    "OPCIÓN B ": "Guantes, Faja, Botas de seguridad",
+    "OPCIÓN C": "Arnés, Casco y Botas de seguridad",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En tus propias palabras ¿Qué es TRAZABILIDAD?",
+    "OPCIÓN A ": "",
+    "OPCIÓN B ": "",
+    "OPCIÓN C": "",
+    "RESPUESTA": "Serie\nde\nprocedimientos que\npermiten seguir el\nproceso de evolución\nde un producto en cada\nuna de sus etapas",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un reloj fechador?",
+    "OPCIÓN A ": "Instrumento o aparato que sirve para poner o\nindicar la fecha,\nseñalando normalmente el día el mes y el año, y en ocasiones el día\nde la semana.",
+    "OPCIÓN B ": "Herramienta utilizada en la industria de la transformación para\ndarle la trazabilidad necesaria a los materiales en el proceso de\nfabricación",
+    "OPCIÓN C": "Se denomina\nreloj al instrumento capaz de medir el tiempo natural\n( años, fases lunares, etc.) en unidades\nconvencionales ( minutos o segundos). Fundamentalmente",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles son los tipos de relojes fechadores que usamos en Viñoplastic?",
+    "OPCIÓN A ": "Reloj y Calendario ",
+    "OPCIÓN B ": "Meses, Días y Años",
+    "OPCIÓN C": "Cantidad y Fecha",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Menciona las partes de una máquina de inyección. ",
+    "OPCIÓN A ": "Molde (lado fijo y lado móvil), Panel de control, Tolva, Unidad de inyección, Guardas de seguridad.",
+    "OPCIÓN B ": "Unidad de cierre-Unidad de inyección-Unidad de control",
+    "OPCIÓN C": "Barras paralelas. Tornillos de sujeción. Botadores de espada. Noyós de formación. Husillo. Calefacción.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es el proceso de transformación de plástico que se lleva a cabo en Viñoplastic?",
+    "OPCIÓN A ": "Inyección soplo.",
+    "OPCIÓN B ": "Termoformado.",
+    "OPCIÓN C": "Inyección de plástico.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿En qué consiste el proceso de inyección?",
+    "OPCIÓN A ": "Comienza con la extrusión de un tubo lleno, esté tubo de plástico aún caliente que sale de la terraja se corta y un molde frío dividido en dos se cierra a su alrededor. A continuación, se inyecta aire en el material con una cánula de soplado y el polímero se adhiere a las paredes internas del molde",
+    "OPCIÓN B ": "El gránulo entra en un tubo calentado, dotado de un tornillo sin fin. El material blando homogeneizado se empuja, se comprime y luego pasa a través de una terraja para darle la forma deseada, permite obtener productos de gran longitud, como tubos.",
+    "OPCIÓN C": "Los pellets se vierten en una tolva para alimentar un tornillo sin fin, el plástico se calienta dando como resultado un líquido viscoso que el husillo expulsa con presión a través de la boquilla para llenar un molde cerrado y enfriado. En contacto con el molde frío, el material toma forma y se solidifica.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Son los procesos en lo que trabaja una máquina de inyección",
+    "OPCIÓN A ": "Automático sin robot. \nAutomático con robot. semiautomático\nManual",
+    "OPCIÓN B ": "Sentado frente a la máquina.\nDe pie en Zona de seguridad del robot.  Movimientos manuales.",
+    "OPCIÓN C": "Con manipulador de extracción. Colocando silicón para desmoldear las piezas plásticas del molde",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Se le conoce como lado operador porque… ",
+    "OPCIÓN A ": "Hace referencia al lado donde un proceso automático o semiautomático, el operador debe llevar el control mediante el panel de control, por lo que este lado siempre será frente al panel de control",
+    "OPCIÓN B ": "Es la posición de zona de seguridad la cual imposibilita hacer movimientos de manera manual. El operador hace movimientos largos.",
+    "OPCIÓN C": "Está a la vista del operador, sobre las mesas con lámparas, y debajo de las micas de seguridad.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Tipos de moldes que existen? ",
+    "OPCIÓN A ": "Colada fría. Colada caliente.\nColada mixta o hibrida que es un conjunto de las dos anteriores.",
+    "OPCIÓN B ": "Grandes\nMedianos\nPequeños.",
+    "OPCIÓN C": "Automotriz.\nEnceres domésticos. Juguetes.\nHerramientas.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es el scrap? ",
+    "OPCIÓN A ": "Es el nombre técnico de la materia prima que se utiliza para la inyección de plásticos ",
+    "OPCIÓN B ": "Es la cantidad de desperdicio obtenido llamado purga en un cambio de color o de resina.",
+    "OPCIÓN C": "Es el conjunto de todo el desperdicio generado en un arranque o reactivación derivado del proceso de inyección de plástico. (piezas, colada, purga, escurrimiento)",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Con que frecuencia debes revisar la boquilla?",
+    "OPCIÓN A ": "Cada 5 minutos.",
+    "OPCIÓN B ": "Cada media hora.",
+    "OPCIÓN C": "Cada hora.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Dónde se registra el scrap?",
+    "OPCIÓN A ": "En la hoja de capacitación y retroalimentación. RG-PRO-108.",
+    "OPCIÓN B ": "En la hoja de control de scrap, colada y purga. RG-PRO-117.",
+    "OPCIÓN C": "En el reporte de producción. RG-PRO-012.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es el reporte de producción y para qué sirve?",
+    "OPCIÓN A ": "Es el documento oficial, en el cual se colocan los datos relevantes para calcular la eficiencia con base a las cantidades producida en un turno, y está dado de alta con el RG-PRO-012.",
+    "OPCIÓN B ": "Documento en el cual queda plasmado el nombre del colaborador, garantizando que cuenta con las habilidades adecuadas para realizar actividades específicas. RG-PRO-108.",
+    "OPCIÓN C": "Documento que sirve como guía para saber paso a paso que es lo que debo revisar, trabajar a la pieza.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una cavidad?",
+    "OPCIÓN A ": "Es la parte de máquina de inyección donde se depositan los pellets",
+    "OPCIÓN B ": "Espacio hueco en el interior de un cuerpo o en una superficie.",
+    "OPCIÓN C": "Es el espacio donde el polímero (materia prima) toma la forma de la pieza, conforme entre el fluido del plástico.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En las piezas plástica ¿Qué es un fechador y para qué sirve?",
+    "OPCIÓN A ": "Es un calendario que se puede modificar de acuerdo con el día, mes y año en que se inyecte la pieza plástica de esta manera lleva a cabo la trazabilidad",
+    "OPCIÓN B ": "Es un indicador para saber la hora exacta en que se fabricó algún producto y saber en qué momento comenzó un lote.",
+    "OPCIÓN C": "Insertos internos de acero con números que están a la vista del operador, sobre las caras del molde.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Las tinas de colores ¿Para qué sirven y cuál es el uso de cada color?",
+    "OPCIÓN A ": "Para que el personal de taller mecánico y mantenimiento no se lastimen y las ocupen para alcanzar lugares en zonas demasiadas altas dentro de la máquina.",
+    "OPCIÓN B ": "Para no confundir la producción con la de otra máquina, ya que las tinas son de la misma forma y al ser de un color diferente ayudan para no mezclarlas.",
+    "OPCIÓN C": "Sirven para identificar insumos y P.T. corresponde de la siguiente manera: ROJA-scrap (piezas, colada y purga). Azul-soporte para producto terminado.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es la hoja de instrucción de trabajo?",
+    "OPCIÓN A ": "Es un documento en el cual queda plasmado el nombre del colaborador, garantizando que cuenta con las habilidades adecuadas para realizar actividades específicas. ",
+    "OPCIÓN B ": "Es una especificación documentada en la cual se especifica paso a paso y detalladamente las instrucciones de lo que se tiene que hacer al llegar a operar una máquina de inyección.",
+    "OPCIÓN C": "Es una hoja que está a la vista del operador, sobre las mesas con lámparas.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es la especificación de empaque?",
+    "OPCIÓN A ": "Documento en el cual se dan las instrucciones paso a paso y detalladamente de lo que se tiene que hacer al llegar a operar una máquina de inyección de plástico. HI-PRO-XXX",
+    "OPCIÓN B ": "Documento en el cual se estipula la forma correcta de mandar la producción al cliente conforme a tamaño de caja tipo de bolsa y cantidades con registro ES-ASC-XXXX",
+    "OPCIÓN C": "Documento en el cual queda plasmado el nombre del colaborador, garantizando que cuenta con las habilidades adecuadas para realizar actividades específicas. RG-PRO-108.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un rechupe en una pieza plástica?",
+    "OPCIÓN A ": "Defecto generado en inyección de plástico debido a la falta de compactación o llenado, generando Zonas huecas o apariencia de las paredes sumidas.",
+    "OPCIÓN B ": "Defecto de la pieza que evita e impide hacer un ensamble correcto lo que provoca una mala imagen de la pieza.",
+    "OPCIÓN C": "Zona de vista en una pieza plástica donde se colocan etiquetas y la deformación en esas zonas impide hacerlo de manera incorrecta.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En una pieza plástica ¿Cuál es la parte que puede llegar a salir incompleta?",
+    "OPCIÓN A ": "La última zona en llenar y esta se puede encontrar en el lado opuesto al punto de inyección.",
+    "OPCIÓN B ": "Únicamente las zonas con costillas ya que es difícil que llegue entrar el plástico en esos puntos del molde.",
+    "OPCIÓN C": "Todas las zonas son importantes y en cualquier zona se puede presentar este defecto así que debemos cuidar en todo momento que salgan bien las piezas.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Cuando un producto debe pasar por otro proceso (pesado, segunda inspección, etc) ¿Qué etiqueta debes colocar? ",
+    "OPCIÓN A ": "La etiqueta azul o blanca con sello de producto en óptimas condiciones para pasar a retrabajo y bascula.",
+    "OPCIÓN B ": "La etiqueta amarilla con la leyenda de liberado y con etiqueta adicional que diga acabados, segunda inspección o bascula.",
+    "OPCIÓN C": "La etiqueta roja con la leyenda adicional de segunda inspección, traspaleo y cuarentena.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si calidad encuentra una pieza NG en nuestra caja ¿Con que etiqueta debería identificarlo?",
+    "OPCIÓN A ": "Con una etiqueta azul o blanca con sello de producto en óptimas condiciones para pasar a retrabajo y bascula.",
+    "OPCIÓN B ": "Con la etiqueta amarilla con la leyenda de liberado y con etiqueta adicional que diga acabados, segunda inspección o bascula.",
+    "OPCIÓN C": "Con la etiqueta roja con la descripción del motivo por el cual se rechaza.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si te rechazan la producción ¿Que debes hacer?",
+    "OPCIÓN A ": "Avisar de inmediato a mi supervisor para tomar acciones de contención y negociar con calidad el defecto.",
+    "OPCIÓN B ": "Nada, sigo trabajando y cuando el supervisor pase a dar su vuelta ya me dirá que acciones tomar.",
+    "OPCIÓN C": "Quitar y cambiar la etiqueta ya que no debo tener etiquetas rojas a lo largo de mi producción.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si salen 5 piezas NG seguidas ¿Qué debes hacer?",
+    "OPCIÓN A ": "Guardar las piezas que salieron mal y seguir trabajando.",
+    "OPCIÓN B ": "Detener máquina de manera correcta y avisar de inmediato al supervisor.",
+    "OPCIÓN C": "Avisar a calidad que han salido mal las piezas para que rechace toda mi producción.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante llevar el ciclo cuando trabaja la maquina en semiautomático?",
+    "OPCIÓN A ": "Para alcanzar mis objetivos consiguiendo obtener las cantidades requeridas por hora y por turno.",
+    "OPCIÓN B ": "Para evitar una llamada atención por parar la maquina ya que debo cumplir con las cantidades.",
+    "OPCIÓN C": "Para cumplir con mi porcentaje de eficiencia general al terminar mi turno.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un ciclo en un proceso de inyección de plástico?",
+    "OPCIÓN A ": "Serie de actos de carácter cultural relacionados entre sí, generalmente por el tema, y celebrados en un tiempo determinado",
+    "OPCIÓN B ": "Un ciclo es cierto periodo temporal que, una vez finalizado, vuelve a empezar.",
+    "OPCIÓN C": "Serie de fases o movimientos por las que pasa un polímero o inyección y que suceden en el mismo orden hasta llegar a una fase o estado a partir de los cuales vuelven a repetirse en el mismo orden.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significan las siglas EPP?",
+    "OPCIÓN A ": "Equipo de Protección Personal.",
+    "OPCIÓN B ": "Equipo Preventivo de Polipropileno",
+    "OPCIÓN C": "Equipo Para Profesionistas",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué debes de usar cofia?",
+    "OPCIÓN A ": "Por reglamento e higiene, así evitamos que algún cabello caiga dentro de los productos que fabricamos.",
+    "OPCIÓN B ": "Porque es un gorro de lino u otra tela fina que cubre toda la cabeza hasta la nuca.",
+    "OPCIÓN C": "Por obligación de la empresa, se necesita contar con protección para la cabeza y así evitar accidentes.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué debes de usar guantes blancos?",
+    "OPCIÓN A ": "Por seguridad y protocolo ya que las piezas salen a una temperatura considerablemente alta.",
+    "OPCIÓN B ": "Por reglamento y seguridad además sirve para no manchar o rayar las piezas cosméticas que fabricamos.",
+    "OPCIÓN C": "Por qué en las mañanas hace mucho frio y se congelan los dedos.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es la forma correcta de usar la bata?",
+    "OPCIÓN A ": "Usarla debajo de la ropa que traemos puesta y colocar una chamarra encima en caso de hacer frio.",
+    "OPCIÓN B ": "Usarla sobre la ropa que traemos de manera abierta sin los botones abrochados y con las mangas arremangadas.",
+    "OPCIÓN C": "Colocándola encima de la ropa que traemos, con todos los botones abrochados y las mangas sin arremangar.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante usar zapato cerrado cuando estas dentro de la fábrica?",
+    "OPCIÓN A ": "Para evitar un accidente ya que nos podemos salpicar plástico fundido o incluso golpearnos con algún objeto.",
+    "OPCIÓN B ": "Porque en temporada de frio, si usamos zapatos abiertos se nos congelan los pies. ",
+    "OPCIÓN C": "No importa el tipo de calzado que usemos, solo hay que tener cuidado.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve la manga y el guante amarillo?",
+    "OPCIÓN A ": "Para acalorarme y trabajar de manera incomoda, ya que me estorban y no me permiten laborar de manera adecuada y cómoda.",
+    "OPCIÓN B ": "Para prevenir una quemadura de segundo grado al trabajar con piezas calientes.",
+    "OPCIÓN C": "Sirven como protecciones de seguridad con el fin de evitar riesgo de cortaduras en la mano o en el antebrazo.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿En qué mano debe ir la manga y el guante amarillo?",
+    "OPCIÓN A ": "¿En qué mano debe ir la manga y el guante amarillo?",
+    "OPCIÓN B ": "En cualquiera de las dos manos, la idea es protegernos de una cortada y esta se puede dar en ambas manos.",
+    "OPCIÓN C": "Personas diestras en la mano derecha y las personas zurdas en la mano izquierda",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué son las 5´S?",
+    "OPCIÓN A ": "Metodología capaz de introducir medidas de prevención en las diferentes áreas de trabajo para dar un mejor sistema de trabajo contando con diferentes acciones como: ordenar separar y limpiar.",
+    "OPCIÓN B ": "5´s es una herramienta de gestión visual fundamental dentro de Lean Manufacturing, y utilizada habitualmente como punto de partida para introducir la mejora continua en la empresa.",
+    "OPCIÓN C": "La metodología “cinco eses” es una herramienta básica en la gestión de calidad fue desarrollada en Japón y cada una de las “S” nos ayuda a mejorar la calidad a través de clasificar, organizar, limpiar, estandarizar y seguir mejorando.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Acomoda las 5´s",
+    "OPCIÓN A ": "Clasificar\nOrdenar\nLimpiar\nEstandarizar\nMantener",
+    "OPCIÓN B ": "Clasificar (Seiri)\nOrdenar (Seiton)\nLimpiar (Seiso)\nEstandarizar (Seiketsu)\nDisciplina (Shitsuke)",
+    "OPCIÓN C": "Mantener\nClasificar\nEstandarizar\nOrdenar\nLimpiar",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cómo organizas tu área de trabajo?",
+    "OPCIÓN A ": "Seleccionando los elementos necesarios, asignándoles un lugar de forma que los pueda tener a mi alcance y no ocasione accidentes.",
+    "OPCIÓN B ": "No hay necesidad de acomodar ya que entre los colaboradores existe este habito de orden y limpieza.",
+    "OPCIÓN C": "De la manera que me lo pida mi jefe directo ya que él es responsable de mantener la planta limpia y ordenada.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cómo ordenas tu área de trabajo?",
+    "OPCIÓN A ": "Eliminar todo lo innecesario liberará espacio, ahorrará tiempo de producción dedicado a buscar las herramientas o limpiar la zona de trabajo",
+    "OPCIÓN B ": "En orden alfabético acomodando los elementos u objetos de tal manera que sea más sencillo realizar mis actividades encomendadas ",
+    "OPCIÓN C": "Determinando lo que no es necesario\nEliminando los elementos u objetos que no son obligatorios para desempeñar correctamente el trabajo",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un ciclo semiautomático?",
+    "OPCIÓN A ": "Serie de actos de carácter cultural relacionados entre sí, generalmente por el tema, y celebrados en un tiempo determinado",
+    "OPCIÓN B ": "Conjunto de movimientos o acciones con un determinado tiempo las cuales se repiten constantemente de manera seriada.",
+    "OPCIÓN C": "Es una serie de movimientos por las que pasa un polímero, que suceden en el mismo orden sin interrupción hasta llegar a un estado de manera intermitente extrayendo las piezas de manera manual. Sin embargo, su repetición depende del operador.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante respetar el tiempo de ciclo cuando se trabaja en semiautomático?",
+    "OPCIÓN A ": "Para alcanzar mis objetivos y porcentaje de eficiencia mínimo de tal forma que se consigan las cantidades requeridas por hora y por turno, también evitamos que salgan piezas NO OK",
+    "OPCIÓN B ": "Para evitar una llamada atención por parar la maquina ya que debo cumplir con las cantidades.",
+    "OPCIÓN C": "Para cumplir con mi porcentaje de eficiencia general al terminar mi turno.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Formato donde se va registrando la cantidad de piezas por hora, se llama?",
+    "OPCIÓN A ": "En la hoja de capacitación y retroalimentación. RG-PRO-108.",
+    "OPCIÓN B ": "En la hoja de control de scrap, colada y purga. RG-PRO-117.",
+    "OPCIÓN C": "En el reporte de producción. RG-PRO-012.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si en una hora salieron 3 piezas incompletas que se debe hacer en el reporte de producción?",
+    "OPCIÓN A ": "Anotarlas en el reporte de producción en el área de Defectos encontrados en el rubro asignado para piezas incompletas.",
+    "OPCIÓN B ": "Anotarlas en el reporte de producción en el área de Defectos encontrados en el rubro asignado para piezas contaminadas.",
+    "OPCIÓN C": "Anotarlas en el reporte de producción en el área de Defectos encontrados en el rubro asignado para piezas deformadas.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si llega a fallar la energía eléctrica, que se debe hacer en el reporte de producción?",
+    "OPCIÓN A ": "Anotarlas en el reporte de producción en el área de Paros o tiempo muerto en el rubro asignado de Falta energía eléctrica.",
+    "OPCIÓN B ": "Anotarlas en el reporte de producción en el área de Paros o tiempo muerto en el rubro asignado de Falta de Liberación.",
+    "OPCIÓN C": "Anotarlas en el reporte de producción en el área de Paros o tiempo muerto en el rubro asignado de Falta de material externo.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significan las letras L y R en productos de la industria automotriz?",
+    "OPCIÓN A ": "L de Lineal R de Resina virgen",
+    "OPCIÓN B ": "L de Left del inglés que significa izquierdo. R de Right del inglés que significa derecho",
+    "OPCIÓN C": "L de Light del inglés luz. R de Risk del inglés riesgo.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve una ayuda visual?",
+    "OPCIÓN A ": "Para difundir las características cualitativas y cuantitativas de todos los productos.",
+    "OPCIÓN B ": "Para distraer la atención del operador, garantizando la buena inspección de sus piezas.",
+    "OPCIÓN C": "Para exponer la forma correcta de trabajar, así como el acomodo de una producción o alguna alerta.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Dónde deben colocarse las ayudas visuales?",
+    "OPCIÓN A ": "A la vista del operador, sobre las mesas con lámparas.",
+    "OPCIÓN B ": "A la vista del supervisor en los pizarrones de las maquinas",
+    "OPCIÓN C": "A la vista de todo el personal, para que todos estemos involucrados en el tema.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un defecto?",
+    "OPCIÓN A ": "Se llama defecto a la carencia o falta de las cualidades propias y naturales de una cosa o a cualquier imperfección natural o moral",
+    "OPCIÓN B ": "Una llamada telefónica donde el cliente se queja de las malas prácticas de manufactura por parte de la empresa.",
+    "OPCIÓN C": "Una reclamación es una expresión de insatisfacción hecha, las quejas de los clientes son un indicador habitual de una baja satisfacción.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un reclamo o queja del cliente?",
+    "OPCIÓN A ": "Es un llamado de alerta en donde el cliente hace referencia a que se tubo al menos un error dentro de nuestra cadena productiva",
+    "OPCIÓN B ": "Apariencia cosmética ok\nGuías completas, Peso correcto Dimensional correcto",
+    "OPCIÓN C": "Líneas negras Betas blancas\nPiezas fuera de tono\n",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles son los costos de la no calidad?",
+    "OPCIÓN A ": "Los costos de no calidad no son más que el punto de vista pesimista de los costos de calidad como las ineficiencias o incumplimientos, los cuales pueden ser evitables.",
+    "OPCIÓN B ": "El precio pagado por los clientes al realizar un retrabajo a sus productos ya que a la primera no salieron bien y requieren de un trabajo adicional.",
+    "OPCIÓN C": "Los costes de no calidad se originan por fallos no atendidos en su debido plazo o por malas decisiones y soluciones",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es la eficiencia?",
+    "OPCIÓN A ": "Se define como la capacidad de lograr el efecto que se desea o se espera.",
+    "OPCIÓN B ": "Es la capacidad de disponer de alguien o algo para conseguir el cumplimiento adecuado de una función.",
+    "OPCIÓN C": "Realizar las actividades encomendadas en tiempo y forma, de manera sistemática u ordenada.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirve el catálogo de fallas?",
+    "OPCIÓN A ": "Para tener un Manual de Ayudas visuales para no cometer errores constantes.",
+    "OPCIÓN B ": "Para usarlo como Revista de productos inyectados emitida por Viñoplastic.",
+    "OPCIÓN C": "Para Recopilar las alertas, fallas y rechazos detectados y enviadas por los clientes.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cómo se calcula la eficiencia de tu producción?",
+    "OPCIÓN A ": "% de eficiencia de maquina por turno es igual a: piezas ok entre producción por turno, el resultado se multiplica por 100. Por lo tanto:\n% = (pzas ok/prod por turno) X100",
+    "OPCIÓN B ": "Multiplicando las cantidades obtenida a lo largo de mi jornada laboral y dividiendo entre el tiempo trabajado.",
+    "OPCIÓN C": "Multiplicando el número de cavidades por el número de ciclos avanzado durante una hora y dividirlo entre 100.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante descargar la cantidad exacta de scrap por hora?",
+    "OPCIÓN A ": "Para no alterar la información con datos falsos y así poder cerrar la Orden de Producción sin contratiempos.",
+    "OPCIÓN B ": "Para llevar un control de las cantidades obtenidas y así saber cuánto hemos desperdiciado.",
+    "OPCIÓN C": "Para garantizar el 100 % de la cantidad de resina que nos da almacén, esa misma cantidad es la que se debe entregar en producto terminado.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una orden de producción?",
+    "OPCIÓN A ": "Documento oficial responsable de todo el tiempo de vida de una producción, el cual sirve para pedir insumos y resinas, además de anotar lo producido y entregado al almacén.",
+    "OPCIÓN B ": "Hoja membretada para descargar cantidades de piezas e insumos y así mantener un control sobre las cantidades obtenidas de alguna máquina inyectora.",
+    "OPCIÓN C": "Documento realizado con la finalidad de pedir todo lo relacionado a la producción que se va a realizar en la maquina estipulada en dicha orden.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante trabajar con el número de cavidades que tiene el molde y en que nos afecta?",
+    "OPCIÓN A ": "No es tan importante, al final del día se tiene que trabajar hasta alcanzar las cantidades que se reflejan en la orden de producción.",
+    "OPCIÓN B ": "Afecta directamente a la baja eficiencia de la producción y si no se reporta, estaremos trabajando en una condición que perjudicara al final de la corrida.",
+    "OPCIÓN C": "Porqué nos ayuda a tener una mejor eficiencia y disminuir los tiempos de producción, ya que si se clausura alguna cavidad se retrasa la producción y baja la eficiencia",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un estudio de tiempos y movimientos?",
+    "OPCIÓN A ": "Conteo de todos los segundos en que se tarda un operador en realizar una serie de actividades enfocadas en terminar un trabajo en conjunto.",
+    "OPCIÓN B ": "Estudio de las capacidades de un operador a realizar dichas actividades estipuladas en la hoja de instrucción de trabajo las cuales pueden variar según el individuo.",
+    "OPCIÓN C": "Documento mediante el cual se analizan todos los tiempos de cada actividad realizada individualmente y se van registrando para determinar la cantidad de operarios necesarios para realizar toda la actividad completa.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es dejar acumulación?",
+    "OPCIÓN A ": "Es tener una cantidad de piezas a las cuales le hace falta realizar algún retrabajo que no se les realizo en tiempo y en forma.",
+    "OPCIÓN B ": "Dejar mi producción trabajada en tiempo y en forma sin haber tenido algún contratiempo y liberado al 100%.",
+    "OPCIÓN C": "Amontonar las piezas en una caja sin ningún tipo de cuidado ya que no me da tiempo trabajar adecuadamente.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante no dejar acumulación?",
+    "OPCIÓN A ": "Para no alargar los tiempos de producción y así evitar un retraso en las entregas con el cliente.",
+    "OPCIÓN B ": "Para que mi supervisor o jefe inmediato no se moleste conmigo y me sancione por mal elemento",
+    "OPCIÓN C": "Para no ser sancionado por mi baja eficiencia en el trabajo.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué se debe hacer si suena la alarma sísmica, si te encuentras en maquina?",
+    "OPCIÓN A ": "Presionar botón rojo “paro de emergencia” y salir inmediatamente lo más ordenadamente posible.",
+    "OPCIÓN B ": "Colocarme en una zona de seguridad y marcar a a todos mis familiares para saturar las líneas telefónicas.",
+    "OPCIÓN C": "Gritar fuertemente para alterar a mis compañeros se contagie el pánico para salir corriendo inmediatamente.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una guarda de protección?",
+    "OPCIÓN A ": "Espacio de almacenamiento donde se colocan insumos y materiales para la manufactura de los productos plásticos.",
+    "OPCIÓN B ": "Es una puerta de seguridad que evita poner en riesgo la integridad física del operario a fin evitar algún evento inesperado.",
+    "OPCIÓN C": "Aditamento opcional de las maquinas inyectoras las cuales se usan con la finalidad de estar expuestos a un elemento mecánico.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante que los guantes blancos utilizados para manipular las piezas calientes, sean de algodón? ",
+    "OPCIÓN A ": "Por qué los guantes que no son de algodón contienen componentes de elastómero y al reaccionar al calor de las piezas manchan las piezas.",
+    "OPCIÓN B ": "Porque los de color manchan las piezas generando líneas de colores en los productos.",
+    "OPCIÓN C": "Para que mi supervisor o jefe inmediato no se moleste conmigo y me sancione por mal elemento.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante usar lentes o lentes de seguridad? ",
+    "OPCIÓN A ": "Para que mi supervisor o jefe inmediato no se moleste conmigo y me sancione por mal elemento.",
+    "OPCIÓN B ": "Para cumplir con el uso del EPP y evitar un accidente con algún elemento que se pueda desprender del rebabeo de las piezas plástica.",
+    "OPCIÓN C": "Porque no veo bien y necesito estar en una zona iluminada la cual me permita realizar mis funciones adecuadamente.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante siempre ver una ruta de evacuación cuando estés en maquina?",
+    "OPCIÓN A ": "Para tener una salida rápida, ágil y eficiente al presentarse un siniestro llámese sismo, incendio, etc.",
+    "OPCIÓN B ": "Para poder salir corriendo y no tropezarme con mis compañeros a la hora de ponerme a salvo.",
+    "OPCIÓN C": "Para ayudar a mis compañeros a tomar la mejor alternativa a la hora de salir del lugar que me encuentro.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una zona A en una pieza plástica automotriz?",
+    "OPCIÓN A ": "Zona de alto riesgo, en la cual se puede generar un reclamo por el cliente ya que está expuesta al usuario.",
+    "OPCIÓN B ": "Zona de ensamble critica en la cual no se permite ningún tipo de defecto por lo que la revisión debe ser a detalle con guantes.",
+    "OPCIÓN C": "Superficie exterior que se ve a un metro de distancia del vehículo. Zona cosmética a simple vista.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una zona B en una pieza plástica?",
+    "OPCIÓN A ": "Zonas de ensamble donde las guías se exponen a esfuerzos y pueden generar fallas en el mecanismo final.",
+    "OPCIÓN B ": "Áreas limitadas, visiblemente. Superficies que no tiene una vista directa. Partes o componentes cubiertos u ocultos.",
+    "OPCIÓN C": "Área de tamaño moderado en el cual no se permite ningún tipo de defecto la cual no se debe manipular por operario solo con robot.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una zona C en una pieza plástica?",
+    "OPCIÓN A ": "Áreas no visibles, son zonas de ensamble y No están al alcance del usuario.",
+    "OPCIÓN B ": "Zonas de medición, a lo cual se debe de hacer prueba de ensamble cada hora para no tener error en la medición.",
+    "OPCIÓN C": "Área de alto impacto visual la cual se debe de tratar con sumo cuidado haciendo uso de guantes especiales.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cómo se debe manejar la zona de vista de una pieza plástica?",
+    "OPCIÓN A ": "Con atención al detalle, cuidando zonas de textura o alto pulido, haciendo uso de los guantes blancos de algodón en casos especiales guantes de látex.",
+    "OPCIÓN B ": "Tomando las piezas por los diferentes ángulos sin usar alguna protección.",
+    "OPCIÓN C": "Revisándole por los diferentes perfiles y determinar si todas las zonas de trabajo cumplen con la especificación.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si la colada al caer sale volando, que debo hacer?",
+    "OPCIÓN A ": "Avisar a mi supervisor para corregirlo y levantar las que salieron volando para no tener sucia mi máquina.",
+    "OPCIÓN B ": "Parar la maquina y no trabajarla hasta que me corrijan ese problema.",
+    "OPCIÓN C": "Esconderlas para que mi supervisor o jefe inmediato no se moleste conmigo y me sancione por mal elemento.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si al empacar una pieza conforme al estándar de empaque se observa que se maltrata que debo hacer?",
+    "OPCIÓN A ": "Analizar la forma de empaque y si existe una mejora canalizarlo con el inspector de calidad para modificar u actualizar la información acordada.",
+    "OPCIÓN B ": "Continuar con mis labores ya que si me distraigo se me hace acumulación y pone en riesgo mi trabajo.",
+    "OPCIÓN C": "Avisar para que mi supervisor o jefe inmediato no se moleste conmigo y me sancione por mal elemento.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si el producto que estoy trabajando tiene rebaba y por lo mismo la rebabeo, que se hace con esa rebaba?",
+    "OPCIÓN A ": "Se dejan en el suele, es desperdicio que ya no sirve, no se puede reutilizar.",
+    "OPCIÓN B ": "Levantarla, almacenarla y al final vaciarla a los tambos de basura sin registrar su cantidad",
+    "OPCIÓN C": "Coloco un contenedor para que caiga adentro por consiguiente meterlo a un costal o gaylord",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si mi maquina tiene un termo alarmado que debo hacer?",
+    "OPCIÓN A ": "Avisar inmediatamente a mi supervisor ya que esto me puede generar que mis piezas salgan con defectos",
+    "OPCIÓN B ": "Esperar a que mi supervisor se acerque a mi máquina para comentarle.",
+    "OPCIÓN C": "Avisar para que mi supervisor o jefe inmediato no se moleste conmigo y me sancione.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si al trabajar debo aplicar desmoldante y observo que las salidas de gas se tapan al aplicarlo que debo hacer?",
+    "OPCIÓN A ": "Avisar inmediatamente a calidad para que revise mis piezas y mi jefe inmediato no me sancione por mal elemento.",
+    "OPCIÓN B ": "Dejar de usar desmoldante y pedir a mi supervisor que ajuste el proceso de manera que no me nea obligado a usar el desmoldante.",
+    "OPCIÓN C": "Limpiarlas con algodón y así evitar aplicar excesivamente el desmoldante, más en esa zona de salida de gas (venteo).",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es lo que debo tener en mi área de trabajo?",
+    "OPCIÓN A ": "Mi desayuno para tomarlo antes de comenzar mi jornada laboral sin importar manchar mi producción.",
+    "OPCIÓN B ": "Cajas para empacar mi producción, basura generada al turno anterior, etiquetas rojas.",
+    "OPCIÓN C": "Mesa de trabajo, cajas para insumos y producto terminado, caja roja para scrap y equipo de trabajo (navajas, pinzas, marcador, guantes, etc.…)",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es el orden que debo seguir en el acomodo de mis tinas según el color?",
+    "OPCIÓN A ": "Primero se coloca la roja para el scrap, después las azules para producto terminado y al final la amarilla para insumos.",
+    "OPCIÓN B ": "No importa el orden de acomodo de las cajas ya que no afecta directamente al producto terminado",
+    "OPCIÓN C": "Amarilla para colocar insumos, después una azul para producto terminado y al final roja para colocar el scrap generado.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si la colada de un producto es muy grande que se debe hacer con ella antes de depositarlo en el contenedor o costa de scrap?",
+    "OPCIÓN A ": "Depositarla en la rampa de llenado y esperar a que pase el supervisor y me haga espacio para poder trabajar en orden.",
+    "OPCIÓN B ": "Nada, es desperdicio y al final solo se vacía al gaylord y se deja abierto hasta que se llene.",
+    "OPCIÓN C": "De acuerdo con el tamaño y forma se corta en 2 o 3 partes para disminuir el volumen en el uso de costales u contenedor",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significa ser puntual?",
+    "OPCIÓN A ": "Llegar a la hora establecida por la compañía a mi estancia de trabajo, sin retrasos ni contratiempos.",
+    "OPCIÓN B ": "Legar a mi estancia de trabajo una hora antes para poder ponerme al corriente con respecto a las actividades a realizar.",
+    "OPCIÓN C": "Legar a mi estancia de trabajo a toda prisa exponiendo a mis compañeros a un accidente por pasar corriendo dentro de la compañía.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué son los 15 minutos de traslape entre un turno y otro?",
+    "OPCIÓN A ": "Para colocarme el uniforme principal y todo el equipo de protección personal para comenzar a realizar mis actividades.",
+    "OPCIÓN B ": "Para platicar con mi compañera sobre la serie de moda y criticar a mis compañeros sin importar las condiciones de mis piezas.",
+    "OPCIÓN C": "Tiempo necesario para intercambiar comentarios, información relevante sobre el turno y el comportamiento de la máquina. Entregar turno.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si mi relevo llega 14:15 yo me puedo retirar inmediatamente?",
+    "OPCIÓN A ": "No, ya que la maquina no se puede quedar sola, necesita operación y supervisión constante.",
+    "OPCIÓN B ": "Si, no pasa nada, el supervisor en cuanto se dé cuenta que me retiré, la trabajará sin problemas.",
+    "OPCIÓN C": "No, Trabajo tiempo extra.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué debo llegar puntual y pedir que mi relevo llegue puntual?",
+    "OPCIÓN A ": "Por qué llegar a la hora establecida por la compañía a mi área de trabajo, es un habito que debemos de construir.",
+    "OPCIÓN B ": "Para pregonar con el ejemplo y crear conciencia positiva y de respeto, ya que, si todos llegamos puntual, nos podemos retirar de la maquina puntual.",
+    "OPCIÓN C": "Porque si llego tarde me hacen realizar actividades de limpieza, las cuales no desarrollo con gusto y satisfacción.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un lote?",
+    "OPCIÓN A ": "Unidad de producción fabricada en una misma planta inyectora con materias primas y parámetros de producción uniformes que puede ser identificada al ponerse en el mercado.",
+    "OPCIÓN B ": "Conjunto de cosas que tienen características comunes y que se agrupan con un fin determinado.",
+    "OPCIÓN C": "Grupo de cosas de los varios que se hacen en un todo para distribuirlo.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si estoy trabajando con una OP y mi supervisor me indica que está por terminar, pero hay una nueva OP (ampliación) que debo hacer?",
+    "OPCIÓN A ": "Cerrar mi reporte de producción, avisar a mi supervisor para que se reinicie el contador y comenzar un reporte nuevo ya que existe cambio de lote.",
+    "OPCIÓN B ": "Seguir con el mismo reporte, al final de la corrida se contarán las piezas y se sacara el dato individual, dividiendo entre 2 de cada orden.",
+    "OPCIÓN C": "Parar la maquina y esperar que mi supervisor se acerque para que note que la maquina se detuvo, solo así le puedo hacer las observaciones",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si la caja de materia prima se termina y llevan otra caja nueva que debo hacer?",
+    "OPCIÓN A ": "Nada ese no es mi trabajo, además yo no ocupo ese tipo de información para realizar mis actividades de trabajo.",
+    "OPCIÓN B ": "Revisar que sea el mismo material. Asegurar que el materialista no deje rastros del gaylord anterior.",
+    "OPCIÓN C": "Corroborar que sea el mismo lote y si cambia, pedir al materialista que cambie la hoja de identificación de la tolva, usando el nuevo número de lote.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un Poka Yoke?",
+    "OPCIÓN A ": "Un poka-yoke es una técnica de calidad que se aplica con el fin de evitar errores en la operación de un sistema.",
+    "OPCIÓN B ": "Dispositivo de medición a prueba de tontos vulgarmente conocido.",
+    "OPCIÓN C": "Un ejemplo es el conector de un USB es un poka-yoke, puesto que no permite conectarlo al revés.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un GO NO GO?",
+    "OPCIÓN A ": "Dispositivo de medición a prueba de tontos vulgarmente conocido.",
+    "OPCIÓN B ": "Se refieren a pruebas de aprobado/fallo usando dos respectivas condiciones límite o de frontera.",
+    "OPCIÓN C": "Son herramientas de medida mecánicas manuales usados en líneas de producción para garantizar que se han producido piezas correctamente.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué se debe hacer después de qué salgan 5 inyecciones no conformes?",
+    "OPCIÓN A ": "Detener la maquina y avisar inmediatamente a mi supervisor para dar ajuste al proceso.",
+    "OPCIÓN B ": "Seguir trabajando y esperar a que se acerque el supervisor para hacerle mis comentarios.",
+    "OPCIÓN C": "Nada, la maquina solita se ajustará ya que así sucede en otras máquinas al final se compone.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significa colocar un punto de certificación en un producto?",
+    "OPCIÓN A ": "Rastreabilidad de mi producción en dado caso que se requiera saber quién fue el responsable de dicho rechazo.",
+    "OPCIÓN B ": "Una verificación de una zona en particular que en un momento el cliente ya nos reportó como reclamo a través de una alerta.",
+    "OPCIÓN C": "Garantizar una verificación a través de una marca con plumón indeleble a una pieza plástica, en una zona critica de riesgo de defecto latente.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significa CSL1?",
+    "OPCIÓN A ": "Sistema de control de la producción para un mejor control de rastreabilidad y contención.",
+    "OPCIÓN B ": "Control de Envió Nivel 1, por sus siglas en inglés.\nControl Shipping Level 1",
+    "OPCIÓN C": "Contención de producción de material sospechoso para su revisión por un sorteador externo.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Con base al reglamento ¿Cuáles son ejemplos de las reglas que ayudarán a obtener un producto de calidad?",
+    "OPCIÓN A ": "Llegar temprano, recibir turno, cumplir con la asistencia diaria, Contar con mis 4 checadas ",
+    "OPCIÓN B ": "Uso correcto del Equipo de Protección Personal, No consumir alimentos en zona de máquinas, no utilizar celular, no usar maquillaje, No usar joyería (aretes, anillos, pulseras, etc.)",
+    "OPCIÓN C": "Cumplir 100% con la eficiencia de mi máquina, no molestar al supervisor, No platicar con mis compañeros, Cumplir con mi horario de comida.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una acción correctiva?",
+    "OPCIÓN A ": "Existe una diferencia entre corrección y acción correctiva. La corrección es la eliminación de la no conformidad, mientras que la acción correctiva elimina su causa.",
+    "OPCIÓN B ": "Sistema de control de la producción para un mejor control de rastreabilidad y contención.",
+    "OPCIÓN C": "son decisiones, medidas, actividades y soluciones orientadas a la eliminación de causas potenciales y reales de un problema.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una acción de contención?",
+    "OPCIÓN A ": "Acción encaminada a contener o paliar los efectos del problema detectado y evitar su recurrencia y en especial sus efectos sobre la emisión de informes /certificados acreditados hasta que se haya demostrado la implantación de la acción correctiva",
+    "OPCIÓN B ": "La acción correctiva se toma para prevenir que algo vuelva a producirse",
+    "OPCIÓN C": "Sistema de control de la producción para un mejor control de rastreabilidad y contención.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué documento se ocupa para plasmar que un colaborador está capacitado?",
+    "OPCIÓN A ": "Check list de mejora continua",
+    "OPCIÓN B ": "Capacitación y retroalimentación",
+    "OPCIÓN C": "Check list de entrega de turno",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles son los puntos que se tienen que revisar en el formato de capacitación?",
+    "OPCIÓN A ": "Hoja de instrucción de trabajo Hoja de instrucción de empaque Hoja de moldeo",
+    "OPCIÓN B ": "Hoja de instrucción de trabajo\nHoja de especificación de empaque Marcas y puntos críticos a revisar",
+    "OPCIÓN C": "Hoja de instrucción de empaque Marcas y puntos críticos a revisar PSW",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuáles son los defectos NO OK de un producto?",
+    "OPCIÓN A ": "Ráfaga, rechupe, incompleto, fuera de dimensión, dispersión, fuera de tono, contaminación",
+    "OPCIÓN B ": "Apariencia cosmética ok\nGuías completas, Peso correcto Dimensional correcto\n",
+    "OPCIÓN C": "Líneas negras Betas blancas\nPiezas fuera de tono\n",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En caso de paro ¿Cuáles son los pasos para seguir para un proceso semiautomático?",
+    "OPCIÓN A ": "Apretar el botón manual de manera inmediata, apagar bomba hidráulica y retirar la unidad de inyección.",
+    "OPCIÓN B ": "Poner el paro de emergencia de manera inmediata, apretar el botón de manual.",
+    "OPCIÓN C": "Apretar el botón de proceso en semiautomático, dejar que cumpla su ciclo, apretar el botón manual y retirar la U.I.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "En caso de paro ¿Cuáles son los pasos para seguir para un proceso automático?",
+    "OPCIÓN A ": "Dejar que cumpla su ciclo, oprimir el botón manual",
+    "OPCIÓN B ": "Oprimir paro de emergencia, oprimir el botón manual.",
+    "OPCIÓN C": "Volver a oprimir el botón de semiautomático, oprimir el botón de ajuste",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿En qué documento debes basarte para trabajar un producto?",
+    "OPCIÓN A ": "Instrucción de inspección. Especificación de empaque. Hoja de moldeo.",
+    "OPCIÓN B ": "Instrucción de trabajo. Instrucción de inspección. Ayudas visuales.",
+    "OPCIÓN C": "Instrucción de trabajo. Especificación de empaque. Instrucción de inspección.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿En qué NORMA está certificada VIÑOPLASTIC?",
+    "OPCIÓN A ": "ISO 14001.",
+    "OPCIÓN B ": "IATF 16949:2016.",
+    "OPCIÓN C": "ISO TS 16 949.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es la política de calidad de Viñoplastic?",
+    "OPCIÓN A ": "Satisfacer las necesidades de nuestros clientes con excelencia, proporcionando soluciones integrales e innovadoras",
+    "OPCIÓN B ": "Ser reconocidos como líderes en la inyección de plástico representando la mejor alternativa en el mercado",
+    "OPCIÓN C": "La satisfacción del cliente cumpliendo con los requisitos de calidad establecidos dentro de un proceso de mejora continua.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una auditoría interna?",
+    "OPCIÓN A ": "Es un método para medir la eficiencia del proceso y la calidad con lo que se trabaja.",
+    "OPCIÓN B ": "Sistema de control de la organización dentro de las condiciones operativas y sistemáticas que mejoran la productividad en una empresa.",
+    "OPCIÓN C": "Sistema de control interno y consiste en el conjunto de medidas, políticas y procedimientos establecidos en una organización concreta para proteger su activo, minimizar riesgos, incrementar la eficacia de los procesos operativos.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cada cuanto debes leer la instrucción de trabajo?",
+    "OPCIÓN A ": "Cada 5 min",
+    "OPCIÓN B ": "Siempre al llegar a operar una máquina de inyección.",
+    "OPCIÓN C": "Cada hora",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿En qué documento se registra el scrap?",
+    "OPCIÓN A ": "Hoja de validación ",
+    "OPCIÓN B ": "Hoja de control de scrap",
+    "OPCIÓN C": "Hoja de desperdicio y rechazo",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Con base a que documento se debe llenar la etiqueta de identificación de scrap?",
+    "OPCIÓN A ": "Hoja de control de scrap",
+    "OPCIÓN B ": "Hoja de control de moldeo",
+    "OPCIÓN C": "Hoja de papel.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una prueba funcional?",
+    "OPCIÓN A ": "Una prueba funcional está basada en la ejecución, revisión y retroalimentación de las funcionalidades previamente diseñadas para el sistema.",
+    "OPCIÓN B ": "Realizar diferentes actividades de manera ininterrumpida para garantizar las mismas condiciones en cada uno de los procesos.",
+    "OPCIÓN C": "Hoja de control que permite plasmar datos y que al final se irán recabando para realizar un estudio donde se determina que tan eficiente es el sistema.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es un dimensional?",
+    "OPCIÓN A ": "Es una comparación de diferentes objetos los cuales se van anotando de manera sistemática para adquirir un resultado",
+    "OPCIÓN B ": "Hoja de control para verificar si las propiedades física y mecánicas del producto corresponden con lo que pide el cliente",
+    "OPCIÓN C": "La dimensión es un número relacionado con las propiedades métricas o topológicas de un objeto matemático.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es hacer una prueba de ensamble?",
+    "OPCIÓN A ": "Corroborar que todos los mecanismo o partes a ensamblar interactúen de tal manera que no exista falla alguna en todos los movimientos involucrados para los cuales fue diseñado.",
+    "OPCIÓN B ": "Es una verificación de que se están haciendo bien las cosas y no requerimos de una supervisión constante y mucho menos efectiva.",
+    "OPCIÓN C": "El objetivo de las pruebas de ensamble es verificar el correcto funcionamiento entre los distintos componentes una vez que han sido probados unitariamente con el fin de comprobar que interactúan correctamente a través de sus interfaces, tanto internas como externas, cubren la funcionalidad establecida..",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es el CEP?",
+    "OPCIÓN A ": "Control Estadístico de la Producción",
+    "OPCIÓN B ": "Control Especifico Puntual",
+    "OPCIÓN C": "Control Especial del Producto",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es graficas de control?",
+    "OPCIÓN A ": "Es un Control Estadístico de la Producción para eficientar las condiciones en que trabaja una máquina de inyección.",
+    "OPCIÓN B ": "Es en revisión parcial en lapsos de tiempo predeterminados para monitorear el trabajo de la operadora.",
+    "OPCIÓN C": "Una gráfica de control es un diagrama que sirve para examinar si un proceso se encuentra en una condición estable, o para asegurar que se mantenga en esa condición.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significa un valor máximo y un valor mínimo?",
+    "OPCIÓN A ": "El mínimo es el valor más pequeño en el conjunto de datos. El máximo es el valor más grande en el conjunto de datos",
+    "OPCIÓN B ": "Valores en los cuales se pueden comparar dos mediciones de una cierta cantidad de valores.",
+    "OPCIÓN C": "Control de valores con respecto a los datos obtenidos en una revisión de números estipulados por el proceso.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es estar dentro de tolerancia?",
+    "OPCIÓN A ": "Controlar las tolerancias requeridas en un rango establecido para manejo de datos estadísticos",
+    "OPCIÓN B ": "Es trabajar un proceso productivo dentro de los rangos máximos o mínimos requeridos sin salir del parámetro.",
+    "OPCIÓN C": "Mantener un ritmo de trabajo para no permitir salir de rango establecido dentro de una especificación técnica.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Es una ventaja de usar CEP",
+    "OPCIÓN A ": "Ayuda a visualizar alguna falla dentro del proceso productivo.",
+    "OPCIÓN B ": "Recopilación de datos dentro del Control Estadístico de la Producción",
+    "OPCIÓN C": "Mantener un ritmo de trabajo para no permitir salir de rango establecido dentro de una especificación técnica.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Es una herramienta del CEP",
+    "OPCIÓN A ": "Valores orientativos reales para fines estadísticos",
+    "OPCIÓN B ": "Diagrama de Pareto y Gráficos de control.",
+    "OPCIÓN C": "Control de la Producción de manera cualitativa y cuantitativa.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si una tolva se apaga. ¿Qué defecto puede llegar a ocasionar en las piezas?",
+    "OPCIÓN A ": "Rechupe.",
+    "OPCIÓN B ": "Ráfaga.",
+    "OPCIÓN C": "Rayas.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si algún termo se apaga después de irse la luz o corte de energía ¿Qué defecto puede ocasionar?",
+    "OPCIÓN A ": "Rechupe.",
+    "OPCIÓN B ": "Ráfaga.",
+    "OPCIÓN C": "Rayas.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es el nombre técnico del material que se utiliza en Viñoplastic?",
+    "OPCIÓN A ": "Plástico.",
+    "OPCIÓN B ": "Hojuelas.",
+    "OPCIÓN C": "Pellets",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué se debe de hacer después de que salgan 5 inyecciones no conformes?",
+    "OPCIÓN A ": "Controlar el proceso para evitar reclamos del cliente.",
+    "OPCIÓN B ": "Detener la maquina correctamente y avisar al supervisor de inmediato.",
+    "OPCIÓN C": "Seguir trabajando hasta que salgan bien las piezas.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Por qué es importante respetar el tiempo de un ciclo?",
+    "OPCIÓN A ": "Para trabajar adecuadamente y cumplir con el objetivo en cantidad de piezas inyectadas.",
+    "OPCIÓN B ": "Por qué es importante y sirve para llenar mi reporte de producción correctamente.",
+    "OPCIÓN C": "Porque me lo pide mi supervisor y si no lo hago así, se molesta.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es el catálogo de fallas?",
+    "OPCIÓN A ": "Revista de productos inyectados emitida por Viñoplastic.",
+    "OPCIÓN B ": "Recopilación de alertas, fallas y rechazos detectados y enviadas por los clientes.",
+    "OPCIÓN C": "Manual de Ayudas visuales para no cometer errores constantes.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si en el catálogo de fallas viene marcado un defecto recurrente que es lo más sano que debo de hacer",
+    "OPCIÓN A ": "Hablarle a mi supervisor.",
+    "OPCIÓN B ": "Platicar con mis compañeros del defecto mencionado.",
+    "OPCIÓN C": "Revisar contantemente esa zona, debido a que es un problema que se ha presentado recurrentemente",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significa colocar un punto de certificación en el producto?",
+    "OPCIÓN A ": "Verificar en cada pieza la zona mencionada por el cliente, ya que en algún momento este defecto genero un reclamo",
+    "OPCIÓN B ": "Corroborar que cada hora, paso el inspector de calidad a hacer una revisión esporádica..",
+    "OPCIÓN C": "Que el plástico se esté fabricando con material 100% virgen y evitar rechazos por fractura..",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significa una etiqueta amarilla a mi producción?",
+    "OPCIÓN A ": "Que está mal mi producción por algún defecto detectado por el inspector de calidad.",
+    "OPCIÓN B ": "Que fue rechazada, ya que, al hacer su muestreo, el inspector de calidad detecto anomalías en varias de mis piezas ya empacadas.",
+    "OPCIÓN C": "Que la producción esta liberada pero aun pasa a una segunda etapa llámese pesado en bascula, retrabajo y traspaleo.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué significa una etiqueta roja a mi producción?",
+    "OPCIÓN A ": "Que está mal mi producción por algún defecto detectado por el inspector de calidad.",
+    "OPCIÓN B ": "Que fue rechazada, ya que, al hacer su muestreo, el inspector de calidad detecto anomalías en varias de mis piezas ya empacadas.",
+    "OPCIÓN C": "Que la producción esta liberada pero aun pasa a una segunda etapa llámese pesado en bascula, retrabajo y traspaleo.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si estaba trabajando con el empaque original, se termina y me traen el alternativo ¿Con que etiqueta la debo de identificar?",
+    "OPCIÓN A ": "Con una etiqueta roja y mencionando el defecto encontrado, para evitar que se mezcle el material.",
+    "OPCIÓN B ": "Con etiqueta amarilla con la leyenda adicional: para traspalear.",
+    "OPCIÓN C": "Con etiquetas de colores para saber qué se va a cuarentena y ahí permanecerá.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es una acción de mejora?",
+    "OPCIÓN A ": "Cualquier acción que suponga una mejora en la eficacia y/o eficiencia de cualquier actividad del sistema de gestión de calidad.",
+    "OPCIÓN B ": "Actividad relacionada con el buen funcionamiento de como manipular una máquina de inyección.",
+    "OPCIÓN C": "Mecanismos desarrollados para la creación de estándares universales para la mejora continua.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si mi compañera/o está haciendo uso de la navaja en maquina y veo que no tiene su manga y guante anticorte (ambos de color amarillo), qué debo hacer?",
+    "OPCIÓN A ": "Buscar a personal de recursos humanos y decirles que la compañera esta en riesgo de sufrir un accidente",
+    "OPCIÓN B ": "Pedirle por favor que haga uso del equipo EPP para evitar cualquier evento inesperado (Accidente).",
+    "OPCIÓN C": "Pedir al supervisor que la castigue por no seguir el reglamento.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si calidad no ha pasado a revisar en más de 2 horas de tiempo que debo hacer?",
+    "OPCIÓN A ": "Reportarlo con mi supervisor y pedirle que platique con él, para que no vuelva a suceder esta situación.",
+    "OPCIÓN B ": "Esperarlo el tiempo que sea necesario ya que no es tan critico hacer muestreos cada hora.",
+    "OPCIÓN C": "Avisar a mi supervisor indicando cual fue la última hora a la que paso y a qué hora debió haber pasado.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si en la maquina estamos tres operadoras(es) y veo que a uno de mis compañeras(os) le cuesta trabajo o se le están acumulando las piezas que debo hacer?",
+    "OPCIÓN A ": "Trabajar en equipo para no ayudarlo y al fin de su turno se quede a sacar su acumulación.",
+    "OPCIÓN B ": "Trabajar individualmente, solo preocuparme por mi actividad ya que me atraso en mis objetivos.",
+    "OPCIÓN C": "Trabajar en equipo, apoyarlo en todo momento y avisar a mi supervisor inmediatamente.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Si en mi área de trabajo hay algo que me estorba (tarimas, cajas, moldes, etc) que pueden provocar que me caiga o se caiga uno de mis compañeros que debo hacer?",
+    "OPCIÓN A ": "Pido por favor que solo hagan espacio para poder transitar libré en lo que se acumulan más tarimas, no importa que se interrumpa el libre paso.",
+    "OPCIÓN B ": "Pido colocar más tarimas para que al juntarse más, sea más rápido el acomodo en el almacen.",
+    "OPCIÓN C": "Si puedo despejar el área lo hago y si no puedo, pido ayuda de algún supervisor para que se haga espacio y mi área de trabajo quede lo más libre posible.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cómo y dónde debo guardar mis navajas que utilizo para trabajar?",
+    "OPCIÓN A ": "En mi lapicera de plástico que me proporciona la empresa de manera que la punta quede tapada con su protector y que al sacarlas no quede expuesto el filo de la navaja.",
+    "OPCIÓN B ": "En los cajones de las mesas para que sea más rápido el tenerlas a disposición de darles un uso de acuerdo con el producto a trabajar.",
+    "OPCIÓN C": "En la bolsa de la bata para que cuando metamos las mano sea más rápido el uso de la navaja y poder retrabajar las piezas plásticas en el menor tiempo posible",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es ergonomía?",
+    "OPCIÓN A ": "Estudio de las condiciones de adaptación de un lugar de trabajo, una máquina, un vehículo, etc., a las características físicas y psicológicas del trabajador o el usuario.",
+    "OPCIÓN B ": "Son las condiciones establecidas para que un trabajador haga diferentes movimientos a fin de realizar actividades simultaneas para terminar lo antes posible sus actividades.",
+    "OPCIÓN C": "Es la disciplina que se encarga del diseño de lugares de trabajo, herramientas y tareas, de modo que coincidan con las características fisiológicas, anatómicas, psicológicas y las capacidades de los trabajadores que se verán involucrados.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es y para qué sirve la muestra de arranque?",
+    "OPCIÓN A ": "Es una herramienta de comparación y sirve para monitorear lo producido cada hora y ver cómo está trabajando la maquina garantizando la calidad de nuestras piezas.",
+    "OPCIÓN B ": "Son piezas de plástico para resguardo y sirven para que se llene mi caja de resguardo, solo se pueden utilizar en caso de que me falten piezas para cumplir la cantidad determinada.",
+    "OPCIÓN C": "Piezas marcadas para el scrap ya que al final del turno ya no servirán y terminarán como desperdicio, lo cual no suma a mis objetivos de producción.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si mi compañero materialista al llenar la tolva deja pellets en la bancada de la maquina y veo que no los recoge, ¿Qué debo hacer?",
+    "OPCIÓN A ": "Pedirle de la mejor manera educada y por favor, Que limpie lo que se le cayó.",
+    "OPCIÓN B ": "Decirle que está haciendo mal su trabajo ya que está desperdiciando el material.",
+    "OPCIÓN C": "Quedarme callada/o y al finalizar mi turno pues lo debo de limpiar ya que es parte de mis responsabilidades.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuánto tiempo tienes para consumir tus alimentos?",
+    "OPCIÓN A ": "1 hora",
+    "OPCIÓN B ": "15 minutos",
+    "OPCIÓN C": "30 minutos",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Hay 15 minutos entre cada cambio de turno ¿para que se utiliza ese tiempo?",
+    "OPCIÓN A ": "Para entrega de turno e intercambiar pormenores de lo sucedido durante el turno",
+    "OPCIÓN B ": "Para platicar con mi relevo acerca de las compañeras de trabajo de manera constructiva.",
+    "OPCIÓN C": "Para sacar mi acumulación o rechazo según sea el caso.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué son las 5`S?",
+    "OPCIÓN A ": "5S es una herramienta de gestión visual fundamental dentro de Lean Manufacturing, y utilizada habitualmente como punto de partida para introducir la mejora continua en la empresa.",
+    "OPCIÓN B ": "Metodología capaz de introducir medidas de prevención en las diferentes áreas de trabajo para dar un mejor sistema de trabajo contando con diferentes acciones como: ordenar separar y limpiar.",
+    "OPCIÓN C": "La metodología “cinco eses” fue desarrollada en Japón y cada una de las “S” hace referencia a una acción a realizar para implantar este método: Clasificación, Organización, Limpieza, Estandarizar y Seguir Mejorando.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Para qué sirven las 5S? ",
+    "OPCIÓN A ": "Con su implementación conseguimos mejorar la productividad del proceso y aumentar la calidad",
+    "OPCIÓN B ": "Con su implementación conseguimos mejorar la eficiencia del proceso y aumentar la calidad.",
+    "OPCIÓN C": "Con su implementación se consigue tener grandes beneficios los cuales van enfocados en la mejora continua de la organización.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si llego 30 minutos antes de mi entrada de turno y salgo después de los 15 minutos de entrega de turno ¿Soy una persona que respeta el horario de trabajo? ",
+    "OPCIÓN A ": "No, porque dedico 45 minutos más de mi tiempo.",
+    "OPCIÓN B ": "Si, ya que me anticipo a eventos inesperados y no me retiro de la maquina hasta que le haya quedado claro todo a mi relevo.",
+    "OPCIÓN C": "Si, por que respeto los tiempos estipulados en mi jornada de trabajo.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si mi relevo no llega y ya son las 14:30 horas,10:30 horas, 06:30 horas (primer, segundo y tercer turno) ¿Qué debo hacer?",
+    "OPCIÓN A ": "Avisar a mi supervisor para detener correctamente la maquina y dar pormenores de lo sucedido en mi turno.",
+    "OPCIÓN B ": "Dejarla trabajando sola, ya que mi jornada laboral ya termino.",
+    "OPCIÓN C": "Salir corriendo ya que es muy tarde y no debo regalar mi tiempo.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si mi maquina llegara a parar por alguna razón ¿Qué debo hacer?",
+    "OPCIÓN A ": "Nada, esperar a que se acerque un supervisor",
+    "OPCIÓN B ": "Presiona botón manual y avisar inmediatamente a mi supervisor.",
+    "OPCIÓN C": "Solucionar el problema y reactivar la máquina.",
+    "RESPUESTA": "B",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si calidad rechaza mi producción por alguna razón ¿Qué debo hacer?",
+    "OPCIÓN A ": "Avisar a mi supervisor de lo sucedido para que pueda negociar con calidad y si requiere de algún retrabajo apoyar para sacarlo",
+    "OPCIÓN B ": "Quitar la etiqueta roja y esconderla ya que me no se puede tener rechazos de producción.",
+    "OPCIÓN C": "Nada, esas piezas ya se trabajaron y por consiguiente ya no son mi responsabilidad.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Son puntos importantes del reglamento interno en Viñoplastic.",
+    "OPCIÓN A ": "Trabajar en equipo. Realizar dinámicas de integración para un mejor ambiente laboral.",
+    "OPCIÓN B ": "No consumir alimentos embolsados. Beber agua natural en máquina.\nPlaticar con mis compañeras.",
+    "OPCIÓN C": "Usar correctamente el EPP. No usar maquillaje ni joyería. No usar el móvil (celular).",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es trabajar en equipo?",
+    "OPCIÓN A ": "Trabajo en equipo es el trabajo hecho por varias personas donde cada uno hace una parte, pero todos tienen un objetivo en común.",
+    "OPCIÓN B ": "Juntar a varias personas y delegarles actividades diferentes para su integración al final del turno.",
+    "OPCIÓN C": "Es sentirse acobijado dentro de un grupo de personas en las cuales se puede confiar y hacerse sentir valorado por su trabajo.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si al estar 2 persona (operadoras) en una maquina y observo que no desarrolla las actividades como lo indica mi hoja de instrucción de trabajo, ¿Qué debo hacer?",
+    "OPCIÓN A ": "Nada, cada uno debe velar por sus actividades e intereses individuales y al final de cuentas el/ella está haciendo mal las cosas, no yo.",
+    "OPCIÓN B ": "Avisar a mi supervisor inmediatamente, ya que le pedí que lo hiciera bien y no lo está respetando además quiero evitar una situación de conflicto con mi compañera/o.",
+    "OPCIÓN C": "Orientarlo respetuosamente de manera que entiende que la responsabilidad es compartida y si hace su trabajo bien los dos salimos beneficiados de un buen trabajo.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es el objetivo de trabajar en equipo?",
+    "OPCIÓN A ": "Dividir el trabajo entre todos los integrantes del grupo y así hacer menos actividades de las estipuladas en mi lista de actividades diarias.",
+    "OPCIÓN B ": "Hacer amigos para que no estemos solos en la zona de trabajo y así hacer ameno el tiempo para que salgan bien las cosas",
+    "OPCIÓN C": "El objetivo del trabajo en equipo es poner más capacidades, inteligencias, ideas y destreza al servicio de una tarea o actividad, de modo tal que por el mismo hecho de compartir esa actividad los resultados se den de manera más rápida y sólida",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué es empatía? ",
+    "OPCIÓN A ": "Participación afectiva de una persona en una realidad ajena a ella, generalmente en los sentimientos de otra persona. Es por esto por lo que es vital para la vida social.",
+    "OPCIÓN B ": "Sentimiento, generalmente instintivo, de afecto o inclinación hacia una persona o hacia su actitud o comportamiento, que provoca encontrar agradable su presencia, desear que las cosas le salgan bien.",
+    "OPCIÓN C": "Sentimiento, generalmente instintivo, de afecto o inclinación hacia una persona o hacia su actitud o comportamiento, que provoca encontrar agradable su presencia, desear que las cosas le salgan bien.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué habilidades se necesitan para trabajar en equipo?",
+    "OPCIÓN A ": "Ser una persona con muchas aptitudes positivas para mejorar el trabajo y contagiar a los compañeros de las buenas prácticas de manufactura.",
+    "OPCIÓN B ": "Proactivo. Exitoso. Propositivo. Géneroso. Auditivo. Comunicativo. Dadivoso. Esplendoroso. Compartido. Autocritico.",
+    "OPCIÓN C": "Ser una persona flexible y adaptable. Tener dotes comunicativos. Ser empático. Saber escuchar. Aceptar críticas. Ser colaborador. Asumir responsabilidades.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Qué pasa si se trabaja en equipo?",
+    "OPCIÓN A ": "Todo sale bien de la manera correcta y hacemos crecer a nuestra organización al cumplir con los objetivos estipulados.",
+    "OPCIÓN B ": "Todo sale mal y no hay manera de revertirlo.",
+    "OPCIÓN C": "Nada, no me debe de preocupar que mis compañeros no hagan la parte de su trabajo, mis actividades son seguras.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si veo que el estándar de empaque daña las piezas ¿Qué debo hacer?",
+    "OPCIÓN A ": "Analizar bien la forma de empacar y comentarle mi idea al supervisor e inspector de calidad.",
+    "OPCIÓN B ": "Nada, ya que es un empaque que previamente fue analizada y no tendría por que fallar.",
+    "OPCIÓN C": "Leer mi hoja de especificación de empaque y generar los cambios que sean necesario a fin de evitar esos daños.",
+    "RESPUESTA": "A",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "Si veo que la instrucción de trabajo provoca daños en las piezas, tiempo perdido, ¿Que debo hacer?",
+    "OPCIÓN A ": "Nada, esa hoja fue analizada de manera estratégica; que ya no se pueden mejorar las actividades que ahí se mencionan.",
+    "OPCIÓN B ": "Trabajar el producto de tal manera que no impida que yo esté haciendo un mayor esfuerzo y así no complicarme el trabajo.",
+    "OPCIÓN C": "Analizar la forma de trabajo y hacerle ver a mi supervisor que se pueden mejorar las condiciones en las que trabajo eficientando mi productividad.",
+    "RESPUESTA": "C",
+    "": ""
+  },
+  {
+    "PREGUNTA ": "¿Cuál es el camino correcto para aportar una idea?",
+    "OPCIÓN A ": "Definir el problema y aportar la idea.",
+    "OPCIÓN B ": "Decirle a mi jefe que es lo que tiene que hacer",
+    "OPCIÓN C": "Decirles a mis compañeros como podemos hacer mejor las cosas sin autorización de nadie.",
+    "RESPUESTA": "A",
+    "": ""
+  }
+]

@@ -59,10 +59,19 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
+    
+    match /preguntas_limpias/{preguntaId} {
+        allow read: if isSignedIn(); // Empleados y admins pueden leer las preguntas para los exámenes.
+    }
 
     match /perfiles_puesto/{puestoId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
+    }
+    
+    match /examenes/{puestoId} {
+        allow read: if isSignedIn(); // Empleados y admins necesitan leer qué preguntas tiene su examen.
+        allow write: if isAdmin();
     }
 
     match /historial_capacitacion/{empleadoId} {
@@ -74,7 +83,14 @@ service cloud.firestore {
     match /Promociones/{empleadoId} {
       allow list: if canRead();
       allow get: if canRead() || (isEmpleado() && getUserData().id_empleado == empleadoId);
-      allow write: if isAdmin();
+      allow write: if isAdmin(); // También podría ser el propio empleado si actualiza un intento
+    }
+    
+    match /Promociones/{empleadoId}/intentos_examen/{intentoId} {
+        allow read: if canRead();
+        // El empleado solo puede crear un nuevo intento para sí mismo.
+        allow create: if isEmpleado() && request.auth.uid == get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.uid && request.resource.data.id_empleado == getUserData().id_empleado;
+        allow write: if isAdmin();
     }
 
     match /plan_formacion/{planId} {

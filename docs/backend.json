@@ -140,6 +140,38 @@
         "nombre": { "type": "string" }
       },
       "required": ["fecha", "nombre"]
+    },
+    "Examen": {
+      "title": "Examen",
+      "description": "Defines an exam for a specific job profile by referencing questions.",
+      "type": "object",
+      "properties": {
+        "puestoId": { "type": "string", "description": "Links to a 'PerfilPuesto' ID." },
+        "nombre_examen": { "type": "string" },
+        "preguntaIds": {
+          "type": "array",
+          "description": "An array of document IDs from the 'preguntas_limpias' collection.",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["puestoId", "nombre_examen", "preguntaIds"]
+    },
+    "IntentoExamen": {
+      "title": "Intento de Examen",
+      "description": "Records a single attempt of an exam by an employee.",
+      "type": "object",
+      "properties": {
+        "id_empleado": { "type": "string" },
+        "examenId": { "type": "string", "description": "The ID of the exam that was taken." },
+        "fecha": { "type": "string", "format": "date-time" },
+        "calificacion": { "type": "number" },
+        "respuestas": {
+          "type": "object",
+          "description": "A map of question IDs to the selected answer key (e.g., {'pregunta123': 'A'}).",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "required": ["id_empleado", "examenId", "fecha", "calificacion"]
     }
   },
   "auth": {
@@ -193,6 +225,18 @@
         }
       },
       {
+        "path": "/Promociones/{empleadoId}/intentos_examen/{intentoId}",
+        "definition": {
+          "entityName": "IntentoExamen",
+          "schema": { "$ref": "#/entities/IntentoExamen" },
+          "description": "Stores each exam attempt for an employee.",
+          "params": [
+            { "name": "empleadoId", "description": "The employee ID." },
+            { "name": "intentoId", "description": "Unique ID for the exam attempt." }
+          ]
+        }
+      },
+      {
         "path": "/usuarios/{usuarioId}",
         "definition": {
           "entityName": "Usuario",
@@ -217,6 +261,15 @@
           "schema": { "$ref": "#/entities/DiaFestivo" },
           "description": "Stores official non-working days for the year.",
           "params": [{ "name": "diaId", "description": "A unique ID for the holiday, e.g., 'ano_nuevo_2024'." }]
+        }
+      },
+      {
+        "path": "/examenes/{puestoId}",
+        "definition": {
+          "entityName": "Examen",
+          "schema": { "$ref": "#/entities/Examen" },
+          "description": "Defines which questions form the exam for a specific job.",
+          "params": [{ "name": "puestoId", "description": "The ID of the job profile." }]
         }
       }
     ]
