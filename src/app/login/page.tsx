@@ -11,10 +11,9 @@ import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { Loader2, Zap } from 'lucide-react';
+import { Loader2, Zap, AlertCircle, Code, PaintBrush, UserSquare } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { AlertCircle } from 'lucide-react';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 
 
@@ -132,15 +131,29 @@ export default function LoginPage() {
                         <Zap className="h-4 w-4" />
                     </InteractiveHoverButton>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-xs bg-card/80 backdrop-blur-lg text-center p-8">
-                     <DialogHeader>
-                        <DialogTitle className="text-lg font-bold">Equipo de Desarrollo</DialogTitle>
-                        <DialogDescription className="text-sm text-muted-foreground pt-2">
-                            Developer Hernández Leonardo
-                            <br/>
-                            Team Hernández Noemi
-                        </DialogDescription>
-                    </DialogHeader>
+                <DialogContent className="sm:max-w-sm rounded-3xl p-0 overflow-hidden bg-transparent border-white/20">
+                     <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1, duration: 0.5, ease: 'easeOut' }}
+                        className="bg-gradient-to-br from-slate-900 via-black to-slate-900 p-8 text-center text-white"
+                      >
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-bold">Equipo de Desarrollo</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex justify-center gap-6 my-6">
+                            <motion.div whileHover={{scale: 1.1}} className="flex flex-col items-center gap-2">
+                                <div className="p-3 rounded-full bg-primary/20"><Code className="h-6 w-6 text-primary"/></div>
+                                <span className="text-xs font-bold">Developer</span>
+                                <span className="text-sm text-slate-300">Hernández Leonardo</span>
+                            </motion.div>
+                             <motion.div whileHover={{scale: 1.1}} className="flex flex-col items-center gap-2">
+                                <div className="p-3 rounded-full bg-accent/20"><PaintBrush className="h-6 w-6 text-accent"/></div>
+                                <span className="text-xs font-bold">Team</span>
+                                <span className="text-sm text-slate-300">Hernández Noemi</span>
+                            </motion.div>
+                        </div>
+                    </motion.div>
                 </DialogContent>
             </Dialog>
         </div>
