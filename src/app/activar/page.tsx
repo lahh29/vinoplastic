@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const formSchema = z.object({
