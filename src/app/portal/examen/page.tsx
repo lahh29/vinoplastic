@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query, where, getDocs, limit, serverTimestamp, addDoc, getDoc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -80,7 +80,6 @@ export default function ExamenPage() {
       }
       const examenDef = examenDefSnap.data() as ExamenDefinicion;
       
-      // Lógica para obtener preguntas aleatorias
       const preguntasRef = collection(firestore, 'preguntas_limpias');
       const q = query(preguntasRef);
       const snapshot = await getDocs(q);
@@ -228,3 +227,4 @@ export default function ExamenPage() {
     </div>
   );
 }
+
