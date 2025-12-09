@@ -108,31 +108,6 @@ const formatDate = (timestamp: any): string => {
   return format(date, 'dd/MMM/yy', { locale: es });
 };
 
-function ThemeToggle() {
-    const { setTheme, theme } = useTheme();
-    return (
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <DockIcon>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                        className="rounded-full h-10 w-10 text-muted-foreground"
-                    >
-                        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                        <span className="sr-only">Cambiar tema</span>
-                    </Button>
-                </DockIcon>
-            </TooltipTrigger>
-            <TooltipContent>
-                <p>Cambiar tema</p>
-            </TooltipContent>
-        </Tooltip>
-    );
-}
-
 // Componente de notificaciones
 function Notifications() {
   const firestore = useFirestore();
@@ -257,6 +232,7 @@ export default function MainUILayout({
   const pathname = usePathname();
   const firestore = useFirestore();
   const { isAdmin } = useRoleCheck();
+  const { setTheme, theme } = useTheme();
   
   const currentUserInfoRef = useMemoFirebase(
       () => (user ? doc(firestore, 'usuarios', user.uid) : null),
@@ -367,8 +343,6 @@ export default function MainUILayout({
                     
                      <div className="border-l h-full mx-2 border-border/60" />
 
-                    <ThemeToggle />
-                    
                     <Tooltip>
                         <TooltipTrigger asChild>
                           <DropdownMenu>
@@ -387,6 +361,10 @@ export default function MainUILayout({
                                       </div>
                                   </DropdownMenuLabel>
                                   <DropdownMenuSeparator />
+                                   <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+                                        {theme === 'light' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
+                                        <span>Cambiar Tema</span>
+                                    </DropdownMenuItem>
                                   {isAdmin && (
                                     <DropdownMenuItem asChild>
                                         <Link href="/usuarios">
