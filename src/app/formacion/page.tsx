@@ -2,26 +2,29 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { CalendarCheck, Loader2, BookCopy, Search, CalendarPlus, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { CalendarPlus, Loader2, Save, BookCopy, Search, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { Progress } from '@/components/ui/progress';
+
 
 // --- Interfaces ---
 interface PlanFormacion {
   id: string; // Document ID
-  id_empleado: string;
+  id_registro: string;
   nombre_empleado: string;
   area: string;
   departamento: string;
@@ -38,6 +41,38 @@ interface GrupoMes {
 }
 
 const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+
+// --- Componente de Tarjeta de Mes ---
+const MonthCard = ({ mes, anio, cursosPlaneados, onPlanificar, isLoading }: { mes: string, anio: number, cursosPlaneados: any[], onPlanificar: () => void, isLoading: boolean }) => (
+    <motion.div whileHover={{ y: -5 }} className="h-full">
+        <Card className="flex flex-col h-full rounded-2xl shadow-md border-border/50 bg-card/60 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold">{mes}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+                {isLoading ? <div className="text-center p-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground"/></div> :
+                cursosPlaneados.length > 0 ? (
+                    <ScrollArea className="h-40">
+                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                            {cursosPlaneados.map(curso => <li key={curso.id}>{curso.nombre_oficial}</li>)}
+                        </ul>
+                    </ScrollArea>
+                ) : (
+                    <div className="flex h-full items-center justify-center text-center">
+                        <p className="text-sm text-muted-foreground italic">Aún no hay cursos planeados.</p>
+                    </div>
+                )}
+            </CardContent>
+            <CardFooter>
+                <Button variant="outline" className="w-full" onClick={onPlanificar}>
+                    <CalendarPlus className="mr-2 h-4 w-4" />
+                    Planificar Cursos
+                </Button>
+            </CardFooter>
+        </Card>
+    </motion.div>
+);
+
 
 // --- Componente Principal ---
 export default function FormacionPage() {
@@ -88,7 +123,7 @@ export default function FormacionPage() {
             plan.nombre_empleado.toLowerCase().includes(queryLower) ||
             plan.departamento.toLowerCase().includes(queryLower) ||
             plan.area.toLowerCase().includes(queryLower) ||
-            plan.id_empleado.toLowerCase().includes(queryLower)
+            plan.id_registro.toLowerCase().includes(queryLower)
         );
         return { ...grupo, planes: planesFiltrados };
     }).filter(grupo => grupo.planes.length > 0);
@@ -191,7 +226,7 @@ export default function FormacionPage() {
             <div className="relative w-full sm:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                  placeholder="Empleado, depto, área..."
+                  placeholder="ID, Empleado, depto..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -227,6 +262,7 @@ export default function FormacionPage() {
                                     <Table>
                                         <TableHeader className="sticky top-0 bg-secondary/80 backdrop-blur-sm">
                                             <TableRow>
+                                                <TableHead>ID</TableHead>
                                                 <TableHead>Empleado</TableHead>
                                                 <TableHead className="text-right">Estatus</TableHead>
                                             </TableRow>
@@ -234,8 +270,9 @@ export default function FormacionPage() {
                                         <TableBody>
                                             {grupo.planes.map(plan => (
                                             <TableRow key={plan.id}>
+                                                <TableCell className="font-mono text-xs">{plan.id_registro}</TableCell>
                                                 <TableCell>
-                                                    <div className="font-medium">{plan.nombre_empleado}</div>
+                                                    <div className="font-medium text-sm">{plan.nombre_empleado}</div>
                                                     <div className="text-xs text-muted-foreground">{plan.departamento}</div>
                                                 </TableCell>
                                                 <TableCell className="text-right">
