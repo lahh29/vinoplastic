@@ -46,6 +46,7 @@ import { useRoleCheck } from '@/hooks/use-role-check';
 import { IdleTimeoutDialog } from './idle-timeout-dialog';
 import { useTheme } from "next-themes";
 import { Button } from './button';
+import { AnimatedDockIcon } from './animated-dock-icon';
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
@@ -296,8 +297,10 @@ export default function MainUILayout({
                         <Tooltip key={item.label}>
                             <TooltipTrigger asChild>
                                 <Link href={item.href}>
-                                    <DockIcon className={isActive(item.href) ? 'bg-primary/10 text-primary' : ''}>
-                                        <item.icon className="h-6 w-6" />
+                                    <DockIcon className={isActive(item.href) ? 'bg-primary/10' : ''}>
+                                        <AnimatedDockIcon>
+                                          <item.icon className="h-6 w-6" />
+                                        </AnimatedDockIcon>
                                     </DockIcon>
                                 </Link>
                             </TooltipTrigger>
