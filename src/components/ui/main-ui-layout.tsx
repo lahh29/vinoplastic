@@ -100,11 +100,10 @@ const formatDate = (timestamp: any): string => {
 };
 
 // Componente de notificaciones
-function Notifications({ as, children }: { as?: React.ElementType, children: React.ReactNode }) {
+function Notifications() {
   const firestore = useFirestore();
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
   const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
-  const Comp = as || 'div';
   
   const notifications = React.useMemo(() => {
     if (!contratos || isLoading) {
@@ -149,9 +148,11 @@ function Notifications({ as, children }: { as?: React.ElementType, children: Rea
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Comp>
-          {children}
-        </Comp>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            <Bell className="mr-2 h-4 w-4" />
+            <span>Notificaciones</span>
+            {notifications.count > 0 && <span className="ml-auto w-2 h-2 rounded-full bg-red-500" />}
+        </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl rounded-2xl">
         <DialogHeader>
@@ -324,10 +325,7 @@ export default function MainUILayout({
                                   <DropdownMenuSeparator />
 
                                   {(userRole === 'admin' || userRole === 'lector') && (
-                                     <Notifications as={DropdownMenuItem}>
-                                          <Bell className="mr-2 h-4 w-4" />
-                                          <span>Notificaciones</span>
-                                    </Notifications>
+                                     <Notifications />
                                   )}
                                   
                                    <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
