@@ -1,5 +1,5 @@
 
-import MainUILayout from "@/components/ui/main-ui-layout";
+import MainUILayoutWrapper from "@/components/ui/main-ui-layout";
 
 export default function PortalLayout({
     children,
@@ -8,5 +8,5 @@ export default function PortalLayout({
   }) {
     // Por ahora usamos el layout principal, pero podemos personalizarlo fácilmente más adelante
     // si queremos una experiencia visual diferente para el portal del empleado.
-    return <MainUILayout>{children}</MainUILayout>
+    return <MainUILayoutWrapper>{children}</MainUILayoutWrapper>
 }

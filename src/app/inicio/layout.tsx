@@ -1,10 +1,10 @@
 
-import MainUILayout from "@/components/ui/main-ui-layout";
+import MainUILayoutWrapper from "@/components/ui/main-ui-layout";
 
 export default function InicioLayout({
     children,
   }: {
     children: React.ReactNode;
   }) {
-    return <MainUILayout>{children}</MainUILayout>
+    return <MainUILayoutWrapper>{children}</MainUILayoutWrapper>
 }

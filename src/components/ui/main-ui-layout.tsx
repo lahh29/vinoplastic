@@ -5,7 +5,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Users, BookUser, LogOut, User, Sun, Moon } from 'lucide-react';
-import { useAuth, useUser, useDoc, getFirebaseServices } from '@/firebase';
+import { useAuth, useUser, useDoc, FirebaseClientProvider } from '@/firebase';
 import { Dock, DockIcon } from '@/components/ui/dock';
 import {
   DropdownMenu,
@@ -97,14 +97,15 @@ function MobileNav({ navItems, pathname, handleLogout, currentUserData, user, is
   );
 }
 
-export default function MainUILayout({ children }: { children: React.ReactNode }) {
+function MainUILayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
-  const { firestore, auth } = getFirebaseServices();
+  const auth = useAuth();
   const { isAdmin } = useRoleCheck();
   const { setTheme, theme } = useTheme();
   const isMobile = useIsMobile();
+  const firestore = useFirestore();
   
   const currentUserInfoRef = useMemoFirebase(
       () => (user ? doc(firestore, 'usuarios', user.uid) : null),
@@ -143,7 +144,7 @@ export default function MainUILayout({ children }: { children: React.ReactNode }
   const navItems = userRole === 'admin' ? adminNavItems : userRole === 'lector' ? lectorNavItems : employeeNavItems;
   
   if (currentUserData?.requiresPasswordChange) {
-      return children;
+      return <>{children}</>;
   }
 
   return (
@@ -240,4 +241,12 @@ export default function MainUILayout({ children }: { children: React.ReactNode }
         )}
     </div>
   );
+}
+
+export default function MainUILayoutWrapper({ children }: { children: React.ReactNode }) {
+    return (
+        <FirebaseClientProvider>
+            <MainUILayoutContent>{children}</MainUILayoutContent>
+        </FirebaseClientProvider>
+    )
 }
