@@ -22,7 +22,7 @@ import {
   Moon
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
-import { useAuth, useUser, useCollection, useFirestore, useDoc, useRoleCheck } from '@/firebase';
+import { useAuth, useUser, useCollection, useFirestore, useDoc } from '@/firebase';
 import { collection, doc, Timestamp } from 'firebase/firestore';
 import { Dock, DockIcon } from '@/components/ui/dock';
 import {
@@ -47,6 +47,7 @@ import { useTheme } from "next-themes";
 import { Button } from './button';
 import { AnimatedDockIcon } from './animated-dock-icon';
 import { useMemoFirebase } from '@/hooks/use-memo-firebase';
+import { useRoleCheck } from '@/hooks/use-role-check';
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },

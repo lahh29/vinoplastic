@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { useAuth } from '@/firebase/provider'; // Use the hook from the provider
+import { getAuth } from "firebase/auth";
 
 interface UserAuthHookResult {
   user: User | null;
@@ -12,19 +12,19 @@ interface UserAuthHookResult {
 }
 
 export const useUser = (): UserAuthHookResult => {
-  const auth = useAuth(); // Get the auth instance from context
   const [user, setUser] = useState<User | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [userError, setUserError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // If auth is not ready, don't do anything
-    if (!auth) {
-        // We are not setting loading to false here because the auth instance might just be initializing.
-        // The provider will re-render once auth is available, and this effect will re-run.
+    let auth;
+    try {
+        auth = getAuth();
+    } catch (e) {
+        // Firebase app not initialized, we'll wait for the provider to handle it
+        setIsUserLoading(false);
         return;
     }
-
     const unsubscribe = onAuthStateChanged(
       auth,
       (user) => {
@@ -39,8 +39,7 @@ export const useUser = (): UserAuthHookResult => {
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [auth]); // Re-run effect if auth instance changes
+  }, []);
 
   return { user, isUserLoading, userError };
 };
-
