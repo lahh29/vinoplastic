@@ -1,14 +1,12 @@
-
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth, useUser } from '@/firebase';
-import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
+import { useUser, initiateEmailSignIn, getFirebaseServices } from '@/firebase';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { Loader2, Zap, AlertCircle, Sparkles } from 'lucide-react';
@@ -16,15 +14,20 @@ import { StarsBackground } from '@/components/animate-ui/components/backgrounds/
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { ShinyButton } from '@/components/ui/shiny-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
+import { Auth } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
-  const auth = useAuth();
+  const [auth, setAuth] = useState<Auth | null>(null);
   const { user, isUserLoading } = useUser();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+
+  useEffect(() => {
+    const { auth: authInstance } = getFirebaseServices();
+    setAuth(authInstance);
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();

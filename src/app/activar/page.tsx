@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,9 +13,10 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight, ArrowLeft } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { doc, getDoc, setDoc, collection, query, where, getDocs, getFirestore } from 'firebase/firestore';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { doc, getDoc, setDoc, collection, query, where, getDocs, type Firestore } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, type Auth } from 'firebase/auth';
 import Link from 'next/link';
+import { getFirebaseServices } from '@/firebase';
 
 const formSchema = z.object({
   employeeId: z.string().min(1, 'El ID de empleado es obligatorio.'),
@@ -40,12 +40,17 @@ const stepVariants = {
   exit: { opacity: 0, x: -50 },
 };
 
-
 export default function ActivateAccountPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const db = getFirestore();
-  const auth = getAuth();
+  
+  // Obtener servicios de Firebase de forma segura
+  const [firebaseServices, setFirebaseServices] = useState<{ auth: Auth; firestore: Firestore; } | null>(null);
+
+  useEffect(() => {
+    const services = getFirebaseServices();
+    setFirebaseServices(services);
+  }, []);
   
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,12 +66,18 @@ export default function ActivateAccountPage() {
   const handleVerifyId = async (data: FormData) => {
     setIsLoading(true);
     form.clearErrors();
+    
+    if (!firebaseServices) {
+        toast({ variant: 'destructive', title: 'Error de Inicialización', description: 'Los servicios de Firebase no están disponibles. Recarga la página.' });
+        setIsLoading(false);
+        return;
+    }
+    const { firestore } = firebaseServices;
 
     try {
         const idLimpio = data.employeeId.trim();
         
-        // 1. Validar si el ID de empleado existe en la Plantilla
-        const plantillaDocRef = doc(db, 'Plantilla', idLimpio);
+        const plantillaDocRef = doc(firestore, 'Plantilla', idLimpio);
         const plantillaSnap = await getDoc(plantillaDocRef);
 
         if (!plantillaSnap.exists()) {
@@ -75,8 +86,7 @@ export default function ActivateAccountPage() {
             return;
         }
 
-        // 2. Validar si ya existe una cuenta de usuario para ese ID
-        const usuariosRef = collection(db, 'usuarios');
+        const usuariosRef = collection(firestore, 'usuarios');
         const q = query(usuariosRef, where("id_empleado", "==", idLimpio));
         const querySnapshot = await getDocs(q);
 
@@ -86,7 +96,6 @@ export default function ActivateAccountPage() {
             return;
         }
         
-        // 3. Si todo es correcto, guardar datos y pasar al siguiente paso
         const datosEmpleado = plantillaSnap.data();
         const emailGenerado = `${idLimpio}_empleado@vinoplastic.com`;
 
@@ -107,17 +116,19 @@ export default function ActivateAccountPage() {
 
   const handleCreateAccount = async (data: FormData) => {
     setIsLoading(true);
-    if (!employeeData || !data.password || !auth) {
+    
+    if (!firebaseServices || !employeeData || !data.password) {
       toast({ variant: 'destructive', title: 'Error Interno', description: 'Faltan datos para crear la cuenta.' });
       setIsLoading(false);
       return;
     }
+    const { auth, firestore } = firebaseServices;
     
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, employeeData.emailGenerado, data.password);
       const user = userCredential.user;
 
-      const userDocRef = doc(db, 'usuarios', user.uid);
+      const userDocRef = doc(firestore, 'usuarios', user.uid);
       await setDoc(userDocRef, {
         uid: user.uid,
         id_empleado: employeeData.id,
@@ -125,7 +136,7 @@ export default function ActivateAccountPage() {
         email: employeeData.emailGenerado,
         role: 'empleado',
         createdAt: new Date(),
-        requiresPasswordChange: false, // La contraseña es definida por el usuario, no es temporal.
+        requiresPasswordChange: false,
       });
       
       setStep(3);
@@ -199,7 +210,7 @@ export default function ActivateAccountPage() {
                                             </p>
                                         )}
                                     </div>
-                                    <Button type="submit" className="w-full h-12 text-md font-semibold" disabled={isLoading}>
+                                    <Button type="submit" className="w-full h-12 text-md font-semibold" disabled={isLoading || !firebaseServices}>
                                         {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Valida tu ID <ArrowRight className="ml-2 h-4 w-4"/></>}
                                     </Button>
                                     <div className="text-center">
@@ -289,5 +300,3 @@ export default function ActivateAccountPage() {
     </div>
   );
 }
-
-    

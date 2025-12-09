@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -22,7 +21,7 @@ import {
   Moon
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
-import { useAuth, useUser, useCollection, useFirestore, useDoc } from '@/firebase';
+import { useAuth, useUser, useCollection, useFirestore, useDoc, getFirebaseServices } from '@/firebase';
 import { collection, doc, Timestamp } from 'firebase/firestore';
 import { Dock, DockIcon } from '@/components/ui/dock';
 import {
@@ -48,6 +47,7 @@ import { Button } from './button';
 import { AnimatedDockIcon } from './animated-dock-icon';
 import { useMemoFirebase } from '@/hooks/use-memo-firebase';
 import { useRoleCheck } from '@/hooks/use-role-check';
+import { Auth } from 'firebase/auth';
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
@@ -211,13 +211,18 @@ export default function MainUILayout({
 }: {
   children: React.ReactNode;
 }) {
-  const auth = useAuth();
+  const [auth, setAuth] = React.useState<Auth | null>(null);
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
   const firestore = useFirestore();
   const { isAdmin } = useRoleCheck();
   const { setTheme, theme } = useTheme();
+
+  React.useEffect(() => {
+    const services = getFirebaseServices();
+    setAuth(services.auth);
+  }, []);
   
   const currentUserInfoRef = useMemoFirebase(
       () => (user ? doc(firestore, 'usuarios', user.uid) : null),
