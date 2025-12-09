@@ -43,7 +43,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useRoleCheck } from '@/hooks/use-role-check';
-import { AppTour } from './app-tour';
 import { IdleTimeoutDialog } from './idle-timeout-dialog';
 import { useTheme } from "next-themes";
 import { Button } from './button';
@@ -140,7 +139,7 @@ function Notifications() {
 
     return {
       expiringContracts: expiring.sort((a,b) => (getDate(a.fechas_contrato.termino)?.getTime() ?? 0) - (getDate(b.fechas_contrato.termino)?.getTime() ?? 0)),
-      dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0))
+      dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada) ?? new Date(0)).getTime())
     };
   }, [contratos, isLoading]);
 
@@ -149,7 +148,7 @@ function Notifications() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div data-tour="notifications">
+        <div>
           <DockIcon>
             <Bell className="h-5 w-5 text-muted-foreground" />
             {notificationCount > 0 && (
@@ -244,11 +243,6 @@ export default function MainUILayout({
       auth.signOut();
     }
   };
-  
-  const handleResetTour = () => {
-    localStorage.removeItem('vinoplastic_tour_completed');
-    window.location.reload();
-  };
 
   const isLoading = isUserLoading || isRoleLoading;
 
@@ -273,7 +267,6 @@ export default function MainUILayout({
     return pathname.startsWith(href);
   }
   
-  // No renderizar el layout si es necesario cambiar la contraseña
   if (currentUserData?.requiresPasswordChange) {
       return children;
   }
@@ -281,7 +274,6 @@ export default function MainUILayout({
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background overflow-hidden">
         <StarsBackground speed={0.5} className="absolute inset-0 z-0"/>
-        <AppTour />
         <IdleTimeoutDialog />
         <main className="relative z-10 flex-1 overflow-auto pb-24">
             <div className="h-full p-4 sm:p-6 lg:p-8">
@@ -294,7 +286,6 @@ export default function MainUILayout({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-            data-tour="dock-menu"
         >
             <TooltipProvider>
                 <Dock 
@@ -338,7 +329,7 @@ export default function MainUILayout({
                         <TooltipTrigger asChild>
                           <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <div data-tour="profile-menu">
+                                <div>
                                   <DockIcon>
                                       <AnimatedUserIcon />
                                   </DockIcon>
@@ -364,10 +355,6 @@ export default function MainUILayout({
                                         </Link>
                                     </DropdownMenuItem>
                                   )}
-                                  <DropdownMenuItem onClick={handleResetTour}>
-                                        <RotateCcw className="mr-2 h-4 w-4" />
-                                        <span>Reiniciar Tour</span>
-                                  </DropdownMenuItem>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
                                       <LogOut className="mr-2 h-4 w-4" />
