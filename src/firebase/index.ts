@@ -1,8 +1,9 @@
+
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import { getAuth, type Auth, signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
@@ -13,27 +14,39 @@ if (!getApps().length) {
   firebaseApp = getApp();
 }
 
+function initializeFirebase() {
+    return firebaseApp;
+}
+
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
 
-export { firebaseApp, auth, firestore, storage };
-
-// Función para obtener los servicios, asegurando la inicialización
 export function getFirebaseServices() {
   return {
-    auth: getAuth(firebaseApp),
-    firestore: getFirestore(firebaseApp),
-    storage: getStorage(firebaseApp)
+    firebaseApp,
+    auth,
+    firestore,
+    storage,
   };
 }
+
+export function initiateEmailSignIn(auth: Auth, email: string, password: string) {
+    return firebaseSignInWithEmailAndPassword(auth, email, password);
+}
+
+export { initializeApp, getApps, getApp, type FirebaseApp };
+export { getAuth, type Auth };
+export { getFirestore, type Firestore };
+export { getStorage, type FirebaseStorage };
 
 export * from './provider';
 export * from './client-provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
 export * from './non-blocking-updates';
-export * from './non-blocking-login';
+export * from './auth/use-user';
 export * from './errors';
 export * from './error-emitter';
 export { useMemoFirebase } from '@/hooks/use-memo-firebase';
+
