@@ -1,8 +1,10 @@
 
+import { FirebaseClientProvider } from "@/firebase";
+
 export default function ActivateAccountLayout({
     children,
   }: {
     children: React.ReactNode;
   }) {
-    return <>{children}</>;
+    return <FirebaseClientProvider>{children}</FirebaseClientProvider>;
 }

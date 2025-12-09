@@ -7,17 +7,14 @@ import { getAuth, type Auth, signInWithEmailAndPassword as firebaseSignInWithEma
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
-let firebaseApp: FirebaseApp;
-if (!getApps().length) {
-  firebaseApp = initializeApp(firebaseConfig);
-} else {
-  firebaseApp = getApp();
-}
-
 function initializeFirebase() {
-    return firebaseApp;
+    if (getApps().length) {
+        return getApp();
+    }
+    return initializeApp(firebaseConfig);
 }
 
+const firebaseApp = initializeFirebase();
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
@@ -49,4 +46,3 @@ export * from './auth/use-user';
 export * from './errors';
 export * from './error-emitter';
 export { useMemoFirebase } from '@/hooks/use-memo-firebase';
-

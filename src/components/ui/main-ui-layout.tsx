@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -48,6 +49,8 @@ import { AnimatedDockIcon } from './animated-dock-icon';
 import { useMemoFirebase } from '@/hooks/use-memo-firebase';
 import { useRoleCheck } from '@/hooks/use-role-check';
 import { Auth } from 'firebase/auth';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
@@ -206,6 +209,52 @@ function Notifications() {
   )
 }
 
+function MobileNav({ navItems, pathname, handleLogout, currentUserData, user, isAdmin }: any) {
+  return (
+    <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-background/70 backdrop-blur-sm border-t border-border/60">
+      <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+        {navItems.map((item: any) => (
+          <Link key={item.label} href={item.href} className="inline-flex flex-col items-center justify-center px-5 hover:bg-muted/50 group">
+            <item.icon className={`w-6 h-6 mb-1 ${isActive(item.href, pathname) ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`} />
+            <span className={`text-xs ${isActive(item.href, pathname) ? 'text-primary' : 'text-muted-foreground'}`}>{item.label}</span>
+          </Link>
+        ))}
+         <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <button className="inline-flex flex-col items-center justify-center px-5 hover:bg-muted/50 group">
+                    <User className="w-6 h-6 mb-1 text-muted-foreground group-hover:text-foreground" />
+                    <span className="text-xs text-muted-foreground">Perfil</span>
+                </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                    </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {(isAdmin) && (<Notifications />)}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Cerrar sesión</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
+
+const isActive = (href: string, pathname: string) => {
+    if (href === '/inicio' || href === '/portal') {
+        return pathname === href;
+    }
+    return pathname.startsWith(href);
+}
+
+
 export default function MainUILayout({
   children,
 }: {
@@ -218,6 +267,7 @@ export default function MainUILayout({
   const firestore = useFirestore();
   const { isAdmin } = useRoleCheck();
   const { setTheme, theme } = useTheme();
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     const services = getFirebaseServices();
@@ -259,13 +309,6 @@ export default function MainUILayout({
   
   const userRole = currentUserData?.role;
   const navItems = userRole === 'admin' ? adminNavItems : userRole === 'lector' ? lectorNavItems : employeeNavItems;
-
-  const isActive = (href: string) => {
-    if (href === '/inicio' || href === '/portal') {
-        return pathname === href;
-    }
-    return pathname.startsWith(href);
-  }
   
   if (currentUserData?.requiresPasswordChange) {
       return children;
@@ -281,86 +324,88 @@ export default function MainUILayout({
             </div>
         </main>
         
-        <motion.div 
-            className="fixed inset-x-0 bottom-4 z-50 sm:bottom-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-        >
-            <TooltipProvider>
-                <Dock 
-                    direction="middle" 
-                    className="bg-background/70 border-border/60 backdrop-blur-sm"
-                >
-                    {navItems.map((item) => (
-                        <Tooltip key={item.label}>
+        {isMobile ? (
+            <MobileNav navItems={navItems} pathname={pathname} handleLogout={handleLogout} currentUserData={currentUserData} user={user} isAdmin={isAdmin}/>
+        ) : (
+            <motion.div 
+                className="fixed inset-x-0 bottom-4 z-50 sm:bottom-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+            >
+                <TooltipProvider>
+                    <Dock 
+                        direction="middle" 
+                        className="bg-background/70 border-border/60 backdrop-blur-sm"
+                    >
+                        {navItems.map((item) => (
+                            <Tooltip key={item.label}>
+                                <TooltipTrigger asChild>
+                                    <Link href={item.href}>
+                                        <DockIcon className={isActive(item.href, pathname) ? 'bg-primary/10' : ''}>
+                                            <AnimatedDockIcon>
+                                            <item.icon className="h-6 w-6" />
+                                            </AnimatedDockIcon>
+                                        </DockIcon>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{item.label}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ))}
+
+                        <div className="border-l h-full mx-2 border-border/60" />
+
+                        <Tooltip>
                             <TooltipTrigger asChild>
-                                <Link href={item.href}>
-                                    <DockIcon className={isActive(item.href) ? 'bg-primary/10' : ''}>
-                                        <AnimatedDockIcon>
-                                          <item.icon className="h-6 w-6" />
-                                        </AnimatedDockIcon>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <div>
+                                    <DockIcon>
+                                        <AnimatedUserIcon />
                                     </DockIcon>
-                                </Link>
+                                    </div>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
+                                    <DropdownMenuLabel className="font-normal">
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
+                                            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+
+                                    {(isAdmin) && (<Notifications />)}
+                                    
+                                    <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+                                            {theme === 'light' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
+                                            <span>Cambiar Tema</span>
+                                        </DropdownMenuItem>
+                                    {isAdmin && (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/usuarios">
+                                            <Users className="mr-2 h-4 w-4" />
+                                            <span>Usuarios</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        <span>Cerrar sesión</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>{item.label}</p>
+                                <p>Perfil y Sesión</p>
                             </TooltipContent>
                         </Tooltip>
-                    ))}
-
-                     <div className="border-l h-full mx-2 border-border/60" />
-
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                          <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <div>
-                                  <DockIcon>
-                                      <AnimatedUserIcon />
-                                  </DockIcon>
-                                </div>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
-                                  <DropdownMenuLabel className="font-normal">
-                                      <div className="flex flex-col space-y-1">
-                                          <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
-                                          <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                                      </div>
-                                  </DropdownMenuLabel>
-                                  <DropdownMenuSeparator />
-
-                                  {(userRole === 'admin' || userRole === 'lector') && (
-                                     <Notifications />
-                                  )}
-                                  
-                                   <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-                                        {theme === 'light' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
-                                        <span>Cambiar Tema</span>
-                                    </DropdownMenuItem>
-                                  {isAdmin && (
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/usuarios">
-                                        <Users className="mr-2 h-4 w-4" />
-                                        <span>Usuarios</span>
-                                        </Link>
-                                    </DropdownMenuItem>
-                                  )}
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
-                                      <LogOut className="mr-2 h-4 w-4" />
-                                      <span>Cerrar sesión</span>
-                                  </DropdownMenuItem>
-                              </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TooltipTrigger>
-                         <TooltipContent>
-                            <p>Perfil y Sesión</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </Dock>
-            </TooltipProvider>
-        </motion.div>
+                    </Dock>
+                </TooltipProvider>
+            </motion.div>
+        )}
     </div>
   );
 }
