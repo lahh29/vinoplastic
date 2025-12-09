@@ -33,8 +33,8 @@ export function getFirebaseServices() {
   };
 }
 
-export function initiateEmailSignIn(auth: Auth, email: string, password: string) {
-    return firebaseSignInWithEmailAndPassword(auth, email, password);
+export function initiateEmailSignIn(authInstance: Auth, email: string, password: string) {
+    return firebaseSignInWithEmailAndPassword(authInstance, email, password);
 }
 
 // Exportaciones explícitas de tipos y funciones necesarias
@@ -43,11 +43,10 @@ export { type Auth };
 export { type Firestore };
 export { type FirebaseStorage };
 
-export { FirebaseProvider, FirebaseClientProvider, useFirebase, useAuth, useFirestore, useStorage, useFirebaseApp } from './provider';
+export { FirebaseProvider, FirebaseClientProvider, useFirebase, useAuth, useFirestore, useStorage, useFirebaseApp, useUser } from './provider';
 export { useCollection } from './firestore/use-collection';
 export { useDoc } from './firestore/use-doc';
 export { setDocumentNonBlocking, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from './non-blocking-updates';
-export { useUser } from './auth/use-user';
 export { FirestorePermissionError } from './errors';
 export { errorEmitter } from './error-emitter';
 export { useMemoFirebase } from '@/hooks/use-memo-firebase';

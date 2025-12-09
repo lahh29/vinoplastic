@@ -5,7 +5,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Users, BookUser, LogOut, User, Sun, Moon } from 'lucide-react';
-import { useAuth, useUser, useDoc, FirebaseClientProvider } from '@/firebase';
+import { useAuth, useUser, useDoc, FirebaseClientProvider, useFirestore } from '@/firebase';
 import { Dock, DockIcon } from '@/components/ui/dock';
 import {
   DropdownMenu,
