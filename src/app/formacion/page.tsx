@@ -2,28 +2,26 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CalendarCheck, ChevronsUpDown, Loader2, Save, BookCopy, Search, CalendarPlus } from 'lucide-react';
+import { CalendarCheck, Loader2, BookCopy, Search, CalendarPlus, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- Interfaces ---
 interface PlanFormacion {
   id: string; // Document ID
-  id_registro: string;
+  id_empleado: string;
   nombre_empleado: string;
   area: string;
   departamento: string;
@@ -40,7 +38,6 @@ interface GrupoMes {
 }
 
 const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
-
 
 // --- Componente Principal ---
 export default function FormacionPage() {
@@ -91,11 +88,23 @@ export default function FormacionPage() {
             plan.nombre_empleado.toLowerCase().includes(queryLower) ||
             plan.departamento.toLowerCase().includes(queryLower) ||
             plan.area.toLowerCase().includes(queryLower) ||
-            plan.id_registro.toLowerCase().includes(queryLower)
+            plan.id_empleado.toLowerCase().includes(queryLower)
         );
         return { ...grupo, planes: planesFiltrados };
     }).filter(grupo => grupo.planes.length > 0);
   }, [datosAgrupados, searchQuery]);
+
+  const kpisGenerales = useMemo(() => {
+    if (!planes) return { anual: 0, total: 0, entregados: 0, pendientes: 0 };
+    const total = planes.length;
+    const entregados = planes.filter(p => p.estatus === 'ENTREGADO').length;
+    return {
+        anual: total > 0 ? (entregados / total) * 100 : 0,
+        total,
+        entregados,
+        pendientes: total - entregados
+    };
+  }, [planes]);
 
 
   const handleStatusChange = async (plan: PlanFormacion, nuevoEstatus: boolean) => {
@@ -104,8 +113,9 @@ export default function FormacionPage() {
     const docRef = doc(firestore, 'plan_formacion', plan.id);
     const estatusString = nuevoEstatus ? 'ENTREGADO' : 'SIN ENTREGAR';
 
+    // No need for setDocumentNonBlocking as we want immediate feedback
     try {
-        setDocumentNonBlocking(docRef, { estatus: estatusString }, { merge: true });
+        await setDoc(docRef, { estatus: estatusString }, { merge: true });
         toast({
             title: `Estatus Actualizado`,
             description: `${plan.nombre_empleado} ahora está como ${estatusString}.`,
@@ -129,19 +139,59 @@ export default function FormacionPage() {
         </p>
       </div>
 
-      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm" data-tour="formacion-tabla">
+       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Cumplimiento Anual</CardTitle>
+                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-3xl font-bold">{kpisGenerales.anual.toFixed(1)}%</div>
+                    <Progress value={kpisGenerales.anual} className="h-2 mt-2"/>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Planes Totales</CardTitle>
+                    <BookCopy className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-3xl font-bold">{kpisGenerales.total}</div>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Entregados</CardTitle>
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-3xl font-bold">{kpisGenerales.entregados}</div>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Pendientes</CardTitle>
+                    <XCircle className="h-4 w-4 text-red-500" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-3xl font-bold">{kpisGenerales.pendientes}</div>
+                </CardContent>
+            </Card>
+        </div>
+
+      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
-              <CardTitle>Cumplimiento por Mes</CardTitle>
+              <CardTitle>Progreso por Mes</CardTitle>
               <CardDescription>
-                Haz clic en un mes para ver el detalle de los planes de formación.
+                Busca y despliega el detalle de los planes de formación para cada mes.
               </CardDescription>
             </div>
             <div className="relative w-full sm:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                  placeholder="Buscar empleado, depto, área..."
+                  placeholder="Empleado, depto, área..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -156,64 +206,59 @@ export default function FormacionPage() {
               <p className="ml-4 text-muted-foreground">Cargando datos de formación...</p>
             </div>
           ) : (
-            <Accordion type="single" collapsible className="w-full space-y-4" defaultValue={filteredDatosAgrupados[0]?.mes}>
-              {filteredDatosAgrupados.map(grupo => (
-                <AccordionItem value={grupo.mes} key={grupo.mes} className="border-b-0 rounded-lg bg-card/80 border shadow-sm">
-                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:no-underline rounded-t-lg">
-                    <div className="flex items-center gap-4 w-full">
-                        <CalendarCheck className="h-6 w-6 text-primary" />
-                        <span className="flex-1 text-left">{grupo.mes.charAt(0).toUpperCase() + grupo.mes.slice(1).toLowerCase()}</span>
-                        <div className="flex items-center gap-3 w-48">
-                            <Progress value={grupo.cumplimiento} className="h-3" />
-                            <span className={cn("font-bold text-sm", grupo.cumplimiento > 80 ? "text-green-500" : "text-amber-500")}>
-                                {grupo.cumplimiento.toFixed(0)}%
-                            </span>
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredDatosAgrupados.map(grupo => (
+                    <Collapsible key={grupo.mes} className="border rounded-lg bg-card/80 shadow-sm">
+                        <div className="p-4">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-lg font-semibold">{grupo.mes}</h3>
+                                <Badge variant={grupo.cumplimiento === 100 ? 'default' : 'secondary'} className={cn(grupo.cumplimiento === 100 && 'bg-green-600')}>
+                                    {grupo.entregados}/{grupo.total} Entregados
+                                </Badge>
+                            </div>
+                             <div className="flex items-center gap-2 mt-2">
+                                <Progress value={grupo.cumplimiento} className="h-2" />
+                                <span className="text-xs font-bold">{grupo.cumplimiento.toFixed(0)}%</span>
+                            </div>
                         </div>
-                         <ChevronsUpDown className="h-4 w-4 shrink-0 transition-transform duration-200 text-muted-foreground group-data-[state=open]:-rotate-180" />
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-2 pb-2">
-                    <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>ID Empleado</TableHead>
-                              <TableHead>Empleado</TableHead>
-                              <TableHead>Departamento</TableHead>
-                              <TableHead>Área</TableHead>
-                              <TableHead className="text-center w-40">Estatus</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {grupo.planes.map(plan => (
-                              <TableRow key={plan.id}>
-                                <TableCell className="font-mono text-xs">{plan.id_registro}</TableCell>
-                                <TableCell className="font-medium">{plan.nombre_empleado}</TableCell>
-                                <TableCell>{plan.departamento}</TableCell>
-                                <TableCell className="text-muted-foreground">{plan.area}</TableCell>
-                                <TableCell className="text-center">
-                                  <div className="flex items-center justify-center space-x-2">
-                                    <Switch
-                                        id={`switch-${plan.id}`}
-                                        checked={plan.estatus === 'ENTREGADO'}
-                                        onCheckedChange={(checked) => handleStatusChange(plan, checked)}
-                                    />
-                                    <Label htmlFor={`switch-${plan.id}`}>
-                                        <Badge variant={plan.estatus === 'ENTREGADO' ? 'default' : 'destructive'} className={cn(plan.estatus === 'ENTREGADO' && 'bg-green-600')}>
-                                            {plan.estatus}
-                                        </Badge>
-                                    </Label>
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+                        <CollapsibleContent>
+                            <div className="border-t">
+                                <ScrollArea className="h-72">
+                                    <Table>
+                                        <TableHeader className="sticky top-0 bg-secondary/80 backdrop-blur-sm">
+                                            <TableRow>
+                                                <TableHead>Empleado</TableHead>
+                                                <TableHead className="text-right">Estatus</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {grupo.planes.map(plan => (
+                                            <TableRow key={plan.id}>
+                                                <TableCell>
+                                                    <div className="font-medium">{plan.nombre_empleado}</div>
+                                                    <div className="text-xs text-muted-foreground">{plan.departamento}</div>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                <Switch
+                                                    checked={plan.estatus === 'ENTREGADO'}
+                                                    onCheckedChange={(checked) => handleStatusChange(plan, checked)}
+                                                />
+                                                </TableCell>
+                                            </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </ScrollArea>
+                            </div>
+                        </CollapsibleContent>
+                        <CardFooter className="p-2 border-t">
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" className="w-full text-xs">Ver Detalles</Button>
+                            </CollapsibleTrigger>
+                        </CardFooter>
+                    </Collapsible>
+                ))}
+             </div>
           )}
         </CardContent>
       </Card>
