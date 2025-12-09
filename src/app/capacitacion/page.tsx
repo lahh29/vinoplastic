@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
-import { BookMarked, BarChart3, Briefcase, ClipboardPlus, BookCopy } from 'lucide-react';
+import { BookMarked, BarChart3, Briefcase, ClipboardPlus, BookCopy, GraduationCap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navLinks = [
@@ -17,6 +17,7 @@ const navLinks = [
     { href: "/capacitacion/analisis", icon: BarChart3, title: "Análisis de Cumplimiento", tourId: "capacitacion-analisis" },
     { href: "/capacitacion/analisis-por-puesto", icon: Briefcase, title: "Análisis por Puesto", tourId: "capacitacion-por-puesto" },
     { href: "/capacitacion/analisis-por-curso", icon: BookCopy, title: "Análisis por Curso", tourId: "capacitacion-por-curso" },
+    { href: "/formacion", icon: GraduationCap, title: "Plan de Formación Anual", tourId: "capacitacion-formacion" },
 ]
 
 export default function CapacitacionPage() {

@@ -55,7 +55,6 @@ const adminNavItems = [
   { href: '/empleados', icon: Users, label: 'Empleados' },
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
   { href: '/categorias', icon: Shapes, label: 'Categorías' },
-  { href: '/formacion', icon: GraduationCap, label: 'Formación' },
 ];
 
 const lectorNavItems = [
@@ -64,7 +63,6 @@ const lectorNavItems = [
   { href: '/empleados', icon: Users, label: 'Empleados' },
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
   { href: '/categorias', icon: Shapes, label: 'Categorías' },
-  { href: '/formacion', icon: GraduationCap, label: 'Formación' },
 ];
 
 const employeeNavItems = [
