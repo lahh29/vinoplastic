@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -10,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CalendarCheck, ChevronsUpDown, Loader2, Save, BookCopy, Search } from 'lucide-react';
+import { CalendarCheck, ChevronsUpDown, Loader2, Save, BookCopy, Search, CalendarPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -133,7 +134,8 @@ export default function FormacionPage() {
         const planesFiltrados = grupo.planes.filter(plan =>
             plan.nombre_empleado.toLowerCase().includes(queryLower) ||
             plan.departamento.toLowerCase().includes(queryLower) ||
-            plan.area.toLowerCase().includes(queryLower)
+            plan.area.toLowerCase().includes(queryLower) ||
+            plan.id_registro.toLowerCase().includes(queryLower)
         );
         return { ...grupo, planes: planesFiltrados };
     }).filter(grupo => grupo.planes.length > 0);
@@ -219,6 +221,7 @@ export default function FormacionPage() {
                         <Table>
                           <TableHeader>
                             <TableRow>
+                              <TableHead>ID Empleado</TableHead>
                               <TableHead>Empleado</TableHead>
                               <TableHead>Departamento</TableHead>
                               <TableHead>Área</TableHead>
@@ -228,6 +231,7 @@ export default function FormacionPage() {
                           <TableBody>
                             {grupo.planes.map(plan => (
                               <TableRow key={plan.id}>
+                                <TableCell className="font-mono text-xs">{plan.id_registro}</TableCell>
                                 <TableCell className="font-medium">{plan.nombre_empleado}</TableCell>
                                 <TableCell>{plan.departamento}</TableCell>
                                 <TableCell className="text-muted-foreground">{plan.area}</TableCell>
