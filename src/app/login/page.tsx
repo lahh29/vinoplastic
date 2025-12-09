@@ -48,10 +48,9 @@ export default function LoginPage() {
         <div className="absolute top-4 left-4 z-10">
             <Dialog>
                 <DialogTrigger asChild>
-                    <ShinyButton>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Equipo de Desarrollo
-                    </ShinyButton>
+                    <Button variant="ghost" size="icon">
+                        <Sparkles className="h-5 w-5" />
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-xs bg-card/80 backdrop-blur-lg text-center p-8">
                     <DialogHeader>
