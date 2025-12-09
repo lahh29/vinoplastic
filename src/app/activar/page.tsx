@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,9 +13,9 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight, ArrowLeft } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { doc, getDoc, setDoc, collection, query, where, getDocs, Firestore } from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword, Auth } from 'firebase/auth';
-import { app, db } from '../../../firebase.js'; // Importar la instancia de la base de datos
+import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useFirestore, useAuth } from '@/firebase';
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -45,12 +44,13 @@ const stepVariants = {
 export default function ActivateAccountPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const db = useFirestore();
+  const auth = useAuth();
   
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [employeeData, setEmployeeData] = useState<{ id: string; nombre_completo: string; emailGenerado: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const authInstance = getAuth(app);
 
 
   const form = useForm<FormData>({
@@ -107,14 +107,14 @@ export default function ActivateAccountPage() {
 
   const handleCreateAccount = async (data: FormData) => {
     setIsLoading(true);
-    if (!employeeData || !data.password || !authInstance) {
+    if (!employeeData || !data.password || !auth) {
       toast({ variant: 'destructive', title: 'Error Interno', description: 'Faltan datos para crear la cuenta.' });
       setIsLoading(false);
       return;
     }
     
     try {
-      const userCredential = await createUserWithEmailAndPassword(authInstance, employeeData.emailGenerado, data.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, employeeData.emailGenerado, data.password);
       const user = userCredential.user;
 
       const userDocRef = doc(db, 'usuarios', user.uid);
@@ -137,7 +137,7 @@ export default function ActivateAccountPage() {
             form.reset();
             setStep(1);
         } else if (error.code === 'auth/weak-password') {
-            errorMessage = 'La contraseña es demasiado débil. Debe tener al menos 6 caracteres.';
+            errorMessage = 'La contraseña es demasiado débil. Debe tener al menos 8 caracteres.';
         }
         console.error("Error creando cuenta:", error);
         toast({ variant: 'destructive', title: 'Error al Crear Cuenta', description: errorMessage });
