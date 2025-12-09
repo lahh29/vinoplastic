@@ -41,62 +41,18 @@ interface GrupoMes {
 
 const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
-// --- Componente de Tarjeta de Mes ---
-const MonthCard = ({ mes, anio, cursosPlaneados, onPlanificar, isLoading }: { mes: string, anio: number, cursosPlaneados: CursoCatalogo[], onPlanificar: () => void, isLoading: boolean }) => (
-    <motion.div whileHover={{ y: -5 }} className="h-full">
-        <Card className="flex flex-col h-full rounded-2xl shadow-md border-border/50 bg-card/60 backdrop-blur-sm">
-            <CardHeader>
-                <CardTitle className="text-xl font-semibold">{mes}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1">
-                {isLoading ? <div className="text-center p-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground"/></div> :
-                cursosPlaneados.length > 0 ? (
-                    <ScrollArea className="h-40">
-                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                            {cursosPlaneados.map(curso => <li key={curso.id}>{curso.nombre_oficial}</li>)}
-                        </ul>
-                    </ScrollArea>
-                ) : (
-                    <div className="flex h-full items-center justify-center text-center">
-                        <p className="text-sm text-muted-foreground italic">Aún no hay cursos planeados.</p>
-                    </div>
-                )}
-            </CardContent>
-            <CardFooter>
-                <Button variant="outline" className="w-full" onClick={onPlanificar}>
-                    <CalendarPlus className="mr-2 h-4 w-4" />
-                    Planificar Cursos
-                </Button>
-            </CardFooter>
-        </Card>
-    </motion.div>
-);
-
-interface CursoCatalogo {
-  id: string; // Document ID from Firestore
-  id_curso: string;
-  nombre_oficial: string;
-}
 
 // --- Componente Principal ---
 export default function FormacionPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [activeMonth, setActiveMonth] = useState<string | null>(null);
-  const [selectedCursos, setSelectedCursos] = useState<Set<string>>(new Set());
-  const [isSaving, setIsSaving] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  
   const [searchQuery, setSearchQuery] = useState('');
 
-  const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
-  const programaRef = useMemoFirebase(() => collection(firestore, 'programa_anual'), [firestore]);
   const formacionRef = useMemoFirebase(() => collection(firestore, 'plan_formacion'), [firestore]);
-
-  const { data: catalogoCursos, isLoading: loadingCursos } = useCollection<CursoCatalogo>(catalogoCursosRef);
-  const { data: programas, isLoading: loadingProgramas } = useCollection<ProgramaMes>(programaRef);
   const { data: planes, isLoading: loadingPlanes } = useCollection<PlanFormacion>(formacionRef);
 
-  const isLoading = loadingCursos || loadingProgramas || loadingPlanes;
+  const isLoading = loadingPlanes;
 
   const datosAgrupados = useMemo(() => {
     if (!planes) return [];
@@ -123,7 +79,7 @@ export default function FormacionPage() {
           entregados,
           cumplimiento: total > 0 ? (entregados / total) * 100 : 0,
         };
-      }).filter(grupo => grupo.total > 0); // Solo mostrar meses con planes
+      }).filter(grupo => grupo.total > 0);
   }, [planes]);
 
   const filteredDatosAgrupados = useMemo(() => {
