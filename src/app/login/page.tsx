@@ -49,7 +49,7 @@ export default function LoginPage() {
             <Dialog>
                 <DialogTrigger asChild>
                     <ShinyButton className="p-2 aspect-square">
-                        <Zap className="h-5 w-5" />
+                        <Sparkles className="h-5 w-5" />
                     </ShinyButton>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-xs bg-card/80 backdrop-blur-lg text-center p-8">

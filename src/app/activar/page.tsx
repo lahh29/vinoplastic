@@ -128,8 +128,8 @@ export default function ActivateAccountPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black p-4">
-        <StarsBackground starColor="#fff" speed={0.5} className="absolute inset-0 z-0"/>
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-background p-4">
+        <StarsBackground starColor="hsl(var(--foreground))" speed={0.5} className="absolute inset-0 z-0"/>
         
         <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -137,7 +137,7 @@ export default function ActivateAccountPage() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="relative z-10 w-full max-w-md"
         >
-          <Card className="w-full bg-black/40 border-white/10 text-white shadow-2xl backdrop-blur-xl">
+          <Card className="w-full bg-card/60 border-border/50 shadow-2xl backdrop-blur-xl">
               <div className="overflow-hidden relative h-[520px]">
                 <AnimatePresence mode="wait">
                     {/* PASO 1: VERIFICACIÓN */}
@@ -161,26 +161,26 @@ export default function ActivateAccountPage() {
                                         <UserCheck className="h-8 w-8 text-primary"/>
                                     </motion.div>
                                     <CardTitle className="text-2xl font-bold tracking-tight">Portal de Empleado</CardTitle>
-                                    <CardDescription className="text-slate-400 text-base">Ingresa tu ID de nómina para activar tu cuenta.</CardDescription>
+                                    <CardDescription className="text-muted-foreground text-base">Ingresa tu ID de nómina para activar tu cuenta.</CardDescription>
                                 </CardHeader>
                                 
                                 <div className="space-y-4 pt-4">
                                     <div className="grid gap-2 text-left">
-                                        <Label htmlFor="employeeId" className="text-sm font-medium text-slate-400">Activación</Label>
+                                        <Label htmlFor="employeeId" className="text-sm font-medium text-muted-foreground">Activación</Label>
                                         <Input 
                                             {...form.register('employeeId')} 
                                             id="employeeId" 
                                             placeholder="Ingresa tu ID" 
-                                            className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 pl-4 py-6 text-lg tracking-widest text-center"
+                                            className="bg-background/50 border-border/50 placeholder:text-muted-foreground pl-4 py-6 text-lg tracking-widest text-center"
                                             autoComplete="off"
                                         />
                                         {form.formState.errors.employeeId && (
-                                            <p className="text-red-400 text-xs mt-1 flex items-center gap-1.5 animate-pulse">
+                                            <p className="text-destructive text-xs mt-1 flex items-center gap-1.5 animate-pulse">
                                                 <AlertTriangle size={14}/> {form.formState.errors.employeeId.message}
                                             </p>
                                         )}
                                     </div>
-                                    <Button type="submit" className="w-full h-12 text-md font-semibold bg-white text-black hover:bg-slate-200 transition-all shadow-lg hover:shadow-slate-400/20" disabled={isLoading}>
+                                    <Button type="submit" className="w-full h-12 text-md font-semibold" disabled={isLoading}>
                                         {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Valida tu ID <ArrowRight className="ml-2 h-4 w-4"/></>}
                                     </Button>
                                 </div>
@@ -205,27 +205,27 @@ export default function ActivateAccountPage() {
                                         <KeyRound className="h-8 w-8 text-primary"/>
                                     </motion.div>
                                     <CardTitle className="text-2xl font-bold">¡Hola, {employeeData?.nombre_completo.split(' ')[0]}!</CardTitle>
-                                    <CardDescription className="text-slate-400">Define una contraseña segura para tu cuenta.</CardDescription>
+                                    <CardDescription className="text-muted-foreground">Define una contraseña segura para tu cuenta.</CardDescription>
                                 </CardHeader>
                                 <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg text-center mt-4">
                                     <p className="text-xs text-primary mb-1 uppercase tracking-wider font-bold">Tu usuario de acceso será:</p>
-                                    <p className="text-sm font-mono text-white">{employeeData?.emailGenerado}</p>
+                                    <p className="text-sm font-mono text-foreground">{employeeData?.emailGenerado}</p>
                                 </div>
                                 <div className="grid gap-2 text-left">
                                     <Label htmlFor="password">Crear Contraseña</Label>
                                     <div className="relative">
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                                        <Input {...form.register('password')} id="password" type={showPassword ? "text" : "password"} className="bg-white/5 border-white/10 text-white pl-10 pr-10" placeholder="Mínimo 8 caracteres" />
-                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white"><EyeOff size={16} /></button>
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input {...form.register('password')} id="password" type={showPassword ? "text" : "password"} className="bg-background/50 border-border/50 text-foreground pl-10 pr-10" placeholder="Mínimo 8 caracteres" />
+                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground"><EyeOff size={16} /></button>
                                     </div>
-                                    {form.formState.errors.password && <p className="text-red-400 text-xs">{form.formState.errors.password.message}</p>}
+                                    {form.formState.errors.password && <p className="text-destructive text-xs">{form.formState.errors.password.message}</p>}
                                 </div>
                                 <div className="grid gap-2 text-left">
                                     <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-                                    <Input {...form.register('confirmPassword')} id="confirmPassword" type={showPassword ? "text" : "password"} className="bg-white/5 border-white/10 text-white pl-4" placeholder="Repite la contraseña" />
-                                    {form.formState.errors.confirmPassword && <p className="text-red-400 text-xs">{form.formState.errors.confirmPassword.message}</p>}
+                                    <Input {...form.register('confirmPassword')} id="confirmPassword" type={showPassword ? "text" : "password"} className="bg-background/50 border-border/50 text-foreground pl-4" placeholder="Repite la contraseña" />
+                                    {form.formState.errors.confirmPassword && <p className="text-destructive text-xs">{form.formState.errors.confirmPassword.message}</p>}
                                 </div>
-                                <Button type="submit" className="w-full mt-2 h-12 font-bold bg-primary hover:bg-primary/90 text-black" disabled={isLoading}>
+                                <Button type="submit" className="w-full mt-2 h-12 font-bold" disabled={isLoading}>
                                     {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Activar Cuenta'}
                                 </Button>
                             </form>
@@ -248,9 +248,9 @@ export default function ActivateAccountPage() {
                             </motion.div>
                             <div className="space-y-2">
                                 <CardTitle className="text-2xl font-bold">¡Cuenta Activada!</CardTitle>
-                                <p className="text-slate-300 max-w-xs mx-auto">Has configurado tu acceso. Ahora puedes ver tu portal personal.</p>
+                                <p className="text-muted-foreground max-w-xs mx-auto">Has configurado tu acceso. Ahora puedes ver tu portal personal.</p>
                             </div>
-                            <Button onClick={() => router.push('/login')} className="w-full bg-white text-black hover:bg-slate-200 font-bold h-12 flex items-center gap-2">
+                            <Button onClick={() => router.push('/login')} className="w-full font-bold h-12 flex items-center gap-2">
                                 Ir a Login <ArrowRight className="h-4 w-4"/>
                             </Button>
                         </motion.div>
@@ -262,3 +262,4 @@ export default function ActivateAccountPage() {
     </div>
   );
 }
+
