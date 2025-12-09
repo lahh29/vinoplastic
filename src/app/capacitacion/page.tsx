@@ -8,13 +8,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
-import { BookMarked, BarChart3, Briefcase, ClipboardPlus, BookCopy, GraduationCap, GitBranch, Users } from 'lucide-react';
+import { BookMarked, BarChart3, Briefcase, ClipboardPlus, BookCopy, GraduationCap, GitBranch, Users, FileUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navLinks = [
     { href: "/empleados", icon: Users, title: "Gestión de Empleados", tourId: "capacitacion-empleados" },
     { href: "/capacitacion/matriz-de-habilidades", icon: BookMarked, title: "Matriz de Habilidades", tourId: "capacitacion-matriz" },
     { href: "/capacitacion/captura", icon: ClipboardPlus, title: "Captura de Cursos", tourId: "capacitacion-captura" },
+    { href: "/capacitacion/cursos", icon: FileUp, title: "Gestión de Cursos", tourId: "capacitacion-cursos" },
     { href: "/capacitacion/analisis", icon: BarChart3, title: "Análisis de Cumplimiento", tourId: "capacitacion-analisis" },
     { href: "/capacitacion/analisis-por-puesto", icon: Briefcase, title: "Análisis por Puesto", tourId: "capacitacion-por-puesto" },
     { href: "/capacitacion/analisis-por-curso", icon: BookCopy, title: "Análisis por Curso", tourId: "capacitacion-por-curso" },
