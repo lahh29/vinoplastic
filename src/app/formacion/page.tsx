@@ -13,7 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { CalendarPlus, Loader2, Save, BookCopy, Search, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -43,37 +43,18 @@ interface GrupoMes {
 
 const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
-// --- Componente de Tarjeta de Mes ---
-const MonthCard = ({ mes, anio, cursosPlaneados, onPlanificar, isLoading }: { mes: string, anio: number, cursosPlaneados: PlanFormacion[], onPlanificar: () => void, isLoading: boolean }) => (
-    <motion.div whileHover={{ y: -5 }} className="h-full">
-        <Card className="flex flex-col h-full rounded-2xl shadow-md border-border/50 bg-card/60 backdrop-blur-sm">
-            <CardHeader>
-                <CardTitle className="text-xl font-semibold">{mes}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1">
-                {isLoading ? <div className="text-center p-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground"/></div> :
-                cursosPlaneados.length > 0 ? (
-                    <ScrollArea className="h-40">
-                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                            {cursosPlaneados.map(curso => <li key={curso.id}>{curso.nombre_empleado}</li>)}
-                        </ul>
-                    </ScrollArea>
-                ) : (
-                    <div className="flex h-full items-center justify-center text-center">
-                        <p className="text-sm text-muted-foreground italic">Aún no hay cursos planeados.</p>
-                    </div>
-                )}
-            </CardContent>
-            <CardFooter>
-                <Button variant="outline" className="w-full" onClick={onPlanificar}>
-                    <CalendarPlus className="mr-2 h-4 w-4" />
-                    Planificar Cursos
-                </Button>
-            </CardFooter>
-        </Card>
-    </motion.div>
-);
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
 
+const itemVariants: Variants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 }
+};
 
 // --- Componente Principal ---
 export default function FormacionPage() {
@@ -166,139 +147,151 @@ export default function FormacionPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
+    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-8">
+      <motion.div variants={itemVariants}>
         <h1 className="text-4xl font-bold tracking-tight">Plan de Formación Anual</h1>
         <p className="mt-2 text-lg text-muted-foreground">
           Seguimiento del cumplimiento de entrega de planes de formación auditables.
         </p>
-      </div>
+      </motion.div>
 
-       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Cumplimiento Anual</CardTitle>
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-3xl font-bold">{kpisGenerales.anual.toFixed(1)}%</div>
-                    <Progress value={kpisGenerales.anual} className="h-2 mt-2"/>
-                </CardContent>
-            </Card>
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Planes Totales</CardTitle>
-                    <BookCopy className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-3xl font-bold">{kpisGenerales.total}</div>
-                </CardContent>
-            </Card>
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Entregados</CardTitle>
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-3xl font-bold">{kpisGenerales.entregados}</div>
-                </CardContent>
-            </Card>
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Pendientes</CardTitle>
-                    <XCircle className="h-4 w-4 text-red-500" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-3xl font-bold">{kpisGenerales.pendientes}</div>
-                </CardContent>
-            </Card>
-        </div>
+       <motion.div variants={containerVariants} className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <motion.div variants={itemVariants}>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Cumplimiento Anual</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold">{kpisGenerales.anual.toFixed(1)}%</div>
+                        <Progress value={kpisGenerales.anual} className="h-2 mt-2"/>
+                    </CardContent>
+                </Card>
+            </motion.div>
+             <motion.div variants={itemVariants}>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Planes Totales</CardTitle>
+                        <BookCopy className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold">{kpisGenerales.total}</div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+             <motion.div variants={itemVariants}>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Entregados</CardTitle>
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold">{kpisGenerales.entregados}</div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+             <motion.div variants={itemVariants}>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Pendientes</CardTitle>
+                        <XCircle className="h-4 w-4 text-red-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold">{kpisGenerales.pendientes}</div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        </motion.div>
 
-      <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-            <div>
-              <CardTitle>Progreso por Mes</CardTitle>
-              <CardDescription>
-                Busca y despliega el detalle de los planes de formación para cada mes.
-              </CardDescription>
+      <motion.div variants={itemVariants}>
+        <Card className="rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
+            <CardHeader>
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                <div>
+                <CardTitle>Progreso por Mes</CardTitle>
+                <CardDescription>
+                    Busca y despliega el detalle de los planes de formación para cada mes.
+                </CardDescription>
+                </div>
+                <div className="relative w-full sm:max-w-xs">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="ID, Empleado, depto..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                />
+                </div>
             </div>
-            <div className="relative w-full sm:max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                  placeholder="ID, Empleado, depto..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-              />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="ml-4 text-muted-foreground">Cargando datos de formación...</p>
-            </div>
-          ) : (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredDatosAgrupados.map(grupo => (
-                    <Collapsible key={grupo.mes} className="border rounded-lg bg-card/80 shadow-sm">
-                        <div className="p-4">
-                            <div className="flex justify-between items-center">
-                                <h3 className="text-lg font-semibold">{grupo.mes}</h3>
-                                <Badge variant={grupo.cumplimiento >= 65 ? 'default' : 'destructive'} className={cn(grupo.cumplimiento >= 65 && 'bg-green-600')}>
-                                    {grupo.entregados}/{grupo.total} Entregados
-                                </Badge>
-                            </div>
-                             <div className="flex items-center gap-2 mt-2">
-                                <Progress value={grupo.cumplimiento} indicatorClassName={cn(grupo.cumplimiento >= 65 ? 'bg-green-500' : 'bg-destructive')} className="h-2" />
-                                <span className="text-xs font-bold">{grupo.cumplimiento.toFixed(0)}%</span>
-                            </div>
-                        </div>
-                        <CollapsibleContent>
-                            <div className="border-t">
-                                <ScrollArea className="h-72">
-                                    <Table>
-                                        <TableHeader className="sticky top-0 bg-secondary/80 backdrop-blur-sm">
-                                            <TableRow>
-                                                <TableHead>ID Empleado</TableHead>
-                                                <TableHead>Empleado</TableHead>
-                                                <TableHead className="text-right">Estatus</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {grupo.planes.map(plan => (
-                                            <TableRow key={plan.id}>
-                                                <TableCell className="font-mono text-xs">{plan.id_registro}</TableCell>
-                                                <TableCell>
-                                                    <div className="font-medium text-sm">{plan.nombre_empleado}</div>
-                                                    <div className="text-xs text-muted-foreground">{plan.departamento}</div>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                <Switch
-                                                    checked={plan.estatus === 'ENTREGADO'}
-                                                    onCheckedChange={(checked) => handleStatusChange(plan, checked)}
-                                                />
-                                                </TableCell>
-                                            </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </ScrollArea>
-                            </div>
-                        </CollapsibleContent>
-                        <CardFooter className="p-2 border-t">
-                            <CollapsibleTrigger asChild>
-                                <Button variant="ghost" className="w-full text-xs">Ver Detalles</Button>
-                            </CollapsibleTrigger>
-                        </CardFooter>
-                    </Collapsible>
-                ))}
-             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            </CardHeader>
+            <CardContent>
+            {isLoading ? (
+                <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex items-center justify-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-4 text-muted-foreground">Cargando datos de formación...</p>
+                </motion.div>
+            ) : (
+                <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredDatosAgrupados.map(grupo => (
+                        <motion.div key={grupo.mes} variants={itemVariants} whileHover={{y: -5}} transition={{type: 'spring', stiffness: 300}}>
+                            <Collapsible key={grupo.mes} className="border rounded-lg bg-card/80 shadow-sm">
+                                <div className="p-4">
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="text-lg font-semibold">{grupo.mes}</h3>
+                                        <Badge variant={grupo.cumplimiento >= 65 ? 'default' : 'destructive'} className={cn(grupo.cumplimiento >= 65 && 'bg-green-600')}>
+                                            {grupo.entregados}/{grupo.total} Entregados
+                                        </Badge>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <Progress value={grupo.cumplimiento} indicatorClassName={cn(grupo.cumplimiento >= 65 ? 'bg-green-500' : 'bg-destructive')} className="h-2" />
+                                        <span className="text-xs font-bold">{grupo.cumplimiento.toFixed(0)}%</span>
+                                    </div>
+                                </div>
+                                <CollapsibleContent>
+                                    <div className="border-t">
+                                        <ScrollArea className="h-72">
+                                            <Table>
+                                                <TableHeader className="sticky top-0 bg-secondary/80 backdrop-blur-sm">
+                                                    <TableRow>
+                                                        <TableHead>ID</TableHead>
+                                                        <TableHead>Empleado</TableHead>
+                                                        <TableHead className="text-right">Estatus</TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {grupo.planes.map(plan => (
+                                                    <TableRow key={plan.id}>
+                                                        <TableCell className="font-mono text-xs">{plan.id_registro}</TableCell>
+                                                        <TableCell>
+                                                            <div className="font-medium text-sm">{plan.nombre_empleado}</div>
+                                                            <div className="text-xs text-muted-foreground">{plan.departamento}</div>
+                                                        </TableCell>
+                                                        <TableCell className="text-right">
+                                                        <Switch
+                                                            checked={plan.estatus === 'ENTREGADO'}
+                                                            onCheckedChange={(checked) => handleStatusChange(plan, checked)}
+                                                        />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </ScrollArea>
+                                    </div>
+                                </CollapsibleContent>
+                                <CardFooter className="p-2 border-t">
+                                    <CollapsibleTrigger asChild>
+                                        <Button variant="ghost" className="w-full text-xs">Ver Detalles</Button>
+                                    </CollapsibleTrigger>
+                                </CardFooter>
+                            </Collapsible>
+                        </motion.div>
+                    ))}
+                </motion.div>
+            )}
+            </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
   );
 }
