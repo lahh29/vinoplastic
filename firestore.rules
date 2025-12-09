@@ -121,12 +121,9 @@ service cloud.firestore {
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Las reglas de Storage son diferentes. La ruta completa del archivo se divide en segmentos.
-    // Esta regla permite la lectura a cualquier usuario autenticado
-    // y solo permite la escritura a los administradores.
     match /cursos/{allPaths=**} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
+      allow write: if request.auth != null && get(/databases/{database}/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
     }
   }
 }
