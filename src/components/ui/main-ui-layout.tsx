@@ -100,14 +100,15 @@ const formatDate = (timestamp: any): string => {
 };
 
 // Componente de notificaciones
-function Notifications() {
+function Notifications({ as, children }: { as?: React.ElementType, children: React.ReactNode }) {
   const firestore = useFirestore();
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
   const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
+  const Comp = as || 'div';
   
   const notifications = React.useMemo(() => {
     if (!contratos || isLoading) {
-      return { expiringContracts: [], dueEvaluations: [] };
+      return { expiringContracts: [], dueEvaluations: [], count: 0 };
     }
 
     const today = new Date();
@@ -140,26 +141,17 @@ function Notifications() {
 
     return {
       expiringContracts: expiring.sort((a,b) => (getDate(a.fechas_contrato.termino)?.getTime() ?? 0) - (getDate(b.fechas_contrato.termino)?.getTime() ?? 0)),
-      dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada) ?? new Date(0)).getTime())
+      dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada) ?? new Date(0)).getTime()),
+      count: expiring.length + evaluationsDue.length,
     };
   }, [contratos, isLoading]);
-
-  const notificationCount = notifications.expiringContracts.length + notifications.dueEvaluations.length;
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div>
-          <DockIcon>
-            <Bell className="h-5 w-5 text-muted-foreground" />
-            {notificationCount > 0 && (
-              <span className="absolute top-0 right-0 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-              </span>
-            )}
-          </DockIcon>
-        </div>
+        <Comp>
+          {children}
+        </Comp>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl rounded-2xl">
         <DialogHeader>
@@ -206,7 +198,7 @@ function Notifications() {
             </ScrollArea>
           </div>
         </div>
-      {notificationCount === 0 && <p className="py-8 text-center text-sm text-muted-foreground">¡Sin notificaciones pendientes!</p>}
+      {notifications.count === 0 && <p className="py-8 text-center text-sm text-muted-foreground">¡Sin notificaciones pendientes!</p>}
       </DialogContent>
     </Dialog>
   )
@@ -310,22 +302,6 @@ export default function MainUILayout({
                         </Tooltip>
                     ))}
 
-                    {(userRole === 'admin' || userRole === 'lector') && (
-                        <>
-                            <div className="border-l h-full mx-2 border-border/60" />
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                <div className="h-full flex items-center">
-                                    <Notifications />
-                                </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Notificaciones</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </>
-                    )}
-                    
                      <div className="border-l h-full mx-2 border-border/60" />
 
                     <Tooltip>
@@ -346,6 +322,14 @@ export default function MainUILayout({
                                       </div>
                                   </DropdownMenuLabel>
                                   <DropdownMenuSeparator />
+
+                                  {(userRole === 'admin' || userRole === 'lector') && (
+                                     <Notifications as={DropdownMenuItem}>
+                                          <Bell className="mr-2 h-4 w-4" />
+                                          <span>Notificaciones</span>
+                                    </Notifications>
+                                  )}
+                                  
                                    <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
                                         {theme === 'light' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
                                         <span>Cambiar Tema</span>
