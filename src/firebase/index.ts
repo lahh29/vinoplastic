@@ -32,17 +32,26 @@ export function initiateEmailSignIn(auth: Auth, email: string, password: string)
     return firebaseSignInWithEmailAndPassword(auth, email, password);
 }
 
+// Explicitly export from each module to avoid conflicts
 export { initializeApp, getApps, getApp, type FirebaseApp };
 export { getAuth, type Auth };
 export { getFirestore, type Firestore };
 export { getStorage, type FirebaseStorage };
 
-export * from './provider';
-export * from './client-provider';
-export * from './firestore/use-collection';
-export * from './firestore/use-doc';
-export * from './non-blocking-updates';
-export * from './auth/use-user';
-export * from './errors';
-export * from './error-emitter';
+export {
+    FirebaseProvider,
+    FirebaseClientProvider,
+    useFirebase,
+    useAuth,
+    useFirestore,
+    useStorage,
+    useFirebaseApp,
+} from './provider';
+
+export { useCollection } from './firestore/use-collection';
+export { useDoc } from './firestore/use-doc';
+export { setDocumentNonBlocking, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from './non-blocking-updates';
+export { useUser } from './auth/use-user';
+export { FirestorePermissionError } from './errors';
+export { errorEmitter } from './error-emitter';
 export { useMemoFirebase } from '@/hooks/use-memo-firebase';
