@@ -10,6 +10,8 @@ import {
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { useMemoFirebase } from '@/hooks/use-memo-firebase';
+
 
 /** Utility type to add an 'id' field to a given type T. */
 type WithId<T> = T & { id: string };
