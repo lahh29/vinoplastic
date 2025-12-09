@@ -28,8 +28,7 @@ interface UserData {
     id: string; 
     email: string;
     nombre?: string;
-    role: 'admin' | 'lector';
-    id_empleado?: string;
+    role: 'admin' | 'lector' | 'empleado';
 }
 
 export default function UsuariosPage() {
@@ -43,11 +42,14 @@ export default function UsuariosPage() {
 
     const filteredUsers = useMemo(() => {
         if (!users) return [];
-        return users.filter(user =>
-            user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const search = searchTerm.toLowerCase();
+        return users
+            .filter(user => user.role === 'admin' || user.role === 'lector')
+            .filter(user =>
+                user.email?.toLowerCase().includes(search) ||
+                user.role.toLowerCase().includes(search) ||
+                user.nombre?.toLowerCase().includes(search)
+            );
     }, [users, searchTerm]);
 
     return (
@@ -56,7 +58,7 @@ export default function UsuariosPage() {
                 <div>
                     <h1 className="text-4xl font-bold tracking-tight">Gestión de Usuarios</h1>
                     <p className="mt-2 text-lg text-muted-foreground max-w-2xl">
-                        Administra los roles y permisos de los usuarios de la plataforma.
+                        Administra los roles y permisos de los usuarios con acceso a la plataforma de gestión.
                     </p>
                 </div>
             </div>
@@ -65,7 +67,7 @@ export default function UsuariosPage() {
                     <CardTitle>Usuarios del Sistema</CardTitle>
                     <div className="flex justify-between items-center">
                         <CardDescription>
-                            {loadingUsers ? 'Cargando usuarios...' : `Listado de usuarios con acceso a la plataforma.`}
+                            {loadingUsers ? 'Cargando usuarios...' : `Listado de administradores y lectores.`}
                         </CardDescription>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -86,12 +88,11 @@ export default function UsuariosPage() {
                                     <TableHead>Usuario</TableHead>
                                     <TableHead>Rol Asignado</TableHead>
                                     <TableHead>Email</TableHead>
-                                    <TableHead>ID Empleado</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {loadingUsers ? (
-                                    <TableRow><TableCell colSpan={4} className="h-24 text-center">Cargando datos de usuarios...</TableCell></TableRow>
+                                    <TableRow><TableCell colSpan={3} className="h-24 text-center">Cargando datos de usuarios...</TableCell></TableRow>
                                 ) : filteredUsers.map((user) => (
                                     <TableRow key={user.id}>
                                         <TableCell className="font-medium">
@@ -104,9 +105,6 @@ export default function UsuariosPage() {
                                         </TableCell>
                                         <TableCell className="text-muted-foreground">
                                             {user.email}
-                                        </TableCell>
-                                        <TableCell className="font-mono text-xs text-muted-foreground">
-                                            {user.id_empleado || 'No asignado'}
                                         </TableCell>
                                     </TableRow>
                                 ))}
