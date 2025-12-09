@@ -6,7 +6,7 @@ import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@
 import { collection, query, where, limit, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, User, Briefcase, BookOpen, CheckCircle2, Clock, Award, Target, CalendarDays, Sparkles, BookUp, ArrowRight } from 'lucide-react';
+import { Loader2, User, Briefcase, BookOpen, CheckCircle2, Clock, Award, Target, CalendarDays, Sparkles, BookUp, ArrowRight, View } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -34,7 +34,7 @@ import {
 interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
 interface PerfilPuesto { id: string; nombre_puesto: string; cursos_obligatorios: string[]; }
 interface Historial { id: string; id_empleado: string; cursos: { id_curso: string; calificacion: number; }[]; }
-interface CursoCatalogo { id: string; id_curso: string; nombre_oficial: string; }
+interface CursoCatalogo { id: string; id_curso: string; nombre_oficial: string; url_pdf?: string; }
 interface Promocion { id: string; fecha_ultimo_cambio?: { toDate: () => Date }; examen_teorico?: number; evaluacion_desempeno?: number; no_apto?: boolean; }
 interface ReglaAscenso { id: string; puesto_actual: string; puesto_siguiente: string; meses_minimos: number; min_evaluacion_desempeno: number; min_examen_teorico?: number; min_cobertura_matriz: number;}
 
@@ -71,8 +71,6 @@ const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status
     const mesesDesdeCambio = differenceInMonths(new Date(), fechaCambio);
     if (mesesDesdeCambio < regla.meses_minimos) return { status: 'En Progreso', message: `Necesitas ${regla.meses_minimos} meses en tu puesto actual. Llevas ${mesesDesdeCambio}.`, esElegibleParaExamen: false };
     
-    if (empleado.coberturaCursos < regla.min_cobertura_matriz) return { status: 'Requiere Atención', message: `Tu cobertura de cursos es ${empleado.coberturaCursos.toFixed(0)}%, se requiere ${regla.min_cobertura_matriz}%.`, esElegibleParaExamen: false };
-
     const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
     if (evaluacionDesempeno === undefined || evaluacionDesempeno < regla.min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Tu evaluación de desempeño (${evaluacionDesempeno ?? 'N/A'}) es inferior al ${regla.min_evaluacion_desempeno} requerido.`, esElegibleParaExamen: false };
     
@@ -82,6 +80,8 @@ const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status
             return { status: 'Requiere Atención', message: 'Tienes pendiente el examen teórico o tu calificación es menor a la requerida.', esElegibleParaExamen: true };
         }
     }
+    
+    if (empleado.coberturaCursos < regla.min_cobertura_matriz) return { status: 'Requiere Atención', message: `Cobertura de cursos insuficiente. Requiere ${regla.min_cobertura_matriz}% y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, esElegibleParaExamen: false };
     
     return { status: 'Elegible', message: '¡Felicidades! Cumples todos los requisitos para ser considerado para una promoción.', esElegibleParaExamen: false };
 };
@@ -105,7 +105,8 @@ const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) 
                     <TableRow>
                         <TableHead>Curso</TableHead>
                         <TableHead className="text-center w-32">Calificación</TableHead>
-                        <TableHead className="text-right w-32">Estado</TableHead>
+                        <TableHead className="text-center w-32">Estado</TableHead>
+                        <TableHead className="text-right w-32">Material</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -113,12 +114,19 @@ const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) 
                         <TableRow key={curso.id}>
                             <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
                             <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-center">
                                 <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                                <Button asChild variant="ghost" size="icon" disabled={!curso.url_pdf}>
+                                    <a href={curso.url_pdf} target="_blank" rel="noopener noreferrer">
+                                        <View className="h-4 w-4"/>
+                                    </a>
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
-                    {cursos.length === 0 && <TableRow><TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
+                    {cursos.length === 0 && <TableRow><TableCell colSpan={4} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
                 </TableBody>
             </Table>
         </ScrollArea>
@@ -153,7 +161,7 @@ export default function PortalPage() {
   const { data: perfiles, isLoading: l2 } = useCollection<PerfilPuesto>(perfilesRef);
   const { data: reglasAscenso, isLoading: l5 } = useCollection<ReglaAscenso>(reglasAscensoRef);
   const { data: catalogoCursos, isLoading: l6 } = useCollection<CursoCatalogo>(catalogoCursosRef);
-
+  
   const isLoading = isUserLoading || loadingEmpleado || l2 || l3 || l4 || l5 || l6;
 
   useEffect(() => {
