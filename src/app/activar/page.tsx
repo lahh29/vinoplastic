@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -13,9 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight, ArrowLeft } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { useFirestore, useAuth } from '@/firebase';
+import { doc, getDoc, setDoc, collection, query, where, getDocs, getFirestore } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -44,8 +44,8 @@ const stepVariants = {
 export default function ActivateAccountPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const db = useFirestore();
-  const auth = useAuth();
+  const db = getFirestore();
+  const auth = getAuth();
   
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -289,3 +289,5 @@ export default function ActivateAccountPage() {
     </div>
   );
 }
+
+    
