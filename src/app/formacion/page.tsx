@@ -43,6 +43,38 @@ interface GrupoMes {
 
 const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
+// --- Componente de Tarjeta de Mes ---
+const MonthCard = ({ mes, anio, cursosPlaneados, onPlanificar, isLoading }: { mes: string, anio: number, cursosPlaneados: PlanFormacion[], onPlanificar: () => void, isLoading: boolean }) => (
+    <motion.div whileHover={{ y: -5 }} className="h-full">
+        <Card className="flex flex-col h-full rounded-2xl shadow-md border-border/50 bg-card/60 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold">{mes}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+                {isLoading ? <div className="text-center p-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground"/></div> :
+                cursosPlaneados.length > 0 ? (
+                    <ScrollArea className="h-40">
+                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                            {cursosPlaneados.map(curso => <li key={curso.id}>{curso.nombre_empleado}</li>)}
+                        </ul>
+                    </ScrollArea>
+                ) : (
+                    <div className="flex h-full items-center justify-center text-center">
+                        <p className="text-sm text-muted-foreground italic">Aún no hay cursos planeados.</p>
+                    </div>
+                )}
+            </CardContent>
+            <CardFooter>
+                <Button variant="outline" className="w-full" onClick={onPlanificar}>
+                    <CalendarPlus className="mr-2 h-4 w-4" />
+                    Planificar Cursos
+                </Button>
+            </CardFooter>
+        </Card>
+    </motion.div>
+);
+
+
 // --- Componente Principal ---
 export default function FormacionPage() {
   const firestore = useFirestore();
@@ -215,12 +247,12 @@ export default function FormacionPage() {
                         <div className="p-4">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-lg font-semibold">{grupo.mes}</h3>
-                                <Badge variant={grupo.cumplimiento === 100 ? 'default' : 'secondary'} className={cn(grupo.cumplimiento === 100 && 'bg-green-600')}>
+                                <Badge variant={grupo.cumplimiento >= 65 ? 'default' : 'destructive'} className={cn(grupo.cumplimiento >= 65 && 'bg-green-600')}>
                                     {grupo.entregados}/{grupo.total} Entregados
                                 </Badge>
                             </div>
                              <div className="flex items-center gap-2 mt-2">
-                                <Progress value={grupo.cumplimiento} className="h-2" />
+                                <Progress value={grupo.cumplimiento} indicatorClassName={cn(grupo.cumplimiento >= 65 ? 'bg-green-500' : 'bg-destructive')} className="h-2" />
                                 <span className="text-xs font-bold">{grupo.cumplimiento.toFixed(0)}%</span>
                             </div>
                         </div>
