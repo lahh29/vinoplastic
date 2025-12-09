@@ -1,5 +1,4 @@
 
-
 export default function ActivateAccountLayout({
     children,
   }: {
