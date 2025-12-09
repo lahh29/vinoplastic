@@ -1,13 +1,12 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CalendarPlus, Loader2, Save, BookCopy, Search, TrendingUp, CheckCircle, XCircle, Building } from 'lucide-react';
@@ -20,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Switch } from '@/components/ui/switch';
 
 
 // --- Interfaces ---
@@ -51,7 +51,7 @@ interface CumplimientoDepartamento {
 }
 
 
-const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -67,7 +67,15 @@ const itemVariants: Variants = {
 };
 
 // --- Componente de Tarjeta de Mes ---
-const MonthCard = ({ mes, anio, planes, cumplimiento, onPlanificar, isLoading }: { mes: string, anio: number, planes: PlanFormacion[], cumplimiento: number, onPlanificar: () => void, isLoading: boolean }) => (
+const MonthCard = ({ mes, anio, planes, cumplimiento, onPlanificar, isLoading }: { mes: string, anio: number, planes: PlanFormacion[], cumplimiento: number, onPlanificar: () => void, isLoading: boolean }) => {
+    
+    const handleStatusChange = (plan: PlanFormacion, checked: boolean) => {
+        // La lógica para cambiar el estatus se manejará en el diálogo principal.
+        // Esta llamada simplemente abre el diálogo para que el usuario confirme/edite.
+        onPlanificar();
+    };
+    
+    return (
     <motion.div variants={itemVariants} whileHover={{y: -5}} className="h-full">
         <Collapsible key={mes} className="border rounded-lg bg-card/80 shadow-sm h-full flex flex-col">
             <div className="p-4 flex-1">
@@ -103,10 +111,10 @@ const MonthCard = ({ mes, anio, planes, cumplimiento, onPlanificar, isLoading }:
                                         <div className="text-xs text-muted-foreground">{plan.departamento}</div>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                    <Switch
-                                        checked={plan.estatus === 'ENTREGADO'}
-                                        onCheckedChange={(checked) => onPlanificar()} // Re-usamos onPlanificar para abrir el diálogo general
-                                    />
+                                        <Switch
+                                            checked={plan.estatus === 'ENTREGADO'}
+                                            onCheckedChange={(checked) => handleStatusChange(plan, checked)}
+                                        />
                                     </TableCell>
                                 </TableRow>
                                 ))
@@ -123,7 +131,8 @@ const MonthCard = ({ mes, anio, planes, cumplimiento, onPlanificar, isLoading }:
             </CardFooter>
         </Collapsible>
     </motion.div>
-);
+    );
+};
 
 
 // --- Componente Principal ---
@@ -200,20 +209,23 @@ export default function FormacionPage() {
     });
     
     return Object.keys(porDepto).sort().map(depto => {
-        let totalAnual = 0;
-        let entregadosAnual = 0;
+        let sumaDeCumplimientosMensuales = 0;
+        let mesesConActividad = 0;
         
         const meses = MESES_ORDENADOS.map(mes => {
             const dataMes = porDepto[depto][mes];
-            if (!dataMes) return { mes, cumplimiento: 0 };
+            if (!dataMes || dataMes.total === 0) {
+              return { mes, cumplimiento: 0 };
+            }
             
-            totalAnual += dataMes.total;
-            entregadosAnual += dataMes.entregados;
+            const cumplimientoMes = (dataMes.entregados / dataMes.total) * 100;
+            sumaDeCumplimientosMensuales += cumplimientoMes;
+            mesesConActividad++;
 
-            return { mes, cumplimiento: (dataMes.entregados / dataMes.total) * 100 };
+            return { mes, cumplimiento: cumplimientoMes };
         });
 
-        const cumplimientoAnual = totalAnual > 0 ? (entregadosAnual / totalAnual) * 100 : 0;
+        const cumplimientoAnual = mesesConActividad > 0 ? (sumaDeCumplimientosMensuales / mesesConActividad) : 0;
         
         return { departamento: depto, cumplimientoAnual, meses };
     });
