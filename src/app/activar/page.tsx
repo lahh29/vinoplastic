@@ -10,12 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight, ArrowLeft } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, getFirestore } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import Link from 'next/link';
 
@@ -44,7 +43,6 @@ const stepVariants = {
 
 export default function ActivateAccountPage() {
   const router = useRouter();
-  const firestore = useFirestore();
   const { toast } = useToast();
   
   const [step, setStep] = useState(1);
@@ -59,7 +57,7 @@ export default function ActivateAccountPage() {
 
   const handleVerifyId = async (data: FormData) => {
     setIsLoading(true);
-    if (!firestore) return;
+    const firestore = getFirestore();
 
     try {
         const idLimpio = data.employeeId.trim();
@@ -91,10 +89,11 @@ export default function ActivateAccountPage() {
 
   const handleCreateAccount = async (data: FormData) => {
     setIsLoading(true);
-    if (!firestore || !employeeData || !data.password) {
+    if (!employeeData || !data.password) {
       setIsLoading(false);
       return;
     }
+    const firestore = getFirestore();
 
     try {
       const auth = getAuth();
