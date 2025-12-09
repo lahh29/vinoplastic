@@ -13,10 +13,11 @@ import { Label } from '@/components/ui/label';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight } from 'lucide-react';
+import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight, ArrowLeft } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import Link from 'next/link';
 
 const formSchema = z.object({
   employeeId: z.string().min(1, 'El ID de empleado es obligatorio.'),
@@ -138,7 +139,7 @@ export default function ActivateAccountPage() {
             className="relative z-10 w-full max-w-md"
         >
           <Card className="w-full bg-card/60 border-border/50 shadow-2xl backdrop-blur-xl">
-              <div className="overflow-hidden relative h-[520px]">
+              <div className="overflow-hidden relative h-[550px]">
                 <AnimatePresence mode="wait">
                     {/* PASO 1: VERIFICACIÓN */}
                     {step === 1 && (
@@ -166,7 +167,7 @@ export default function ActivateAccountPage() {
                                 
                                 <div className="space-y-4 pt-4">
                                     <div className="grid gap-2 text-left">
-                                        <Label htmlFor="employeeId" className="text-sm font-medium text-muted-foreground">Activación</Label>
+                                        <Label htmlFor="employeeId" className="text-sm font-medium text-muted-foreground">ID de Empleado</Label>
                                         <Input 
                                             {...form.register('employeeId')} 
                                             id="employeeId" 
@@ -183,6 +184,14 @@ export default function ActivateAccountPage() {
                                     <Button type="submit" className="w-full h-12 text-md font-semibold" disabled={isLoading}>
                                         {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Valida tu ID <ArrowRight className="ml-2 h-4 w-4"/></>}
                                     </Button>
+                                    <div className="text-center">
+                                        <Button variant="link" asChild className="text-muted-foreground">
+                                            <Link href="/login">
+                                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                                Volver a Login
+                                            </Link>
+                                        </Button>
+                                    </div>
                                 </div>
                             </form>
                         </motion.div>
