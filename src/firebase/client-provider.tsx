@@ -11,7 +11,6 @@ interface FirebaseClientProviderProps {
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const firebaseServices = useMemo(() => {
-    // getFirebaseServices ensures Firebase is initialized and returns the services.
     return getFirebaseServices();
   }, []);
 

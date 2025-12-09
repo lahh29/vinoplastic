@@ -5,7 +5,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Users, BookUser, LogOut, User, Sun, Moon } from 'lucide-react';
-import { useAuth, useUser, useDoc, FirebaseClientProvider, useFirestore } from '@/firebase';
+import { useAuth, useUser, useDoc, useFirestore } from '@/firebase';
 import { Dock, DockIcon } from '@/components/ui/dock';
 import {
   DropdownMenu,
@@ -97,7 +97,7 @@ function MobileNav({ navItems, pathname, handleLogout, currentUserData, user, is
   );
 }
 
-function MainUILayoutContent({ children }: { children: React.ReactNode }) {
+function MainUILayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
@@ -244,9 +244,5 @@ function MainUILayoutContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function MainUILayoutWrapper({ children }: { children: React.ReactNode }) {
-    return (
-        <FirebaseClientProvider>
-            <MainUILayoutContent>{children}</MainUILayoutContent>
-        </FirebaseClientProvider>
-    )
+    return <MainUILayout>{children}</MainUILayout>;
 }
