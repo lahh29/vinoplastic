@@ -1,14 +1,13 @@
-
 'use client';
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useCollection, useFirestore, useStorage, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Loader2, Upload, File, CheckCircle, Paperclip } from 'lucide-react';
+import { Search, Loader2, Upload, File, CheckCircle, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useRoleCheck } from '@/hooks/use-role-check';
@@ -31,7 +30,7 @@ export default function CursosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadingFile, setUploadingFile] = useState<{ id: string, progress: number } | null>(null);
 
-  const fileInputRef = useRef<Record<string, HTMLInputElement | null>>({});
+  // Eliminamos useRef complejo. Usaremos IDs de HTML simples.
 
   const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
   const { data: catalogoCursos, isLoading } = useCollection<CursoCatalogo>(catalogoCursosRef);
@@ -45,18 +44,25 @@ export default function CursosPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, curso: CursoCatalogo) => {
     if (!isAdmin) {
-      toast({ variant: 'destructive', title: 'Acción no permitida' });
+      toast({ variant: 'destructive', title: 'Acción no permitida', description: 'Solo administradores pueden subir archivos.' });
       return;
     }
     const file = e.target.files?.[0];
+    
+    // Reset del input para permitir re-seleccionar el mismo archivo si falla
+    e.target.value = '';
+
     if (file && file.type === 'application/pdf' && storage) {
       handleUpload(file, curso);
     } else if (file) {
-      toast({ variant: 'destructive', title: 'Archivo inválido', description: 'Por favor, selecciona un archivo PDF.' });
+      toast({ variant: 'destructive', title: 'Formato incorrecto', description: 'El archivo debe ser PDF.' });
     }
   };
 
   const handleUpload = (file: File, curso: CursoCatalogo) => {
+    if (!storage || !firestore) return;
+
+    // Referencia única: cursos/ID_CURSO.pdf
     const storageRef = ref(storage, `cursos/${curso.id_curso}.pdf`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -68,40 +74,56 @@ export default function CursosPage() {
         setUploadingFile({ id: curso.id, progress });
       },
       (error) => {
-        console.error("Upload error:", error);
-        toast({ variant: 'destructive', title: 'Error de subida', description: 'No se pudo subir el archivo.' });
+        console.error("Error subiendo:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo subir el archivo a Storage.' });
         setUploadingFile(null);
       },
       async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        const cursoDocRef = doc(firestore, 'catalogo_cursos', curso.id);
-        await setDoc(cursoDocRef, { url_pdf: downloadURL }, { merge: true });
+        try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            
+            // Guardar URL en Firestore
+            const cursoDocRef = doc(firestore, 'catalogo_cursos', curso.id);
+            await setDoc(cursoDocRef, { url_pdf: downloadURL }, { merge: true });
 
-        toast({
-          title: '¡Éxito!',
-          description: `El PDF para "${curso.nombre_oficial}" se ha subido correctamente.`,
-          className: "bg-green-100 text-green-800 border-green-300",
-        });
-        setUploadingFile(null);
+            toast({
+            title: 'Carga completa',
+            description: `Material actualizado para: ${curso.nombre_oficial}`,
+            className: "bg-green-100 text-green-800 border-green-300",
+            });
+        } catch (err) {
+            console.error("Error guardando URL:", err);
+            toast({ variant: 'destructive', title: 'Error', description: 'El archivo se subió, pero no se pudo guardar el enlace.' });
+        } finally {
+            setUploadingFile(null);
+        }
       }
     );
+  };
+
+  // Función auxiliar para activar el input oculto
+  const triggerFileInput = (cursoId: string) => {
+    const inputElement = document.getElementById(`file-input-${cursoId}`) as HTMLInputElement;
+    if (inputElement) {
+        inputElement.click();
+    }
   };
   
   return (
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center flex-wrap gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <CardTitle className="text-3xl font-bold">Gestión de Archivos de Cursos</CardTitle>
+              <CardTitle className="text-2xl font-bold">Material Didáctico</CardTitle>
               <CardDescription>
-                Administra los materiales PDF para cada curso del catálogo.
+                Sube o actualiza los manuales PDF de los cursos.
               </CardDescription>
             </div>
-            <div className="relative max-w-sm w-full">
+            <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar curso por nombre..."
+                placeholder="Buscar curso..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -112,67 +134,90 @@ export default function CursosPage() {
         <CardContent>
           <ScrollArea className="h-[calc(100vh-22rem)] pr-4">
             {isLoading ? (
-              <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>
-            ) : (
+              <div className="flex h-64 items-center justify-center text-muted-foreground gap-2">
+                  <Loader2 className="h-6 w-6 animate-spin" /> Cargando catálogo...
+              </div>
+            ) : filteredCursos.length > 0 ? (
               <div className="space-y-3">
                 {filteredCursos.map(curso => (
                   <motion.div 
                     key={curso.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
                   >
-                  <Card className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4">
-                    <div className="flex-1 mb-4 sm:mb-0">
-                      <h3 className="font-semibold">{curso.nombre_oficial}</h3>
-                      <div className="flex items-center gap-2 text-xs mt-1">
+                  <Card className="flex flex-col sm:flex-row items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                    
+                    {/* Info del Curso */}
+                    <div className="flex-1 w-full sm:w-auto mb-4 sm:mb-0">
+                      <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-sm sm:text-base">{curso.nombre_oficial}</h3>
+                          {curso.url_pdf && <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />}
+                      </div>
+                      
+                      <div className="flex items-center gap-3 text-xs mt-1.5">
+                        <span className="text-muted-foreground bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                            ID: {curso.id_curso}
+                        </span>
+                        
                         {curso.url_pdf ? (
-                          <a href={curso.url_pdf} target="_blank" rel="noopener noreferrer" className="flex items-center text-green-500 hover:underline">
-                            <CheckCircle className="h-4 w-4 mr-1" /> PDF Cargado
+                          <a 
+                            href={curso.url_pdf} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="flex items-center text-blue-600 hover:text-blue-500 hover:underline font-medium"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" /> Ver PDF actual
                           </a>
                         ) : (
-                          <div className="flex items-center text-muted-foreground">
-                            <File className="h-4 w-4 mr-1" /> Sin PDF
-                          </div>
+                          <span className="text-slate-400 flex items-center">
+                            <File className="h-3 w-3 mr-1" /> Sin material
+                          </span>
                         )}
                       </div>
                     </div>
-                    <div className="w-full sm:w-auto">
+
+                    {/* Acciones de Carga */}
+                    <div className="w-full sm:w-auto flex flex-col items-end">
+                        {/* Input Oculto con ID único */}
+                        <input
+                            id={`file-input-${curso.id}`}
+                            type="file"
+                            className="hidden"
+                            accept="application/pdf"
+                            disabled={!isAdmin || uploadingFile?.id === curso.id}
+                            onChange={(e) => handleFileChange(e, curso)}
+                        />
+
                         {uploadingFile?.id === curso.id ? (
-                            <div className="w-full sm:w-40 text-center">
+                            <div className="w-full sm:w-48">
+                                <div className="flex justify-between text-xs mb-1">
+                                    <span>Subiendo...</span>
+                                    <span>{Math.round(uploadingFile.progress)}%</span>
+                                </div>
                                 <Progress value={uploadingFile.progress} className="h-2"/>
-                                <p className="text-xs mt-1 text-muted-foreground">Subiendo...</p>
                             </div>
                         ) : (
-                        <>
-                            <input
-                                type="file"
-                                ref={el => (fileInputRef.current[curso.id] = el)}
-                                onChange={(e) => handleFileChange(e, curso)}
-                                className="hidden"
-                                accept="application/pdf"
-                                disabled={!isAdmin}
-                            />
                             <Button 
-                                variant={curso.url_pdf ? "outline" : "default"} 
-                                onClick={() => fileInputRef.current[curso.id]?.click()}
+                                variant={curso.url_pdf ? "secondary" : "default"} 
+                                size="sm"
+                                onClick={() => triggerFileInput(curso.id)}
                                 disabled={!isAdmin}
                                 className="w-full sm:w-auto"
                             >
                                 <Upload className="mr-2 h-4 w-4" />
-                                {curso.url_pdf ? 'Reemplazar PDF' : 'Subir PDF'}
+                                {curso.url_pdf ? 'Actualizar PDF' : 'Subir Archivo'}
                             </Button>
-                        </>
                         )}
                     </div>
                   </Card>
                   </motion.div>
                 ))}
               </div>
-            )}
-            {!isLoading && filteredCursos.length === 0 && (
-                <div className="text-center py-20 text-muted-foreground">
-                    <p>No se encontraron cursos que coincidan con tu búsqueda.</p>
+            ) : (
+                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground opacity-50">
+                    <File className="h-12 w-12 mb-2" />
+                    <p>No se encontraron cursos.</p>
                 </div>
             )}
           </ScrollArea>

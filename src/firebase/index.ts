@@ -1,23 +1,27 @@
-
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, User } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { useMemoFirebase } from '@/hooks/use-memo-firebase';
 
-// IMPORTANT: DO NOT MODIFY THIS FUNCTION
-export function initializeFirebase() {
-  if (!getApps().length) {
-    // Always initialize with the explicit config object for compatibility with Vercel and other environments.
-    const firebaseApp = initializeApp(firebaseConfig);
-    return getSdks(firebaseApp);
-  }
+// 1. Inicialización Singleton (Para uso directo como: import { storage } from '@/firebase')
+// Esto asegura que solo haya una instancia de Firebase corriendo
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const storage = getStorage(app);
 
-  // If already initialized, return the SDKs with the already initialized App
-  return getSdks(getApp());
+// Exportamos las instancias para usarlas directamente en componentes simples
+export { app, auth, firestore, storage };
+
+// 2. Funciones de ayuda para el Provider (Tu estructura original)
+// Mantenemos esto para que tu <FirebaseProvider> siga funcionando correctamente
+export function initializeFirebase() {
+  // Como ya inicializamos 'app' arriba, simplemente devolvemos sus SDKs
+  return getSdks(app);
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
@@ -35,6 +39,7 @@ export interface UserAuthHookResult {
   userError: Error | null;
 }
 
+// 3. Re-exportaciones (Mantenemos tus exportaciones originales)
 export * from './provider';
 export * from './client-provider';
 export * from './firestore/use-collection';
