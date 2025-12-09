@@ -50,13 +50,11 @@ import { Button } from './button';
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
-  { href: '/empleados', icon: Users, label: 'Empleados' },
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
 ];
 
 const lectorNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
-  { href: '/empleados', icon: Users, label: 'Empleados' },
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
 ];
 
