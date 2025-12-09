@@ -34,7 +34,7 @@ export default function CursosPage() {
   const fileInputRef = useRef<Record<string, HTMLInputElement | null>>({});
 
   const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
-  const { data: catalogoCursos, isLoading: loadingCursos } = useCollection<CursoCatalogo>(catalogoCursosRef);
+  const { data: catalogoCursos, isLoading } = useCollection<CursoCatalogo>(catalogoCursosRef);
 
   const filteredCursos = useMemo(() => {
     if (!catalogoCursos) return [];
@@ -111,7 +111,7 @@ export default function CursosPage() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-22rem)] pr-4">
-            {isLoadingCursos ? (
+            {isLoading ? (
               <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>
             ) : (
               <div className="space-y-3">
@@ -170,7 +170,7 @@ export default function CursosPage() {
                 ))}
               </div>
             )}
-            {!isLoadingCursos && filteredCursos.length === 0 && (
+            {!isLoading && filteredCursos.length === 0 && (
                 <div className="text-center py-20 text-muted-foreground">
                     <p>No se encontraron cursos que coincidan con tu búsqueda.</p>
                 </div>
