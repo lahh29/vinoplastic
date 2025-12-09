@@ -14,8 +14,9 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight, ArrowLeft } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { doc, getDoc, setDoc, getFirestore } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { db } from '../../../firebase.js'; // Importar la instancia de la base de datos
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -57,11 +58,9 @@ export default function ActivateAccountPage() {
 
   const handleVerifyId = async (data: FormData) => {
     setIsLoading(true);
-    const firestore = getFirestore();
-
     try {
         const idLimpio = data.employeeId.trim();
-        const plantillaDocRef = doc(firestore, 'Plantilla', idLimpio);
+        const plantillaDocRef = doc(db, 'Plantilla', idLimpio);
         const plantillaSnap = await getDoc(plantillaDocRef);
 
         if (!plantillaSnap.exists()) {
@@ -93,14 +92,13 @@ export default function ActivateAccountPage() {
       setIsLoading(false);
       return;
     }
-    const firestore = getFirestore();
-
+    
     try {
       const auth = getAuth();
       const userCredential = await createUserWithEmailAndPassword(auth, employeeData.emailGenerado, data.password);
       const user = userCredential.user;
 
-      const userDocRef = doc(firestore, 'usuarios', user.uid);
+      const userDocRef = doc(db, 'usuarios', user.uid);
       await setDoc(userDocRef, {
         uid: user.uid,
         id_empleado: employeeData.id,
@@ -270,3 +268,5 @@ export default function ActivateAccountPage() {
     </div>
   );
 }
+
+    
