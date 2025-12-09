@@ -19,6 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
 
 
 // --- Interfaces ---
@@ -41,38 +42,6 @@ interface GrupoMes {
 }
 
 const MESES_ORDENADOS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
-
-// --- Componente de Tarjeta de Mes ---
-const MonthCard = ({ mes, anio, cursosPlaneados, onPlanificar, isLoading }: { mes: string, anio: number, cursosPlaneados: any[], onPlanificar: () => void, isLoading: boolean }) => (
-    <motion.div whileHover={{ y: -5 }} className="h-full">
-        <Card className="flex flex-col h-full rounded-2xl shadow-md border-border/50 bg-card/60 backdrop-blur-sm">
-            <CardHeader>
-                <CardTitle className="text-xl font-semibold">{mes}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1">
-                {isLoading ? <div className="text-center p-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground"/></div> :
-                cursosPlaneados.length > 0 ? (
-                    <ScrollArea className="h-40">
-                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                            {cursosPlaneados.map(curso => <li key={curso.id}>{curso.nombre_oficial}</li>)}
-                        </ul>
-                    </ScrollArea>
-                ) : (
-                    <div className="flex h-full items-center justify-center text-center">
-                        <p className="text-sm text-muted-foreground italic">Aún no hay cursos planeados.</p>
-                    </div>
-                )}
-            </CardContent>
-            <CardFooter>
-                <Button variant="outline" className="w-full" onClick={onPlanificar}>
-                    <CalendarPlus className="mr-2 h-4 w-4" />
-                    Planificar Cursos
-                </Button>
-            </CardFooter>
-        </Card>
-    </motion.div>
-);
-
 
 // --- Componente Principal ---
 export default function FormacionPage() {
@@ -148,9 +117,8 @@ export default function FormacionPage() {
     const docRef = doc(firestore, 'plan_formacion', plan.id);
     const estatusString = nuevoEstatus ? 'ENTREGADO' : 'SIN ENTREGAR';
 
-    // No need for setDocumentNonBlocking as we want immediate feedback
     try {
-        await setDoc(docRef, { estatus: estatusString }, { merge: true });
+        await setDocumentNonBlocking(docRef, { estatus: estatusString }, { merge: true });
         toast({
             title: `Estatus Actualizado`,
             description: `${plan.nombre_empleado} ahora está como ${estatusString}.`,
@@ -262,7 +230,7 @@ export default function FormacionPage() {
                                     <Table>
                                         <TableHeader className="sticky top-0 bg-secondary/80 backdrop-blur-sm">
                                             <TableRow>
-                                                <TableHead>ID</TableHead>
+                                                <TableHead>ID Empleado</TableHead>
                                                 <TableHead>Empleado</TableHead>
                                                 <TableHead className="text-right">Estatus</TableHead>
                                             </TableRow>
