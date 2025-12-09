@@ -34,7 +34,7 @@ export default function CapacitacionPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {navLinks.map((item) => (
-             <Link key={item.href} href={item.href} className="block hover:no-underline group" data-tour={item.tourId}>
+             <Link key={item.href} href={item.href} className="block hover:no-underline group">
                 <motion.div
                     whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
                     transition={{ type: "spring", stiffness: 300 }}
@@ -43,6 +43,21 @@ export default function CapacitacionPage() {
                     <Card className="h-full flex flex-col items-center justify-center text-center p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 bg-card/60 border-border/50 hover:border-primary/50 backdrop-blur-sm">
                         <motion.div
                             whileHover={{ rotateY: 180, transition: { duration: 0.5 } }}
+                             animate={{
+                                color: [
+                                'hsl(217, 91%, 60%)', // Azul
+                                'hsl(260, 85%, 65%)', // Púrpura intermedio
+                                'hsl(0, 84%, 60%)',   // Rojo
+                                'hsl(260, 85%, 65%)', // Púrpura intermedio
+                                'hsl(217, 91%, 60%)'  // Vuelta al Azul
+                                ],
+                            }}
+                            transition={{
+                                duration: 4,
+                                ease: "easeInOut",
+                                repeat: Infinity,
+                                repeatType: "loop",
+                            }}
                             className="text-primary mb-4"
                             style={{ perspective: 800 }}
                         >
