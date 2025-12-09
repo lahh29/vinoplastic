@@ -2,10 +2,11 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -19,8 +20,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
-import { Switch } from '@/components/ui/switch';
-
 
 // --- Interfaces ---
 interface PlanFormacion {
@@ -123,15 +122,14 @@ export default function FormacionPage() {
     };
   }, [planes]);
 
-
   const handleStatusChange = async (plan: PlanFormacion, nuevoEstatus: boolean) => {
     if (!firestore) return;
     
-    const docRef = doc(firestore, 'plan_formacion', plan.id);
+    const docRef = doc(firestore, 'plan_formacion', plan.id_registro);
     const estatusString = nuevoEstatus ? 'ENTREGADO' : 'SIN ENTREGAR';
 
     try {
-        await setDocumentNonBlocking(docRef, { estatus: estatusString }, { merge: true });
+        await setDoc(docRef, { estatus: estatusString }, { merge: true });
         toast({
             title: `Estatus Actualizado`,
             description: `${plan.nombre_empleado} ahora está como ${estatusString}.`,
@@ -157,7 +155,7 @@ export default function FormacionPage() {
 
        <motion.div variants={containerVariants} className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <motion.div variants={itemVariants}>
-                <Card>
+                <Card className="h-full">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Cumplimiento Anual</CardTitle>
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -169,7 +167,7 @@ export default function FormacionPage() {
                 </Card>
             </motion.div>
              <motion.div variants={itemVariants}>
-                <Card>
+                <Card className="h-full">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Planes Totales</CardTitle>
                         <BookCopy className="h-4 w-4 text-muted-foreground" />
@@ -180,7 +178,7 @@ export default function FormacionPage() {
                 </Card>
             </motion.div>
              <motion.div variants={itemVariants}>
-                <Card>
+                <Card className="h-full">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Entregados</CardTitle>
                         <CheckCircle className="h-4 w-4 text-green-500" />
@@ -191,7 +189,7 @@ export default function FormacionPage() {
                 </Card>
             </motion.div>
              <motion.div variants={itemVariants}>
-                <Card>
+                <Card className="h-full">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Pendientes</CardTitle>
                         <XCircle className="h-4 w-4 text-red-500" />
@@ -259,7 +257,8 @@ export default function FormacionPage() {
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody>
-                                                    {grupo.planes.map(plan => (
+                                                    {grupo.planes.length > 0 ? (
+                                                    grupo.planes.map(plan => (
                                                     <TableRow key={plan.id}>
                                                         <TableCell className="font-mono text-xs">{plan.id_registro}</TableCell>
                                                         <TableCell>
@@ -273,7 +272,8 @@ export default function FormacionPage() {
                                                         />
                                                         </TableCell>
                                                     </TableRow>
-                                                    ))}
+                                                    ))
+                                                    ) : (<TableRow><TableCell colSpan={3} className="h-24 text-center text-muted-foreground italic">No hay registros para este mes.</TableCell></TableRow>)}
                                                 </TableBody>
                                             </Table>
                                         </ScrollArea>
