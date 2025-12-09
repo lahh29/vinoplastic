@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -90,7 +91,7 @@ function StarsBackground({
   pointerEvents = true,
   ...props
 }: StarsBackgroundProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const offsetX = useMotionValue(1);
   const offsetY = useMotionValue(1);
 
@@ -109,7 +110,7 @@ function StarsBackground({
     [offsetX, offsetY, factor],
   );
   
-  const finalStarColor = starColor || (theme === 'dark' ? '#fff' : '#000');
+  const finalStarColor = starColor || (resolvedTheme === 'dark' ? '#fff' : '#000');
 
 
   return (

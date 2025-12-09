@@ -312,11 +312,11 @@ export default function MainUILayout({
   }
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-transparent">
-        <StarsBackground starColor='hsl(var(--primary-foreground))' speed={0.5} className="absolute inset-0 z-[-1]"/>
+    <div className="relative flex min-h-screen w-full flex-col bg-background overflow-hidden">
+        <StarsBackground speed={0.5} className="absolute inset-0 z-0"/>
         <AppTour />
         <IdleTimeoutDialog />
-        <main className="flex-1 overflow-auto pb-24">
+        <main className="relative z-10 flex-1 overflow-auto pb-24">
             <div className="h-full p-4 sm:p-6 lg:p-8">
                 {children}
             </div>
