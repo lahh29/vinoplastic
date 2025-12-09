@@ -14,9 +14,9 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Loader2, CheckCircle, AlertTriangle, Eye, EyeOff, Lock, UserCheck, KeyRound, ArrowRight, ArrowLeft } from 'lucide-react';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { db } from '../../../firebase.js'; // Importar la instancia de la base de datos
+import { doc, getDoc, setDoc, collection, query, where, getDocs, Firestore } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword, Auth } from 'firebase/auth';
+import { app, db } from '../../../firebase.js'; // Importar la instancia de la base de datos
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -50,6 +50,8 @@ export default function ActivateAccountPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [employeeData, setEmployeeData] = useState<{ id: string; nombre_completo: string; emailGenerado: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const authInstance = getAuth(app);
+
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -58,16 +60,33 @@ export default function ActivateAccountPage() {
 
   const handleVerifyId = async (data: FormData) => {
     setIsLoading(true);
+    form.clearErrors();
+
     try {
         const idLimpio = data.employeeId.trim();
+        
+        // 1. Validar si el ID de empleado existe en la Plantilla
         const plantillaDocRef = doc(db, 'Plantilla', idLimpio);
         const plantillaSnap = await getDoc(plantillaDocRef);
 
         if (!plantillaSnap.exists()) {
-            form.setError('employeeId', { type: 'manual', message: 'ID no encontrado. Verifica que sea correcto.' });
+            form.setError('employeeId', { type: 'manual', message: 'ID de empleado no encontrado. Verifica que sea correcto.' });
+            setIsLoading(false);
+            return;
+        }
+
+        // 2. Validar si ya existe una cuenta de usuario para ese ID
+        const usuariosRef = collection(db, 'usuarios');
+        const q = query(usuariosRef, where("id_empleado", "==", idLimpio));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            form.setError('employeeId', { type: 'manual', message: 'Este ID de empleado ya tiene una cuenta activada.' });
+            setIsLoading(false);
             return;
         }
         
+        // 3. Si todo es correcto, guardar datos y pasar al siguiente paso
         const datosEmpleado = plantillaSnap.data();
         const emailGenerado = `${idLimpio}_empleado@vinoplastic.com`;
 
@@ -80,7 +99,7 @@ export default function ActivateAccountPage() {
 
     } catch (error) {
         console.error("Error al verificar ID:", error);
-        toast({ variant: 'destructive', title: 'Error de Verificación', description: 'Ocurrió un problema al verificar tu ID. Intenta más tarde.' });
+        toast({ variant: 'destructive', title: 'Error de Verificación', description: 'Ocurrió un problema al conectar con la base de datos. Intenta más tarde.' });
     } finally {
         setIsLoading(false);
     }
@@ -88,14 +107,14 @@ export default function ActivateAccountPage() {
 
   const handleCreateAccount = async (data: FormData) => {
     setIsLoading(true);
-    if (!employeeData || !data.password) {
+    if (!employeeData || !data.password || !authInstance) {
+      toast({ variant: 'destructive', title: 'Error Interno', description: 'Faltan datos para crear la cuenta.' });
       setIsLoading(false);
       return;
     }
     
     try {
-      const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(auth, employeeData.emailGenerado, data.password);
+      const userCredential = await createUserWithEmailAndPassword(authInstance, employeeData.emailGenerado, data.password);
       const user = userCredential.user;
 
       const userDocRef = doc(db, 'usuarios', user.uid);
@@ -106,20 +125,22 @@ export default function ActivateAccountPage() {
         email: employeeData.emailGenerado,
         role: 'empleado',
         createdAt: new Date(),
-        requiresPasswordChange: false, // El usuario ya define su contraseña final.
+        requiresPasswordChange: false, // La contraseña es definida por el usuario, no es temporal.
       });
       
       setStep(3);
 
     } catch (error: any) {
+        let errorMessage = 'No se pudo crear la cuenta. Inténtalo de nuevo.';
         if (error.code === 'auth/email-already-in-use') {
-            toast({ variant: 'destructive', title: 'Cuenta Existente', description: 'Ya existe una cuenta asociada a este ID de empleado.' });
+            errorMessage = 'Esta cuenta ya ha sido registrada. Si tienes problemas para acceder, contacta a RH.';
             form.reset();
             setStep(1);
-        } else {
-            console.error("Error creando cuenta:", error);
-            toast({ variant: 'destructive', title: 'Error Crítico', description: error.message || 'No se pudo crear la cuenta.' });
+        } else if (error.code === 'auth/weak-password') {
+            errorMessage = 'La contraseña es demasiado débil. Debe tener al menos 6 caracteres.';
         }
+        console.error("Error creando cuenta:", error);
+        toast({ variant: 'destructive', title: 'Error al Crear Cuenta', description: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -268,5 +289,3 @@ export default function ActivateAccountPage() {
     </div>
   );
 }
-
-    
