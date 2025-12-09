@@ -11,6 +11,7 @@ import {
 } from 'motion/react';
 
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 type StarLayerProps = HTMLMotionProps<'div'> & {
   count: number;
@@ -85,10 +86,11 @@ function StarsBackground({
   factor = 0.05,
   speed = 50,
   transition = { stiffness: 50, damping: 20 },
-  starColor = '#fff',
+  starColor,
   pointerEvents = true,
   ...props
 }: StarsBackgroundProps) {
+  const { theme } = useTheme();
   const offsetX = useMotionValue(1);
   const offsetY = useMotionValue(1);
 
@@ -106,12 +108,15 @@ function StarsBackground({
     },
     [offsetX, offsetY, factor],
   );
+  
+  const finalStarColor = starColor || (theme === 'dark' ? '#fff' : '#000');
+
 
   return (
     <div
       data-slot="stars-background"
       className={cn(
-        'relative size-full overflow-hidden bg-[radial-gradient(ellipse_at_bottom,_#262626_0%,_#000_100%)]',
+        'relative size-full overflow-hidden bg-background',
         className,
       )}
       onMouseMove={handleMouseMove}
@@ -125,7 +130,7 @@ function StarsBackground({
           count={1000}
           size={1}
           transition={{ repeat: Infinity, duration: speed, ease: 'linear' }}
-          starColor={starColor}
+          starColor={finalStarColor}
         />
         <StarLayer
           count={400}
@@ -135,7 +140,7 @@ function StarsBackground({
             duration: speed * 2,
             ease: 'linear',
           }}
-          starColor={starColor}
+          starColor={finalStarColor}
         />
         <StarLayer
           count={200}
@@ -145,7 +150,7 @@ function StarsBackground({
             duration: speed * 3,
             ease: 'linear',
           }}
-          starColor={starColor}
+          starColor={finalStarColor}
         />
       </motion.div>
       {children}

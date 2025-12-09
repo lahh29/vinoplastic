@@ -18,7 +18,9 @@ import {
   FileClock,
   AlertTriangle,
   CalendarClock,
-  RotateCcw
+  RotateCcw,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
@@ -44,6 +46,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useRoleCheck } from '@/hooks/use-role-check';
 import { AppTour } from './app-tour';
 import { IdleTimeoutDialog } from './idle-timeout-dialog';
+import { useTheme } from "next-themes";
+import { Button } from './button';
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
@@ -103,6 +107,31 @@ const formatDate = (timestamp: any): string => {
   if (!date || !isValid(date)) return 'Fecha inválida';
   return format(date, 'dd/MMM/yy', { locale: es });
 };
+
+function ThemeToggle() {
+    const { setTheme, theme } = useTheme();
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <DockIcon>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                        className="rounded-full h-10 w-10 text-muted-foreground"
+                    >
+                        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                        <span className="sr-only">Cambiar tema</span>
+                    </Button>
+                </DockIcon>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Cambiar tema</p>
+            </TooltipContent>
+        </Tooltip>
+    );
+}
 
 // Componente de notificaciones
 function Notifications() {
@@ -284,7 +313,7 @@ export default function MainUILayout({
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-transparent">
-        <StarsBackground starColor='#fff' speed={0.5} className="absolute inset-0 z-[-1]"/>
+        <StarsBackground starColor='hsl(var(--primary-foreground))' speed={0.5} className="absolute inset-0 z-[-1]"/>
         <AppTour />
         <IdleTimeoutDialog />
         <main className="flex-1 overflow-auto pb-24">
@@ -335,6 +364,10 @@ export default function MainUILayout({
                             </Tooltip>
                         </>
                     )}
+                    
+                     <div className="border-l h-full mx-2 border-border/60" />
+
+                    <ThemeToggle />
                     
                     <Tooltip>
                         <TooltipTrigger asChild>
