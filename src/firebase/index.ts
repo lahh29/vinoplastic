@@ -44,4 +44,5 @@ export * from './non-blocking-login';
 export * from './errors';
 export * from './error-emitter';
 export * from './auth/use-user';
+export * from './auth/use-role-check';
 export { useMemoFirebase };

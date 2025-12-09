@@ -7,7 +7,7 @@ import { Firestore } from 'firebase/firestore';
 import { Auth, User } from 'firebase/auth';
 import { FirebaseStorage } from 'firebase/storage';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
-import { useUser as useAuthUserHook } from './auth/use-user'; // Import the original hook directly
+import { useUser as useAuthUserHook } from '@/firebase/auth/use-user'; // Import the original hook directly
 
 interface FirebaseProviderProps {
   children: ReactNode;

@@ -22,7 +22,7 @@ import {
   Moon
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
-import { useAuth, useUser, useCollection, useFirestore, useDoc } from '@/firebase';
+import { useAuth, useUser, useCollection, useFirestore, useDoc, useRoleCheck } from '@/firebase';
 import { collection, doc, Timestamp } from 'firebase/firestore';
 import { Dock, DockIcon } from '@/components/ui/dock';
 import {
@@ -42,7 +42,6 @@ import { StarsBackground } from '@/components/animate-ui/components/backgrounds/
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useRoleCheck } from '@/hooks/use-role-check';
 import { IdleTimeoutDialog } from './idle-timeout-dialog';
 import { useTheme } from "next-themes";
 import { Button } from './button';
