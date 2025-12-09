@@ -10,7 +10,6 @@ import {
   Users,
   BookUser,
   LogOut,
-  Shapes,
   User,
   Settings,
   GraduationCap,
@@ -54,7 +53,6 @@ const adminNavItems = [
   { href: '/contratos', icon: FileText, label: 'Contratos' },
   { href: '/empleados', icon: Users, label: 'Empleados' },
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
-  { href: '/categorias', icon: Shapes, label: 'Categorías' },
 ];
 
 const lectorNavItems = [
@@ -62,7 +60,6 @@ const lectorNavItems = [
   { href: '/contratos', icon: FileText, label: 'Contratos' },
   { href: '/empleados', icon: Users, label: 'Empleados' },
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
-  { href: '/categorias', icon: Shapes, label: 'Categorías' },
 ];
 
 const employeeNavItems = [
