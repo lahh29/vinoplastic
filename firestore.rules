@@ -35,13 +35,13 @@ service cloud.firestore {
     
     // Reglas para la activación de la cuenta
     match /Plantilla/{empleadoId} {
-      allow read: if true; // Permite la lectura pública para la activación
-      allow write: if isAdmin();
+      allow read: if true; // Permitir lectura pública para verificar ID
+      allow write: if isAdmin(); // Solo admins pueden modificar la plantilla
     }
     
     match /usuarios/{userId} {
-      allow read: if canRead() || (request.auth != null && request.auth.uid == userId);
-      allow create: if true; // Permite a cualquiera crear su propio registro de usuario
+      allow read: if true; // Permitir lectura para verificar duplicados
+      allow create: if true; // Permitir que cualquiera cree su documento de usuario al registrarse
       allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == userId);
     }
     

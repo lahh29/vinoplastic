@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -48,8 +49,12 @@ export default function ActivateAccountPage() {
   const [firebaseServices, setFirebaseServices] = useState<{ auth: Auth; firestore: Firestore; } | null>(null);
 
   useEffect(() => {
-    const services = getFirebaseServices();
-    setFirebaseServices(services);
+    try {
+        const services = getFirebaseServices();
+        setFirebaseServices(services);
+    } catch(e) {
+        console.error("Error al inicializar Firebase. Es posible que el proveedor aún no esté listo.");
+    }
   }, []);
   
   const [step, setStep] = useState(1);
