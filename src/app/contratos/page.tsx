@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, FileClock, Search, Calendar, Star, TrendingUp, Loader2, ListTodo, UserX } from 'lucide-react';
+import { AlertTriangle, FileClock, Search, Calendar, Star, TrendingUp, Loader2, ListTodo, UserX, Briefcase } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -44,6 +44,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Separator } from '@/components/ui/separator';
 
 
 interface ContratoFechas {
@@ -80,6 +81,10 @@ interface Contrato {
   id_empleado: string;
   nombre_completo: string;
   departamento: string;
+  puesto?: {
+      titulo: string;
+      departamento: string;
+  };
   fechas_contrato: ContratoFechas;
   evaluaciones: ContratoEvaluaciones;
   indeterminado?: boolean;
@@ -128,6 +133,7 @@ export default function ContratosPage() {
         const empleadoData = empleadosMap.get(c.id_empleado);
         return {
           ...c,
+          puesto: empleadoData?.puesto,
           fecha_ingreso_plantilla: empleadoData?.fecha_ingreso || c.fechas_contrato.ingreso,
         };
       });
@@ -205,9 +211,9 @@ export default function ContratosPage() {
     checkAdminAndExecute(() => {
         setSelectedContract(contrato);
         setEvaluations({
-            eval1: contrato.evaluaciones?.primera?.calificacion_texto || 'Pendiente',
-            eval2: contrato.evaluaciones?.segunda?.calificacion_texto || 'Pendiente',
-            eval3: contrato.evaluaciones?.tercera?.calificacion_texto || 'Pendiente',
+            eval1: contrato.evaluaciones?.primera?.calificacion_texto || '',
+            eval2: contrato.evaluaciones?.segunda?.calificacion_texto || '',
+            eval3: contrato.evaluaciones?.tercera?.calificacion_texto || '',
         });
         setIsIndeterminate(contrato.indeterminado || false);
         setSolicitarBaja(contrato.solicitar_baja || false);
@@ -228,55 +234,63 @@ export default function ContratosPage() {
     });
   };
 
- const handleSave = () => {
+  const handleSave = () => {
     checkAdminAndExecute(async () => {
-      if (!selectedContract || !firestore) return;
-      setIsSaving(true);
-      const docRef = doc(firestore, 'Contratos', selectedContract.id);
-      
-      const parseScore = (score: string) => score.includes('%') ? parseFloat(score.replace('%','')) : (isNaN(parseFloat(score)) ? null : parseFloat(score));
-      
-      const updatedData: any = {
-        evaluaciones: {
-            primera: { ...selectedContract.evaluaciones.primera, calificacion_texto: evaluations.eval1, calificacion_valor: parseScore(evaluations.eval1), estatus: (evaluations.eval1 === 'Pendiente' || evaluations.eval1 === '') ? 'Pendiente' : 'Evaluado' },
-            segunda: { ...selectedContract.evaluaciones.segunda, calificacion_texto: evaluations.eval2, calificacion_valor: parseScore(evaluations.eval2), estatus: (evaluations.eval2 === 'Pendiente' || evaluations.eval2 === '') ? 'Pendiente' : 'Evaluado' },
-            tercera: { ...selectedContract.evaluaciones.tercera, calificacion_texto: evaluations.eval3, calificacion_valor: parseScore(evaluations.eval3), estatus: (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado' },
-        },
-        indeterminado: isIndeterminate,
-        solicitar_baja: solicitarBaja,
-        requiere_seguimiento: requiereSeguimiento,
-      };
+        if (!selectedContract || !firestore) return;
+        setIsSaving(true);
+        const docRef = doc(firestore, 'Contratos', selectedContract.id);
+        
+        const parseScore = (score: string) => {
+            const cleaned = score.replace('%','').trim();
+            if (cleaned === '' || isNaN(parseFloat(cleaned))) return null;
+            return parseFloat(cleaned);
+        }
+        
+        const updatedData: any = {
+            'evaluaciones.primera.calificacion_texto': evaluations.eval1,
+            'evaluaciones.primera.calificacion_valor': parseScore(evaluations.eval1),
+            'evaluaciones.primera.estatus': (evaluations.eval1 === 'Pendiente' || evaluations.eval1 === '') ? 'Pendiente' : 'Evaluado',
+            'evaluaciones.segunda.calificacion_texto': evaluations.eval2,
+            'evaluaciones.segunda.calificacion_valor': parseScore(evaluations.eval2),
+            'evaluaciones.segunda.estatus': (evaluations.eval2 === 'Pendiente' || evaluations.eval2 === '') ? 'Pendiente' : 'Evaluado',
+            'evaluaciones.tercera.calificacion_texto': evaluations.eval3,
+            'evaluaciones.tercera.calificacion_valor': parseScore(evaluations.eval3),
+            'evaluaciones.tercera.estatus': (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado',
+            indeterminado: isIndeterminate,
+            solicitar_baja: solicitarBaja,
+            requiere_seguimiento: requiereSeguimiento,
+        };
 
-      if (solicitarBaja && solicitarBajaFecha) {
-        updatedData.solicitar_baja_fecha_limite = Timestamp.fromDate(solicitarBajaFecha);
-      } else {
-        updatedData.solicitar_baja_fecha_limite = deleteField();
-      }
+        if (solicitarBaja && solicitarBajaFecha) {
+            updatedData.solicitar_baja_fecha_limite = Timestamp.fromDate(solicitarBajaFecha);
+        } else {
+            updatedData.solicitar_baja_fecha_limite = deleteField();
+        }
 
-      if (requiereSeguimiento && requiereSeguimientoFecha) {
-        updatedData.requiere_seguimiento_fecha_limite = Timestamp.fromDate(requiereSeguimientoFecha);
-      } else {
-        updatedData.requiere_seguimiento_fecha_limite = deleteField();
-      }
-      
-      try {
-        await updateDoc(docRef, updatedData);
-        toast({
-          title: "Éxito",
-          description: `El contrato de ${selectedContract.nombre_completo} ha sido actualizado.`,
-          className: "bg-green-100 text-green-800 border-green-300",
-        })
-      } catch (error) {
-        console.error(error);
-        toast({
-          title: "Error",
-          description: "No se pudo actualizar el contrato.",
-          variant: 'destructive',
-        })
-      } finally {
-        setIsSaving(false);
-        setSelectedContract(null);
-      }
+        if (requiereSeguimiento && requiereSeguimientoFecha) {
+            updatedData.requiere_seguimiento_fecha_limite = Timestamp.fromDate(requiereSeguimientoFecha);
+        } else {
+            updatedData.requiere_seguimiento_fecha_limite = deleteField();
+        }
+        
+        try {
+            await updateDoc(docRef, updatedData);
+            toast({
+            title: "Éxito",
+            description: `El contrato de ${selectedContract.nombre_completo} ha sido actualizado.`,
+            className: "bg-green-100 text-green-800 border-green-300",
+            })
+        } catch (error) {
+            console.error(error);
+            toast({
+            title: "Error",
+            description: "No se pudo actualizar el contrato.",
+            variant: 'destructive',
+            })
+        } finally {
+            setIsSaving(false);
+            setSelectedContract(null);
+        }
     });
   };
   
@@ -406,97 +420,70 @@ export default function ContratosPage() {
 
       {selectedContract && (
         <Dialog open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
-            <DialogContent className="sm:max-w-2xl rounded-2xl bg-card/80 backdrop-blur-lg border-border">
+            <DialogContent className="sm:max-w-4xl rounded-2xl bg-card/80 backdrop-blur-lg border-border">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">Seguimiento de Evaluaciones</DialogTitle>
-                    <DialogDescription className="text-base">
-                        {selectedContract.nombre_completo} (ID: {selectedContract.id_empleado})
+                    <DialogTitle className="text-2xl font-bold">{selectedContract.nombre_completo}</DialogTitle>
+                    <DialogDescription className="flex items-center gap-4 text-base">
+                        <span className="flex items-center gap-1.5"><User size={14}/> ID: {selectedContract.id_empleado}</span>
+                        <span className="flex items-center gap-1.5"><Briefcase size={14}/> {selectedContract.puesto?.titulo || 'Puesto no disponible'}</span>
                     </DialogDescription>
                 </DialogHeader>
-                <div className="py-6 space-y-6">
-                    <div className="space-y-4 rounded-lg border p-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><Star className="text-amber-400"/> Evaluaciones de Desempeño</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="eval1" className="flex items-center gap-2 text-muted-foreground">
-                                    <Calendar size={16}/> 1ra Evaluación ({formatDate(calculatedDates.eval1)})
-                                </Label>
-                                <Input
-                                    id="eval1"
-                                    value={evaluations.eval1}
-                                    onChange={(e) => setEvaluations({...evaluations, eval1: e.target.value})}
-                                    placeholder="Ej: 95%"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="eval2" className="flex items-center gap-2 text-muted-foreground">
-                                    <Calendar size={16}/> 2da Evaluación ({formatDate(calculatedDates.eval2)})
-                                </Label>
-                                <Input
-                                    id="eval2"
-                                    value={evaluations.eval2}
-                                    onChange={(e) => setEvaluations({...evaluations, eval2: e.target.value})}
-                                    placeholder="Ej: 95%"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="eval3" className="flex items-center gap-2 text-muted-foreground">
-                                    <Calendar size={16}/> 3ra Evaluación ({formatDate(calculatedDates.eval3)})
-                                </Label>
-                                <Input
-                                    id="eval3"
-                                    value={evaluations.eval3}
-                                    onChange={(e) => setEvaluations({...evaluations, eval3: e.target.value})}
-                                    placeholder="Ej: 95%"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                     <div className="space-y-4 rounded-lg border p-4">
-                       <h3 className="font-semibold text-lg flex items-center gap-2"><TrendingUp className="text-green-500"/> Estatus del Contrato</h3>
-                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-2">
-                            <div className="flex items-center space-x-3">
-                                <Switch id="indeterminate-mode" checked={isIndeterminate} onCheckedChange={setIsIndeterminate} />
-                                <Label htmlFor="indeterminate-mode" className="text-base">Marcar como Contrato Indeterminado</Label>
-                            </div>
-                            <div>
-                                <Label className="text-sm text-muted-foreground">Término de contrato: {formatDate(calculatedDates.termino)}</Label>
-                            </div>
-                        </div>
-                    </div>
-                     <div className="space-y-4 rounded-lg border p-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><AlertTriangle className="text-orange-500"/> Acciones Administrativas</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 pt-2">
-                            <div className="flex items-center justify-between space-x-3 p-3 bg-secondary/30 rounded-lg">
-                                <Label htmlFor="solicitar-baja" className="flex flex-col">
-                                    <span className="text-base font-medium">Solicitar Baja</span>
-                                    <span className="text-xs text-muted-foreground">Inicia proceso de terminación.</span>
-                                </Label>
-                                <Switch id="solicitar-baja" checked={solicitarBaja} onCheckedChange={setSolicitarBaja} />
-                            </div>
-                            <div className="flex items-center justify-between space-x-3 p-3 bg-secondary/30 rounded-lg">
-                                <Label htmlFor="requiere-seguimiento" className="flex flex-col">
-                                    <span className="text-base font-medium">Requiere Seguimiento</span>
-                                     <span className="text-xs text-muted-foreground">Indica necesidad de un plan.</span>
-                                </Label>
-                                <Switch id="requiere-seguimiento" checked={requiereSeguimiento} onCheckedChange={setRequiereSeguimiento} />
-                            </div>
-                            {solicitarBaja && (
+                <div className="grid md:grid-cols-2 gap-6 pt-4">
+                    {/* Columna Izquierda */}
+                    <div className="space-y-6">
+                        <Card className="bg-background/70">
+                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Star className="text-amber-400"/> Evaluaciones</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="baja-fecha">Fecha Límite para Baja</Label>
-                                    <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !solicitarBajaFecha && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{solicitarBajaFecha ? format(solicitarBajaFecha, "PPP", {locale: es}) : <span>Elige fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={solicitarBajaFecha} onSelect={setSolicitarBajaFecha} initialFocus /></PopoverContent></Popover>
+                                    <Label htmlFor="eval1" className="flex items-center gap-2 text-muted-foreground"><Calendar size={16}/> 1ra Evaluación ({formatDate(calculatedDates.eval1)})</Label>
+                                    <Input id="eval1" value={evaluations.eval1} onChange={(e) => setEvaluations({...evaluations, eval1: e.target.value})} placeholder="Ej: 95%" />
                                 </div>
-                            )}
-                             {requiereSeguimiento && (
                                 <div className="space-y-2">
-                                    <Label htmlFor="seguimiento-fecha">Fecha Límite para Seguimiento</Label>
-                                    <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !requiereSeguimientoFecha && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{requiereSeguimientoFecha ? format(requiereSeguimientoFecha, "PPP", {locale: es}) : <span>Elige fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={requiereSeguimientoFecha} onSelect={setRequiereSeguimientoFecha} initialFocus /></PopoverContent></Popover>
+                                    <Label htmlFor="eval2" className="flex items-center gap-2 text-muted-foreground"><Calendar size={16}/> 2da Evaluación ({formatDate(calculatedDates.eval2)})</Label>
+                                    <Input id="eval2" value={evaluations.eval2} onChange={(e) => setEvaluations({...evaluations, eval2: e.target.value})} placeholder="Ej: 95%" />
                                 </div>
-                            )}
-                        </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="eval3" className="flex items-center gap-2 text-muted-foreground"><Calendar size={16}/> 3ra Evaluación ({formatDate(calculatedDates.eval3)})</Label>
+                                    <Input id="eval3" value={evaluations.eval3} onChange={(e) => setEvaluations({...evaluations, eval3: e.target.value})} placeholder="Ej: 95%" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Columna Derecha */}
+                    <div className="space-y-6">
+                         <Card className="bg-background/70">
+                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><TrendingUp className="text-green-500"/> Estatus del Contrato</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center justify-between p-3 rounded-lg bg-secondary">
+                                    <Label htmlFor="indeterminate-mode" className="text-base">Contrato Indeterminado</Label>
+                                    <Switch id="indeterminate-mode" checked={isIndeterminate} onCheckedChange={setIsIndeterminate} />
+                                </div>
+                                <div><Label className="text-sm text-muted-foreground">Término de contrato determinado: {formatDate(calculatedDates.termino)}</Label></div>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-background/70">
+                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="text-orange-500"/> Acciones Administrativas</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="p-3 bg-secondary rounded-lg space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="solicitar-baja" className="text-base">Solicitar Baja de Contrato</Label>
+                                        <Switch id="solicitar-baja" checked={solicitarBaja} onCheckedChange={setSolicitarBaja} />
+                                    </div>
+                                    {solicitarBaja && (<Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !solicitarBajaFecha && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{solicitarBajaFecha ? format(solicitarBajaFecha, "PPP", {locale: es}) : <span>Fecha Límite</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={solicitarBajaFecha} onSelect={setSolicitarBajaFecha} initialFocus /></PopoverContent></Popover>)}
+                                </div>
+                                <div className="p-3 bg-secondary rounded-lg space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="requiere-seguimiento" className="text-base">Requiere Plan de Seguimiento</Label>
+                                        <Switch id="requiere-seguimiento" checked={requiereSeguimiento} onCheckedChange={setRequiereSeguimiento} />
+                                    </div>
+                                    {requiereSeguimiento && (<Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !requiereSeguimientoFecha && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{requiereSeguimientoFecha ? format(requiereSeguimientoFecha, "PPP", {locale: es}) : <span>Fecha Límite</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={requiereSeguimientoFecha} onSelect={setRequiereSeguimientoFecha} initialFocus /></PopoverContent></Popover>)}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="pt-6">
                     <Button variant="outline" onClick={() => setSelectedContract(null)}>Cancelar</Button>
                     <Button onClick={handleSave} disabled={isSaving}>
                         {isSaving ? <Loader2 className="animate-spin mr-2"/> : null}
