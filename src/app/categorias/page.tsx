@@ -3,11 +3,11 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, setDoc, orderBy, query } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, UserCheck, ShieldCheck, ClipboardEdit, Calendar as CalendarIcon, Percent, BookOpen, Clock, Award, AlertCircle, Users, Briefcase, ChevronRight, ArrowRight, Loader2, CheckCircle2, XCircle, MinusCircle, UserX, UserRound, Sparkles } from 'lucide-react';
+import { Search, UserCheck, ShieldCheck, ClipboardEdit, Calendar as CalendarIcon, Percent, BookOpen, Clock, Award, AlertCircle, Users, Briefcase, ChevronRight, ArrowRight, Loader2, CheckCircle2, XCircle, MinusCircle, UserX, UserRound, Sparkles, History } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Label } from '@/components/ui/label';
@@ -25,6 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { useRoleCheck } from '@/hooks/use-role-check';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // Interfaces
 interface Empleado {
@@ -51,11 +52,18 @@ interface ReglaAscenso {
     min_examen_teorico?: number;
     min_cobertura_matriz: number;
 }
+interface IntentoExamen {
+    id: string;
+    calificacion: number;
+    fecha: { toDate: () => Date };
+    respuestas: Record<string, string>;
+}
 interface EmpleadoPromocion extends Empleado {
   promocionData?: Promocion;
   coberturaCursos: number;
   cursosCompletados: CursoCatalogo[];
   cursosPendientes: CursoCatalogo[];
+  intentosExamen?: IntentoExamen[];
 }
 
 const parseDate = (date: any): Date | null => {
@@ -134,6 +142,38 @@ const getCriterioStatus = (empleado: EmpleadoPromocion, regla: ReglaAscenso, cri
     return { Icon: MinusCircle, color: 'text-muted-foreground', tooltip: 'Criterio no definido.' };
 }
 
+function HistorialExamenes({ empleadoId }: { empleadoId: string }) {
+    const firestore = useFirestore();
+    const intentosRef = useMemoFirebase(
+      () => query(collection(firestore, `Promociones/${empleadoId}/intentos_examen`), orderBy('fecha', 'desc')),
+      [firestore, empleadoId]
+    );
+    const { data: intentos, isLoading } = useCollection<IntentoExamen>(intentosRef);
+
+    if (isLoading) return <div className="text-center p-4"><Loader2 className="animate-spin h-5 w-5 mx-auto"/></div>
+    if (!intentos || intentos.length === 0) return <p className="text-sm text-muted-foreground text-center p-4">Este empleado no tiene intentos de examen registrados.</p>
+
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead className="text-right">Calificación</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {intentos.map(intento => (
+                    <TableRow key={intento.id}>
+                        <TableCell>{format(intento.fecha.toDate(), 'dd/MMM/yyyy, hh:mm a', {locale: es})}</TableCell>
+                        <TableCell className="text-right font-mono font-semibold">
+                            <Badge variant={intento.calificacion >= 70 ? 'default' : 'destructive'} className={cn(intento.calificacion >= 70 && 'bg-green-600')}>{intento.calificacion.toFixed(0)}</Badge>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    );
+}
 
 export default function PromocionesPage() {
   const firestore = useFirestore();
@@ -426,7 +466,7 @@ export default function PromocionesPage() {
                         </CardContent>
                     </Card>
                     
-                    <Accordion type="multiple" className="w-full space-y-4">
+                    <Accordion type="multiple" className="w-full space-y-4" defaultValue={['examenes']}>
                         <AccordionItem value="evaluaciones" className="border rounded-lg">
                             <AccordionTrigger className="px-4 py-3 text-lg font-medium"><div className="flex items-center gap-3"><ClipboardEdit/>Evaluaciones</div></AccordionTrigger>
                             <AccordionContent className="p-4 space-y-4">
@@ -451,6 +491,12 @@ export default function PromocionesPage() {
                                 <ul className="list-disc list-inside space-y-1 text-sm">{selectedEmpleado.cursosCompletados.length > 0 ? selectedEmpleado.cursosCompletados.map(c => <li key={c.id}>{c.nombre_oficial}</li>) : <li className="list-none text-muted-foreground">Ninguno aún.</li>}</ul>
                             </AccordionContent>
                         </AccordionItem>
+                        <AccordionItem value="examenes" className="border rounded-lg">
+                           <AccordionTrigger className="px-4 py-3 text-lg font-medium"><div className="flex items-center gap-3"><History/>Historial de Exámenes</div></AccordionTrigger>
+                           <AccordionContent className="p-4">
+                                <HistorialExamenes empleadoId={selectedEmpleado.id_empleado} />
+                           </AccordionContent>
+                       </AccordionItem>
                     </Accordion>
                 </div>
                 </ScrollArea>
@@ -490,3 +536,4 @@ export default function PromocionesPage() {
     </div>
   );
 }
+

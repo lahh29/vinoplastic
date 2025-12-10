@@ -51,8 +51,8 @@ const reportTypes = [
     },
     {
         icon: History,
-        title: "Historial de Cursos",
-        description: "Exporta el historial completo de todos los cursos tomados por cada empleado, con fechas y calificaciones.",
+        title: "Historial de Cursos y Exámenes",
+        description: "Exporta el historial completo de todos los cursos y exámenes tomados por cada empleado.",
         id: "historial",
         tourId: "reporte-historial"
     },
