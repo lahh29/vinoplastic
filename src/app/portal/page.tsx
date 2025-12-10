@@ -4,7 +4,7 @@
 import React, { useMemo } from 'react';
 import { useUser, useDoc, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
-import { Loader2, User, Briefcase, BookOpen, CheckCircle2, XCircle, Clock, Award, Target, FileText } from 'lucide-react';
+import { Loader2, User, Briefcase, BookOpen, CheckCircle2, XCircle, Clock, Award, Target, FileText, CalendarDays, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,12 +12,15 @@ import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { format, differenceInMonths, isValid } from 'date-fns';
+import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fns';
 import Link from 'next/link';
+import { es } from 'date-fns/locale';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 // --- Interfaces ---
 interface UserData { id_empleado?: string; }
-interface Empleado { nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
+interface Empleado { id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
 interface PerfilPuesto { id: string; nombre_puesto: string; cursos_obligatorios: string[]; }
 interface HistorialCurso { id_curso: string; calificacion: number; }
 interface Historial { id_empleado: string; cursos: HistorialCurso[]; }
@@ -30,9 +33,9 @@ interface CursoConEstado {
     estado: 'Aprobado' | 'Reprobado' | 'Pendiente';
     calificacion?: number;
 }
-interface EmpleadoPerfil extends Empleado {
+interface EmpleadoPerfil extends Empleado { 
     promocionData?: Promocion;
-    coberturaCursos: number;
+    coberturaCursos: number; 
     cursosAsignados: CursoConEstado[];
     cursosExtras: CursoConEstado[];
     promedioGeneral: number;
@@ -41,13 +44,13 @@ type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Req
 
 // --- Helpers ---
 const parseDate = (date: any): Date | null => {
-    if (!date) return null;
-    if (date.toDate) return date.toDate();
-    if (typeof date === 'string' || typeof date === 'number') {
-        const d = new Date(date);
-        return isValid(d) ? d : null;
-    }
-    return null;
+  if (!date) return null;
+  if (date.toDate) return date.toDate();
+  if (typeof date === 'string' || typeof date === 'number') {
+    const d = new Date(date);
+    return isValid(d) ? d : null;
+  }
+  return null;
 };
 
 const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status: EstatusPromocion, message: string } => {
@@ -82,15 +85,16 @@ export default function PortalPage() {
   const empleadoRef = useMemoFirebase(() => (userInfo?.id_empleado ? doc(firestore, 'Plantilla', userInfo.id_empleado) : null), [userInfo, firestore]);
   const { data: empleadoData, isLoading: isEmpleadoLoading } = useDoc<Empleado>(empleadoRef);
 
+  const historialRef = useMemoFirebase(() => (userInfo?.id_empleado ? doc(firestore, 'historial_capacitacion', userInfo.id_empleado) : null), [userInfo, firestore]);
+  const { data: historial, isLoading: l3 } = useDoc<Historial>(historialRef);
+
   const perfilesRef = useMemoFirebase(() => collection(firestore, 'perfiles_puesto'), [firestore]);
-  const historialRef = useMemoFirebase(() => collection(firestore, 'historial_capacitacion'), [firestore]);
-  const promocionesRef = useMemoFirebase(() => collection(firestore, 'Promociones'), [firestore]);
+  const promocionesRef = useMemoFirebase(() => (userInfo?.id_empleado ? doc(firestore, 'Promociones', userInfo.id_empleado) : null), [userInfo, firestore]);
   const reglasAscensoRef = useMemoFirebase(() => collection(firestore, 'reglas_ascenso'), [firestore]);
   const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
 
   const { data: perfiles, isLoading: l2 } = useCollection<PerfilPuesto>(perfilesRef);
-  const { data: historiales, isLoading: l3 } = useCollection<Historial>(historialRef);
-  const { data: promociones, isLoading: l4 } = useCollection<Promocion>(promocionesRef);
+  const { data: promocionData, isLoading: l4 } = useDoc<Promocion>(promocionesRef);
   const { data: reglasAscenso, isLoading: l5 } = useCollection<ReglaAscenso>(reglasAscensoRef);
   const { data: catalogoCursos, isLoading: l6 } = useCollection<CursoCatalogo>(catalogoCursosRef);
   
@@ -100,8 +104,6 @@ export default function PortalPage() {
     if (isLoading || !empleadoData) return null;
 
     const perfil = perfiles?.find(p => p.nombre_puesto === empleadoData.puesto.titulo);
-    const historial = historiales?.find(h => h.id_empleado === empleadoData.id_empleado);
-    const promocionData = promociones?.find(p => p.id === empleadoData.id_empleado);
     const catalogoMap = new Map(catalogoCursos?.map(c => [c.id_curso, c]));
     
     let cursosAsignados: CursoConEstado[] = [];
@@ -139,7 +141,7 @@ export default function PortalPage() {
     }
 
     return { ...empleadoData, promocionData, coberturaCursos, cursosAsignados, cursosExtras, promedioGeneral };
-  }, [isLoading, empleadoData, perfiles, historiales, promociones, catalogoCursos]);
+  }, [isLoading, empleadoData, perfiles, historial, promocionData, catalogoCursos]);
   
   const reglaAplicable = reglasAscenso?.find(r => r.puesto_actual === empleadoPerfil?.puesto.titulo);
   const statusInfo = empleadoPerfil ? getStatusInfo(empleadoPerfil, reglaAplicable) : null;
@@ -186,7 +188,14 @@ export default function PortalPage() {
           <CardContent><p className="text-2xl font-bold">{empleadoPerfil.promocionData?.evaluacion_desempeno ?? 'N/A'}</p></CardContent>
         </Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Exámen Teórico</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold">{empleadoPerfil.promocionData?.examen_teorico ?? 'N/A'}</p></CardContent>
+            <CardContent className="flex justify-between items-end">
+                <p className="text-2xl font-bold">{empleadoPerfil.promocionData?.examen_teorico ?? 'N/A'}</p>
+                {statusInfo?.status === 'Requiere Atención' && statusInfo.message.includes('Examen teórico') && (
+                     <Button asChild size="sm">
+                        <Link href="/portal/examen">Realizar Examen</Link>
+                    </Button>
+                )}
+            </CardContent>
         </Card>
       </div>
 
@@ -228,7 +237,7 @@ const CursosTable = ({ cursos }: { cursos: CursoConEstado[] }) => {
                         <TableRow key={curso.id}>
                             <TableCell className="font-medium text-sm">{curso.nombre_oficial}</TableCell>
                             <TableCell className="text-center">
-                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500/80')}>{estado}</Badge>
+                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
                             </TableCell>
                             <TableCell className="text-right">
                                 {estado === 'Pendiente' && curso.url_pdf && (
