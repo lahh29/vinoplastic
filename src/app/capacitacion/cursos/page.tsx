@@ -111,8 +111,8 @@ export default function CursosPage() {
   };
   
   return (
-    <div className="space-y-8">
-      <Card>
+    <div className="space-y-8 h-full flex flex-col">
+      <Card className="flex-1 flex flex-col">
         <CardHeader>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
@@ -132,10 +132,10 @@ export default function CursosPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[calc(100vh-22rem)] pr-4">
+        <CardContent className="flex-1 relative">
+          <ScrollArea className="absolute inset-0 pr-4">
             {isLoading ? (
-              <div className="flex h-64 items-center justify-center text-muted-foreground gap-2">
+              <div className="flex h-full items-center justify-center text-muted-foreground gap-2">
                   <Loader2 className="h-6 w-6 animate-spin" /> Cargando catálogo...
               </div>
             ) : filteredCursos.length > 0 ? (
@@ -216,7 +216,7 @@ export default function CursosPage() {
                 ))}
               </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground opacity-50">
+                <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
                     <File className="h-12 w-12 mb-2" />
                     <p>No se encontraron cursos.</p>
                 </div>
