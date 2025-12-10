@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp, setDoc, orderBy, query } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { format, isValid, differenceInMonths } from 'date-fns';
+import { format, isValid, differenceInMonths, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -466,7 +466,7 @@ export default function PromocionesPage() {
                         </CardContent>
                     </Card>
                     
-                    <Accordion type="multiple" className="w-full space-y-4" defaultValue={['examenes']}>
+                    <Accordion type="multiple" className="w-full space-y-4">
                         <AccordionItem value="evaluaciones" className="border rounded-lg">
                             <AccordionTrigger className="px-4 py-3 text-lg font-medium"><div className="flex items-center gap-3"><ClipboardEdit/>Evaluaciones</div></AccordionTrigger>
                             <AccordionContent className="p-4 space-y-4">
@@ -494,7 +494,7 @@ export default function PromocionesPage() {
                         <AccordionItem value="examenes" className="border rounded-lg">
                            <AccordionTrigger className="px-4 py-3 text-lg font-medium"><div className="flex items-center gap-3"><History/>Historial de Exámenes</div></AccordionTrigger>
                            <AccordionContent className="p-4">
-                                <HistorialExamenes empleadoId={selectedEmpleado.id_empleado} />
+                                {selectedEmpleado.id_empleado && <HistorialExamenes empleadoId={selectedEmpleado.id_empleado} />}
                            </AccordionContent>
                        </AccordionItem>
                     </Accordion>
@@ -536,4 +536,3 @@ export default function PromocionesPage() {
     </div>
   );
 }
-
