@@ -34,7 +34,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, Timestamp, setDoc } from 'firebase/firestore';
+import { collection, doc, Timestamp, setDoc, serverTimestamp, updateDoc, deleteField } from 'firebase/firestore';
 import { format, addDays, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRoleCheck } from '@/hooks/use-role-check';
@@ -108,7 +108,7 @@ const formatDate = (timestamp: any): string => {
 export default function ContratosPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { checkAdminAndExecute } = useRoleCheck();
+  const { isAdmin, checkAdminAndExecute } = useRoleCheck();
   const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
   const plantillaRef = useMemoFirebase(() => firestore ? collection(firestore, 'Plantilla') : null, [firestore]);
 
@@ -234,33 +234,33 @@ export default function ContratosPage() {
       setIsSaving(true);
       const docRef = doc(firestore, 'Contratos', selectedContract.id);
       
-      const updatedData = { ...selectedContract };
-
       const parseScore = (score: string) => score.includes('%') ? parseFloat(score.replace('%','')) : (isNaN(parseFloat(score)) ? null : parseFloat(score));
       
-      updatedData.evaluaciones.primera.calificacion_texto = evaluations.eval1;
-      updatedData.evaluaciones.primera.calificacion_valor = parseScore(evaluations.eval1);
-      updatedData.evaluaciones.primera.estatus = (evaluations.eval1 === 'Pendiente' || evaluations.eval1 === '') ? 'Pendiente' : 'Evaluado';
-      
-      updatedData.evaluaciones.segunda.calificacion_texto = evaluations.eval2;
-      updatedData.evaluaciones.segunda.calificacion_valor = parseScore(evaluations.eval2);
-      updatedData.evaluaciones.segunda.estatus = (evaluations.eval2 === 'Pendiente' || evaluations.eval2 === '') ? 'Pendiente' : 'Evaluado';
+      const updatedData: any = {
+        evaluaciones: {
+            primera: { ...selectedContract.evaluaciones.primera, calificacion_texto: evaluations.eval1, calificacion_valor: parseScore(evaluations.eval1), estatus: (evaluations.eval1 === 'Pendiente' || evaluations.eval1 === '') ? 'Pendiente' : 'Evaluado' },
+            segunda: { ...selectedContract.evaluaciones.segunda, calificacion_texto: evaluations.eval2, calificacion_valor: parseScore(evaluations.eval2), estatus: (evaluations.eval2 === 'Pendiente' || evaluations.eval2 === '') ? 'Pendiente' : 'Evaluado' },
+            tercera: { ...selectedContract.evaluaciones.tercera, calificacion_texto: evaluations.eval3, calificacion_valor: parseScore(evaluations.eval3), estatus: (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado' },
+        },
+        indeterminado: isIndeterminate,
+        solicitar_baja: solicitarBaja,
+        requiere_seguimiento: requiereSeguimiento,
+      };
 
-      updatedData.evaluaciones.tercera.calificacion_texto = evaluations.eval3;
-      updatedData.evaluaciones.tercera.calificacion_valor = parseScore(evaluations.eval3);
-      updatedData.evaluaciones.tercera.estatus = (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado';
-      
-      updatedData.indeterminado = isIndeterminate;
-      updatedData.solicitar_baja = solicitarBaja;
-      updatedData.solicitar_baja_fecha_limite = solicitarBaja && solicitarBajaFecha ? Timestamp.fromDate(solicitarBajaFecha) : undefined;
-      updatedData.requiere_seguimiento = requiereSeguimiento;
-      updatedData.requiere_seguimiento_fecha_limite = requiereSeguimiento && requiereSeguimientoFecha ? Timestamp.fromDate(requiereSeguimientoFecha) : undefined;
+      if (solicitarBaja && solicitarBajaFecha) {
+        updatedData.solicitar_baja_fecha_limite = Timestamp.fromDate(solicitarBajaFecha);
+      } else {
+        updatedData.solicitar_baja_fecha_limite = deleteField();
+      }
 
-      delete (updatedData as any).id;
-      delete (updatedData as any).fecha_ingreso_plantilla;
+      if (requiereSeguimiento && requiereSeguimientoFecha) {
+        updatedData.requiere_seguimiento_fecha_limite = Timestamp.fromDate(requiereSeguimientoFecha);
+      } else {
+        updatedData.requiere_seguimiento_fecha_limite = deleteField();
+      }
       
       try {
-        await setDoc(docRef, updatedData, { merge: true });
+        await updateDoc(docRef, updatedData);
         toast({
           title: "Éxito",
           description: `El contrato de ${selectedContract.nombre_completo} ha sido actualizado.`,
