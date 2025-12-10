@@ -31,8 +31,6 @@ export default function CursosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadingFile, setUploadingFile] = useState<{ id: string, progress: number } | null>(null);
 
-  // Eliminamos useRef complejo. Usaremos IDs de HTML simples.
-
   const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
   const { data: catalogoCursos, isLoading } = useCollection<CursoCatalogo>(catalogoCursosRef);
 
@@ -50,7 +48,6 @@ export default function CursosPage() {
     }
     const file = e.target.files?.[0];
     
-    // Reset del input para permitir re-seleccionar el mismo archivo si falla
     e.target.value = '';
 
     if (file && file.type === 'application/pdf' && storage) {
@@ -63,7 +60,6 @@ export default function CursosPage() {
   const handleUpload = (file: File, curso: CursoCatalogo) => {
     if (!storage || !firestore) return;
 
-    // Referencia única: cursos/ID_CURSO.pdf
     const storageRef = ref(storage, `cursos/${curso.id_curso}.pdf`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -83,7 +79,6 @@ export default function CursosPage() {
         try {
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
             
-            // Guardar URL en Firestore
             const cursoDocRef = doc(firestore, 'catalogo_cursos', curso.id);
             await setDoc(cursoDocRef, { url_pdf: downloadURL }, { merge: true });
 
@@ -102,7 +97,6 @@ export default function CursosPage() {
     );
   };
 
-  // Función auxiliar para activar el input oculto
   const triggerFileInput = (cursoId: string) => {
     const inputElement = document.getElementById(`file-input-${cursoId}`) as HTMLInputElement;
     if (inputElement) {
@@ -112,7 +106,7 @@ export default function CursosPage() {
   
   return (
     <div className="space-y-8 h-full flex flex-col">
-      <Card className="flex-1 flex flex-col">
+      <Card className="flex-1 flex flex-col rounded-2xl shadow-lg bg-card/60 border-border/50 backdrop-blur-sm">
         <CardHeader>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
@@ -127,13 +121,13 @@ export default function CursosPage() {
                 placeholder="Buscar curso..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 rounded-full"
               />
             </div>
           </div>
         </CardHeader>
-        <CardContent className="flex-1 relative">
-          <ScrollArea className="absolute inset-0 pr-4">
+        <CardContent className="flex-1 relative p-4">
+          <ScrollArea className="absolute inset-4">
             {isLoading ? (
               <div className="flex h-full items-center justify-center text-muted-foreground gap-2">
                   <Loader2 className="h-6 w-6 animate-spin" /> Cargando catálogo...
@@ -147,17 +141,15 @@ export default function CursosPage() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.2 }}
                   >
-                  <Card className="flex flex-col sm:flex-row items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                    
-                    {/* Info del Curso */}
-                    <div className="flex-1 w-full sm:w-auto mb-4 sm:mb-0">
+                  <Card className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+                    <div className="flex-1 w-full sm:w-auto mb-4 sm:mb-0 sm:pr-4">
                       <div className="flex items-center gap-2">
                           <h3 className="font-semibold text-sm sm:text-base">{curso.nombre_oficial}</h3>
                           {curso.url_pdf && <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />}
                       </div>
                       
                       <div className="flex items-center gap-3 text-xs mt-1.5">
-                        <span className="text-muted-foreground bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                        <span className="text-muted-foreground bg-secondary px-2 py-0.5 rounded">
                             ID: {curso.id_curso}
                         </span>
                         
@@ -166,21 +158,19 @@ export default function CursosPage() {
                             href={curso.url_pdf} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="flex items-center text-blue-600 hover:text-blue-500 hover:underline font-medium"
+                            className="flex items-center text-primary hover:underline font-medium"
                           >
                             <ExternalLink className="h-3 w-3 mr-1" /> Ver PDF actual
                           </a>
                         ) : (
-                          <span className="text-slate-400 flex items-center">
+                          <span className="text-muted-foreground flex items-center">
                             <File className="h-3 w-3 mr-1" /> Sin material
                           </span>
                         )}
                       </div>
                     </div>
 
-                    {/* Acciones de Carga */}
                     <div className="w-full sm:w-auto flex flex-col items-end">
-                        {/* Input Oculto con ID único */}
                         <input
                             id={`file-input-${curso.id}`}
                             type="file"
