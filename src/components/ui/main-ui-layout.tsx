@@ -26,6 +26,7 @@ import { Notifications } from '@/components/ui/notifications';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 
 const adminNavItems = [
