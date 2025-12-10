@@ -19,7 +19,6 @@ const navLinks = [
     { href: "/capacitacion/analisis-por-puesto", icon: Briefcase, title: "Análisis por Puesto", tourId: "capacitacion-por-puesto" },
     { href: "/capacitacion/analisis-por-curso", icon: BookCopy, title: "Análisis por Curso", tourId: "capacitacion-por-curso" },
     { href: "/formacion", icon: GraduationCap, title: "Plan de Formación Anual", tourId: "capacitacion-formacion" },
-    { href: "/categorias", icon: GitBranch, title: "Promociones y Categorías", tourId: "capacitacion-categorias" },
 ]
 
 export default function CapacitacionPage() {
