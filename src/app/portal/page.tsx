@@ -1,358 +1,82 @@
 
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
-import { collection, query, where, limit, doc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Loader2, User, Briefcase, BookOpen, CheckCircle2, Clock, Award, Target, CalendarDays, Sparkles, BookUp, ArrowRight, View } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { format, differenceInMonths, isValid, intervalToDuration } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { Progress } from '@/components/ui/progress';
-import { motion, Variants } from 'framer-motion';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Label } from '@/components/ui/label';
-import Link from 'next/link';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+import React, { useMemo } from 'react';
+import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-// Interfaces
-interface Empleado { id: string; id_empleado: string; nombre_completo: string; puesto: { titulo: string; departamento: string; }; fecha_ingreso?: { toDate: () => Date }; }
-interface PerfilPuesto { id: string; nombre_puesto: string; cursos_obligatorios: string[]; }
-interface Historial { id: string; id_empleado: string; cursos: { id_curso: string; calificacion: number; }[]; }
-interface CursoCatalogo { id: string; id_curso: string; nombre_oficial: string; url_pdf?: string; }
-interface Promocion { id: string; fecha_ultimo_cambio?: { toDate: () => Date }; examen_teorico?: number; evaluacion_desempeno?: number; no_apto?: boolean; }
-interface ReglaAscenso { id: string; puesto_actual: string; puesto_siguiente: string; meses_minimos: number; min_evaluacion_desempeno: number; min_examen_teorico?: number; min_cobertura_matriz: number;}
-
-interface CursoConEstado {
-    curso: CursoCatalogo;
-    estado: 'Aprobado' | 'Reprobado' | 'Pendiente';
-    calificacion?: number;
+// Interfaces básicas para los datos del empleado
+interface UserData {
+    id_empleado?: string;
 }
-interface EmpleadoPerfil extends Empleado { 
-    promocionData?: Promocion;
-    coberturaCursos: number; 
-    cursosConEstado: CursoConEstado[];
+
+interface Empleado {
+    nombre_completo: string;
+    puesto: {
+        titulo: string;
+        departamento: string;
+    };
 }
-type EstatusPromocion = 'Elegible' | 'En Progreso' | 'Máxima Categoría' | 'Requiere Atención' | 'Pendiente' | 'No Apto';
-
-// Helpers
-const parseDate = (date: any): Date | null => {
-  if (!date) return null;
-  if (date.toDate) return date.toDate();
-  if (typeof date === 'string' || typeof date === 'number') {
-    const d = new Date(date);
-    return isValid(d) ? d : null;
-  }
-  return null;
-};
-
-const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status: EstatusPromocion, message: string, esElegibleParaExamen: boolean } => {
-    if (empleado.promocionData?.no_apto) return { status: 'No Apto', message: 'Marcado manualmente como no apto.', esElegibleParaExamen: false };
-    if (!regla) return { status: 'Máxima Categoría', message: 'Este puesto no tiene una categoría superior definida en el plan de carrera.', esElegibleParaExamen: false };
-
-    const fechaCambio = empleado.promocionData?.fecha_ultimo_cambio ? parseDate(empleado.promocionData.fecha_ultimo_cambio) : parseDate(empleado.fecha_ingreso);
-    if (!fechaCambio) return { status: 'Pendiente', message: 'Falta registrar la fecha de último cambio o ingreso.', esElegibleParaExamen: false };
-
-    const mesesDesdeCambio = differenceInMonths(new Date(), fechaCambio);
-    if (mesesDesdeCambio < regla.meses_minimos) return { status: 'En Progreso', message: `Necesitas ${regla.meses_minimos} meses en tu puesto actual. Llevas ${mesesDesdeCambio}.`, esElegibleParaExamen: false };
-    
-    const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
-    if (evaluacionDesempeno === undefined || evaluacionDesempeno < regla.min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Tu evaluación de desempeño (${evaluacionDesempeno ?? 'N/A'}) es inferior al ${regla.min_evaluacion_desempeno} requerido.`, esElegibleParaExamen: false };
-    
-    if (regla.min_examen_teorico && (empleado.promocionData?.examen_teorico === undefined || empleado.promocionData.examen_teorico < regla.min_examen_teorico)) return { status: 'Requiere Atención', message: 'Tienes pendiente el examen teórico o tu calificación es menor a la requerida.', esElegibleParaExamen: true };
-    
-    if (empleado.coberturaCursos < regla.min_cobertura_matriz) return { status: 'Requiere Atención', message: `Cobertura de cursos insuficiente. Requiere ${regla.min_cobertura_matriz}% y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, esElegibleParaExamen: false };
-    
-    return { status: 'Elegible', message: '¡Felicidades! Cumples todos los requisitos para ser considerado para una promoción.', esElegibleParaExamen: false };
-};
-const statusColors: Record<EstatusPromocion, string> = { 'Elegible': 'bg-green-500 text-white', 'En Progreso': 'bg-blue-500 text-white', 'Máxima Categoría': 'bg-purple-500 text-white', 'Requiere Atención': 'bg-orange-500 text-white', 'Pendiente': 'bg-gray-400 text-white', 'No Apto': 'bg-zinc-600 text-white' };
-
-// Componentes Animados
-const AnimatedIcon = ({ children }: { children: React.ReactNode }) => (
-    <motion.div
-        animate={{ color: ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--primary))"]}}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-    >
-        {children}
-    </motion.div>
-);
-
-const CursosTable = ({ cursos }: { cursos: EmpleadoPerfil['cursosConEstado'] }) => {
-    return (
-        <ScrollArea className="h-[70vh] rounded-lg border">
-            <Table>
-                <TableHeader className='sticky top-0 bg-background z-10'>
-                    <TableRow>
-                        <TableHead>Curso</TableHead>
-                        <TableHead className="text-center w-32">Calificación</TableHead>
-                        <TableHead className="text-center w-32">Estado</TableHead>
-                        <TableHead className="text-right w-32">Material</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {cursos.map(({ curso, estado, calificacion }) => (
-                        <TableRow key={curso.id}>
-                            <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
-                            <TableCell className="text-center font-mono">{calificacion ?? '-'}</TableCell>
-                            <TableCell className="text-center">
-                                <Badge variant={estado === 'Aprobado' ? 'default' : estado === 'Reprobado' ? 'destructive' : 'outline'} className={cn(estado === 'Aprobado' && 'bg-green-500')}>{estado}</Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                                <Button asChild variant="ghost" size="icon" disabled={!curso.url_pdf}>
-                                    <a href={curso.url_pdf} target="_blank" rel="noopener noreferrer">
-                                        <View className="h-4 w-4"/>
-                                    </a>
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                    {cursos.length === 0 && <TableRow><TableCell colSpan={4} className="text-center h-24 text-muted-foreground">No hay cursos asignados a este puesto.</TableCell></TableRow>}
-                </TableBody>
-            </Table>
-        </ScrollArea>
-    );
-};
-
 
 export default function PortalPage() {
+  const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
-  const [empleadoPerfil, setEmpleadoPerfil] = useState<EmpleadoPerfil | null>(null);
 
-  const usuarioInfoRef = useMemoFirebase(() => user ? doc(firestore, 'usuarios', user.uid) : null, [user, firestore]);
-  const { data: usuarioData } = useDoc<{ id_empleado?: string }>(usuarioInfoRef);
-  
-  const empleadoRef = useMemoFirebase(
-    () => usuarioData?.id_empleado ? doc(firestore, 'Plantilla', usuarioData.id_empleado) : null,
-    [firestore, usuarioData]
+  // 1. Obtener el ID de empleado desde la colección 'usuarios'
+  const userInfoRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'usuarios', user.uid) : null),
+    [user, firestore]
   );
-  const { data: empleado, isLoading: loadingEmpleado } = useDoc<Empleado>(empleadoRef);
-  
-  const historialRef = useMemoFirebase(() => usuarioData?.id_empleado ? doc(firestore, 'historial_capacitacion', usuarioData.id_empleado) : null, [firestore, usuarioData]);
-  const promocionRef = useMemoFirebase(() => usuarioData?.id_empleado ? doc(firestore, 'Promociones', usuarioData.id_empleado) : null, [firestore, usuarioData]);
+  const { data: userInfo, isLoading: isUserInfoLoading } = useDoc<UserData>(userInfoRef);
 
-  const { data: historial, isLoading: l3 } = useDoc<Historial>(historialRef);
-  const { data: promocionData, isLoading: l4 } = useDoc<Promocion>(promocionRef);
+  // 2. Usar el ID de empleado para obtener los detalles de la 'Plantilla'
+  const empleadoRef = useMemoFirebase(
+    () => (userInfo?.id_empleado ? doc(firestore, 'Plantilla', userInfo.id_empleado) : null),
+    [userInfo, firestore]
+  );
+  const { data: empleado, isLoading: isEmpleadoLoading } = useDoc<Empleado>(empleadoRef);
 
-  const perfilesRef = useMemoFirebase(() => collection(firestore, 'perfiles_puesto'), [firestore]);
-  const reglasAscensoRef = useMemoFirebase(() => collection(firestore, 'reglas_ascenso'), [firestore]);
-  const catalogoCursosRef = useMemoFirebase(() => collection(firestore, 'catalogo_cursos'), [firestore]);
-
-  const { data: perfiles, isLoading: l2 } = useCollection<PerfilPuesto>(perfilesRef);
-  const { data: reglasAscenso, isLoading: l5 } = useCollection<ReglaAscenso>(reglasAscensoRef);
-  const { data: catalogoCursos, isLoading: l6 } = useCollection<CursoCatalogo>(catalogoCursosRef);
-  
-  const isLoading = isUserLoading || loadingEmpleado || l2 || l3 || l4 || l5 || l6;
-
-  useEffect(() => {
-    if (isLoading || !empleado || !perfiles || !catalogoCursos) {
-        return;
-    }
-    
-    const perfil = perfiles.find(p => p.nombre_puesto === empleado.puesto.titulo);
-    const catalogoMap = new Map(catalogoCursos.map(c => [c.id_curso, c]));
-    
-    let cursosConEstado: EmpleadoPerfil['cursosConEstado'] = [];
-    let coberturaCursos = 0;
-    
-    if (perfil?.cursos_obligatorios) {
-        const cursosCompletadosMap = new Map(historial?.cursos?.map(c => [c.id_curso, c.calificacion]));
-        cursosConEstado = perfil.cursos_obligatorios.map(idCurso => {
-            const cursoInfo = catalogoMap.get(idCurso) || { id: idCurso, id_curso: idCurso, nombre_oficial: `Curso no encontrado (${idCurso})` };
-            const calificacion = cursosCompletadosMap.get(idCurso);
-            let estado: 'Aprobado' | 'Reprobado' | 'Pendiente' = 'Pendiente';
-            if (calificacion !== undefined) {
-                estado = calificacion >= 70 ? 'Aprobado' : 'Reprobado';
-            }
-            return { curso: cursoInfo, estado, calificacion };
-        }).sort((a,b) => a.curso.nombre_oficial.localeCompare(b.curso.nombre_oficial));
-        
-        const aprobados = cursosConEstado.filter(c => c.estado === 'Aprobado').length;
-        coberturaCursos = perfil.cursos_obligatorios.length > 0 ? (aprobados / perfil.cursos_obligatorios.length) * 100 : 100;
-    }
-    
-    setEmpleadoPerfil({ ...empleado, promocionData: promocionData ?? undefined, coberturaCursos, cursosConEstado });
-    
-  }, [isLoading, empleado, perfiles, historial, promocionData, catalogoCursos]);
-  
-  const antiguedad = useMemo(() => {
-    if (!empleadoPerfil?.fecha_ingreso) return null;
-    const fechaIngreso = parseDate(empleadoPerfil.fecha_ingreso);
-    if (!fechaIngreso) return null;
-    
-    const duracion = intervalToDuration({ start: fechaIngreso, end: new Date() });
-    
-    const parts = [];
-    if (duracion.years && duracion.years > 0) parts.push(`${duracion.years} años`);
-    if (duracion.months && duracion.months > 0) parts.push(`${duracion.months} meses`);
-    if (parts.length === 0) return "Menos de un mes";
-
-    return parts.join(', ');
-  }, [empleadoPerfil]);
-  
-  const reglaAplicable = reglasAscenso?.find(r => r.puesto_actual === empleadoPerfil?.puesto.titulo);
-  const statusInfo = empleadoPerfil ? getStatusInfo(empleadoPerfil, reglaAplicable) : null;
+  const isLoading = isAuthLoading || isUserInfoLoading || isEmpleadoLoading;
 
   if (isLoading) {
-    return <div className="flex h-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
-  }
-  
-  if (!empleadoPerfil) {
-    return <div className="flex h-full items-center justify-center"><p className="text-lg text-muted-foreground">No se encontró un perfil de empleado asociado a tu cuenta.</p></div>;
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Cargando tu portal...</p>
+        </div>
+      </div>
+    );
   }
 
-  const containerVariants: Variants = {
-      hidden: { opacity: 0 },
-      visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.1 }
-      }
-  };
-  
-  const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
-  };
-  
+  if (!empleado) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p className="text-lg text-muted-foreground">
+          No se pudo cargar la información de tu perfil. Por favor, contacta a RH.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
-      <motion.h1 variants={itemVariants} className="text-3xl md:text-4xl font-bold tracking-tight">Bienvenido a tu Portal</motion.h1>
-      <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
-          <Card className='bg-card/30 backdrop-blur-lg border-white/10'>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-2xl flex items-center gap-3">{empleadoPerfil.nombre_completo}</CardTitle>
-                  <CardDescription>Tu perfil y puesto actual</CardDescription>
-                </div>
-                <Badge variant="secondary" className="text-sm">ID: {empleadoPerfil.id_empleado}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <p><span className="font-semibold text-muted-foreground">Puesto:</span> {empleadoPerfil.puesto.titulo}</p>
-              <p><span className="font-semibold text-muted-foreground">Departamento:</span> {empleadoPerfil.puesto.departamento}</p>
-            </CardContent>
-          </Card>
-      </motion.div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      <div>
+        <h1 className="text-4xl font-bold tracking-tight">Bienvenido, {empleado.nombre_completo.split(' ')[0]}</h1>
+        <p className="mt-2 text-lg text-muted-foreground">
+          {empleado.puesto.titulo} | {empleado.puesto.departamento}
+        </p>
+      </div>
+
+      {/* A partir de aquí podemos empezar a añadir las nuevas tarjetas y componentes. */}
       
-      {statusInfo?.esElegibleParaExamen && (
-          <motion.div variants={itemVariants}>
-              <Card className="bg-primary/10 border-primary/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-primary"><BookUp/>¡Acción Requerida!</CardTitle>
-                    <CardDescription>Cumples con los requisitos para presentar tu examen de promoción.</CardDescription>
-                  </CardHeader>
-                  <CardFooter>
-                     <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button>
-                                Iniciar Examen de Promoción <ArrowRight className="ml-2 h-4 w-4"/>
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>¿Estás listo para comenzar?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Una vez que inicies, tendrás un tiempo limitado para completar el examen. Asegúrate de estar en un lugar tranquilo y sin interrupciones.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction asChild>
-                                    <Link href="/portal/examen">Sí, comenzar ahora</Link>
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                  </CardFooter>
-              </Card>
-          </motion.div>
-      )}
-
-      <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
-          <Card className="h-full bg-card/30 backdrop-blur-lg border-white/10"><CardHeader><CardTitle className="text-lg flex items-center gap-2"><AnimatedIcon><CalendarDays/></AnimatedIcon> Antigüedad</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{antiguedad || 'N/A'}</p></CardContent></Card>
-        </motion.div>
-        <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
-          <Card className="h-full bg-card/30 backdrop-blur-lg border-white/10">
-            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AnimatedIcon><Target/></AnimatedIcon>Plan de Carrera</CardTitle></CardHeader>
-            <CardContent>
-                <div className="flex items-center justify-between">
-                    <p className="text-2xl font-bold">{statusInfo?.status}</p>
-                    <div className={cn("p-2 rounded-full", statusColors[statusInfo?.status || 'Pendiente'])}><Sparkles className="h-5 w-5 text-white" /></div>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">{statusInfo?.message}</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-        <motion.div variants={itemVariants} whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ type: 'spring', stiffness: 300 }}>
-            <Card className="h-full bg-card/30 backdrop-blur-lg border-white/10"><CardHeader><CardTitle className="text-lg flex items-center gap-2"><AnimatedIcon><BookOpen/></AnimatedIcon>Capacitación</CardTitle></CardHeader>
-                <CardContent>
-                    <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm text-muted-foreground">Progreso de Cursos</span>
-                        <span className="text-sm font-bold">{empleadoPerfil.coberturaCursos.toFixed(0)}%</span>
-                    </div>
-                    <Progress value={empleadoPerfil.coberturaCursos} />
-                </CardContent>
-            </Card>
-        </motion.div>
-      </motion.div>
-
-       <motion.div variants={itemVariants}>
-            <Card className='bg-card/30 backdrop-blur-lg border-white/10 h-full'>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                    <CardTitle className="text-xl flex items-center gap-3"><CheckCircle2 className="text-green-500" />Cursos Completados</CardTitle>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="secondary">Ver Todos los Cursos</Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-4xl h-[90vh]">
-                            <DialogHeader>
-                                <DialogTitle>Matriz de Habilidades: {empleadoPerfil.puesto.titulo}</DialogTitle>
-                                <DialogDescription>Listado completo de cursos asignados a tu puesto y tu estado actual.</DialogDescription>
-                            </DialogHeader>
-                            <CursosTable cursos={empleadoPerfil.cursosConEstado} />
-                        </DialogContent>
-                    </Dialog>
-                </div>
-              </CardHeader>
-              <CardContent>
-                 <Table>
-                    <TableBody>
-                        {(empleadoPerfil.cursosConEstado.filter(c => c.estado === 'Aprobado').slice(0, 5)).map(({curso}) => (
-                             <TableRow key={curso.id}>
-                                <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
-                                <TableCell className="text-right">
-                                     <Button asChild variant="ghost" size="icon" disabled={!curso.url_pdf}>
-                                        <a href={curso.url_pdf} target="_blank" rel="noopener noreferrer"><View className="h-4 w-4"/></a>
-                                    </Button>
-                                </TableCell>
-                             </TableRow>
-                        ))}
-                         {empleadoPerfil.cursosConEstado.filter(c => c.estado === 'Aprobado').length === 0 && (
-                            <TableRow><TableCell colSpan={2} className="h-24 text-center text-muted-foreground">Aún no has completado cursos.</TableCell></TableRow>
-                        )}
-                    </TableBody>
-                 </Table>
-              </CardContent>
-            </Card>
-        </motion.div>
     </motion.div>
   );
 }
