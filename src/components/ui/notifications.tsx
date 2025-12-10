@@ -21,6 +21,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useRoleCheck } from '@/hooks/use-role-check';
+
 
 // Interfaces para notificaciones
 interface Contrato {
@@ -54,11 +56,14 @@ const formatDate = (timestamp: any): string => {
 // Componente de notificaciones
 export function Notifications() {
   const firestore = useFirestore();
-  const contratosRef = useMemoFirebase(() => firestore ? collection(firestore, 'Contratos') : null, [firestore]);
+  const { isAdmin, isLector } = useRoleCheck();
+  const canReadData = isAdmin || isLector;
+
+  const contratosRef = useMemoFirebase(() => (firestore && canReadData) ? collection(firestore, 'Contratos') : null, [firestore, canReadData]);
   const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
   
   const notifications = React.useMemo(() => {
-    if (!contratos || isLoading) {
+    if (!contratos || isLoading || !canReadData) {
       return { expiringContracts: [], dueEvaluations: [], count: 0 };
     }
 
@@ -95,7 +100,11 @@ export function Notifications() {
       dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada) ?? new Date(0)).getTime()),
       count: expiring.length + evaluationsDue.length,
     };
-  }, [contratos, isLoading]);
+  }, [contratos, isLoading, canReadData]);
+
+  if (!canReadData) {
+    return null; // No mostrar el icono de notificaciones para empleados
+  }
 
   return (
     <Dialog>
