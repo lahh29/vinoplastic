@@ -46,7 +46,7 @@ service cloud.firestore {
     }
     
     match /Contratos/{contratoId} {
-      allow read: if canRead() || (isEmpleado() && getUserData().id_empleado == contratoId);
+      allow read: if canRead();
       allow write: if isAdmin();
     }
 
