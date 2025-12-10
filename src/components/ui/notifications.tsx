@@ -6,6 +6,8 @@ import {
   Bell,
   FileClock,
   AlertTriangle,
+  UserX,
+  ListTodo
 } from 'lucide-react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, Timestamp } from 'firebase/firestore';
@@ -29,6 +31,8 @@ interface Contrato {
   id: string;
   nombre_completo: string;
   indeterminado?: boolean;
+  solicitar_baja?: boolean;
+  requiere_seguimiento?: boolean;
   fechas_contrato: {
     termino: Timestamp;
   };
@@ -66,7 +70,7 @@ export function Notifications() {
   
   const notifications = React.useMemo(() => {
     if (!contratos || !canReadData) {
-      return { expiringContracts: [], dueEvaluations: [], count: 0 };
+      return { expiringContracts: [], dueEvaluations: [], bajasSolicitadas: [], seguimientosRequeridos: [], count: 0 };
     }
 
     const today = new Date();
@@ -78,6 +82,9 @@ export function Notifications() {
         const termDate = getDate(c.fechas_contrato?.termino);
         return termDate && termDate >= today && termDate <= fifteenDaysFromNow;
     });
+
+    const bajasSolicitadas = contratos.filter(c => c.solicitar_baja === true);
+    const seguimientosRequeridos = contratos.filter(c => c.requiere_seguimiento === true);
     
     const evaluationsDue: {contrato: Contrato, fecha: string, tipo: string}[] = [];
     contratos.forEach(c => {
@@ -100,7 +107,9 @@ export function Notifications() {
     return {
       expiringContracts: expiring.sort((a,b) => (getDate(a.fechas_contrato.termino)?.getTime() ?? 0) - (getDate(b.fechas_contrato.termino)?.getTime() ?? 0)),
       dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada) ?? new Date(0)).getTime()),
-      count: expiring.length + evaluationsDue.length,
+      bajasSolicitadas,
+      seguimientosRequeridos,
+      count: expiring.length + evaluationsDue.length + bajasSolicitadas.length + seguimientosRequeridos.length,
     };
   }, [contratos, canReadData]);
 
@@ -129,14 +138,51 @@ export function Notifications() {
           <TooltipContent side="right">Notificaciones</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className="sm:max-w-2xl rounded-2xl">
+      <DialogContent className="sm:max-w-4xl rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl">Notificaciones</DialogTitle>
           <DialogDescription>
-            Alertas importantes sobre contratos y evaluaciones del personal.
+            Alertas importantes sobre el personal y sus contratos.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-4">
+            {/* Bajas Solicitadas */}
+            <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                    <UserX className="h-4 w-4 text-red-500"/> Solicitudes de Baja
+                </h4>
+                <ScrollArea className="h-64 pr-4">
+                    <div className="space-y-3">
+                        {notifications.bajasSolicitadas.length > 0 ? (
+                            notifications.bajasSolicitadas.map(c => (
+                                <div key={c.id} className="p-3 bg-secondary/50 rounded-lg">
+                                    <p className="font-semibold text-sm text-red-500">{c.nombre_completo}</p>
+                                    <p className="text-xs text-muted-foreground">ID: {c.id_empleado}</p>
+                                </div>
+                            ))
+                        ) : <div className="flex h-full items-center justify-center"><p className="p-2 text-sm text-muted-foreground italic">Sin solicitudes.</p></div>}
+                    </div>
+                </ScrollArea>
+            </div>
+            {/* Requiere Seguimiento */}
+            <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                    <ListTodo className="h-4 w-4 text-yellow-500"/> Requiere Seguimiento
+                </h4>
+                <ScrollArea className="h-64 pr-4">
+                    <div className="space-y-3">
+                        {notifications.seguimientosRequeridos.length > 0 ? (
+                            notifications.seguimientosRequeridos.map(c => (
+                                <div key={c.id} className="p-3 bg-secondary/50 rounded-lg">
+                                    <p className="font-semibold text-sm text-yellow-500">{c.nombre_completo}</p>
+                                    <p className="text-xs text-muted-foreground">ID: {c.id_empleado}</p>
+                                </div>
+                            ))
+                        ) : <div className="flex h-full items-center justify-center"><p className="p-2 text-sm text-muted-foreground italic">Nadie requiere seguimiento.</p></div>}
+                    </div>
+                </ScrollArea>
+            </div>
+          {/* Contratos por Vencer */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-destructive"/> Contratos por Vencer
@@ -150,10 +196,11 @@ export function Notifications() {
                       <p className="text-xs text-destructive">Vence: {formatDate(c.fechas_contrato.termino)}</p>
                       </div>
                   ))
-                  ) : <div className="flex h-full items-center justify-center"><p className="p-2 text-sm text-muted-foreground italic">Nada por aquí.</p></div>}
+                  ) : <div className="flex h-full items-center justify-center"><p className="p-2 text-sm text-muted-foreground italic">Sin vencimientos próximos.</p></div>}
               </div>
             </ScrollArea>
           </div>
+          {/* Evaluaciones Próximas */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
               <FileClock className="h-4 w-4 text-primary"/> Evaluaciones Próximas
