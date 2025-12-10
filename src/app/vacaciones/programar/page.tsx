@@ -58,7 +58,7 @@ const formSchema = z.object({
 export default function ProgramarVacacionesPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { checkAdminAndExecute } = useRoleCheck();
+  const { isAdmin, checkAdminAndExecute } = useRoleCheck();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEmpleadoPopoverOpen, setIsEmpleadoPopoverOpen] = useState(false);
