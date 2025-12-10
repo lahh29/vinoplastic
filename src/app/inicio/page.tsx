@@ -25,7 +25,6 @@ interface UserData {
 }
 
 const navLinks = [
-    { href: "/contratos", icon: FileText, title: "Gestión de Contratos", description: "Supervisa vencimientos, evaluaciones y desempeño del personal.", tourId: "inicio-contratos" },
     { href: "/vacaciones", icon: CalendarClock, title: "Gestión de Vacaciones", description: "Visualiza el calendario de ausencias y programa las vacaciones del personal.", tourId: "inicio-vacaciones" },
     { href: "/reportes", icon: BarChart, title: "Reportes y Diagnósticos", description: "Genera informes y obtén una visión general del estado del personal.", tourId: "inicio-reportes" },
     { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto.", tourId: "inicio-carrera" },
