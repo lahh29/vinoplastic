@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -23,24 +24,36 @@ export default function LoginPage() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const { auth: authInstance } = getFirebaseServices();
     setAuth(authInstance);
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (auth && email && password) {
       setIsLoading(true);
-      initiateEmailSignIn(auth, email, password);
+      setError(null);
+      try {
+        await initiateEmailSignIn(auth, email, password);
+        // La redirección ahora es manejada por el layout principal
+      } catch (err: any) {
+        let message = "Ocurrió un error al iniciar sesión.";
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+          message = "Correo o contraseña incorrectos.";
+        }
+        setError(message);
+        setIsLoading(false);
+      }
     }
   };
   
   React.useEffect(() => {
-    if (!isUserLoading && user) {
-      router.push('/inicio');
-    }
+    // Si el usuario ya está logueado, el layout se encargará de redirigir.
+    // Solo si el proceso de login se completa y 'user' se actualiza,
+    // el layout reaccionará.
   }, [user, isUserLoading, router]);
 
 
@@ -131,6 +144,11 @@ export default function LoginPage() {
                               className="bg-background/50 border-border/50 placeholder:text-muted-foreground focus:ring-primary rounded-md"
                           />
                       </div>
+                      {error && (
+                        <div className="text-destructive text-xs mt-1 flex items-center gap-1.5">
+                            <AlertCircle size={14}/> {error}
+                        </div>
+                      )}
                       <Button type="submit" className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md" disabled={isLoading}>
                           {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Ingresar'}
                       </Button>

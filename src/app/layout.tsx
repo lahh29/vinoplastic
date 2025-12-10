@@ -4,14 +4,15 @@
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import { FirebaseClientProvider, useUser, useDoc, useFirestore, useAuth, useMemoFirebase } from '@/firebase';
+import { FirebaseClientProvider, useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { usePathname, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { doc } from 'firebase/firestore';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { IdleTimeoutDialog } from '@/components/ui/idle-timeout-dialog';
 import { Sidebar } from '@/components/ui/sidebar';
+import { Notifications } from '@/components/ui/notifications';
 
 interface UserData {
     id: string;
@@ -48,18 +49,30 @@ function RootContent({ children }: { children: React.ReactNode }) {
     
     useEffect(() => {
         if (!isUserLoading && !user) {
+            // Si el usuario no está logueado, redirigir al login, excepto si ya está en una página pública.
             if (pathname !== '/login' && pathname !== '/activar') {
                 router.replace('/login');
             }
-        } else if (currentUserData?.requiresPasswordChange && pathname !== '/cambiar-password') {
-            router.replace('/cambiar-password');
+        } else if (user && currentUserData) {
+            // Si el usuario requiere cambio de contraseña y no está en la página correcta.
+            if (currentUserData.requiresPasswordChange && pathname !== '/cambiar-password') {
+                router.replace('/cambiar-password');
+            }
+            // Si el usuario es 'empleado' y no está en su portal.
+            else if (currentUserData.role === 'empleado' && pathname !== '/portal' && !pathname.startsWith('/portal/')) {
+                 router.replace('/portal');
+            }
+            // Si el usuario es 'admin' o 'lector' y está en el portal de empleado.
+            else if ((currentUserData.role === 'admin' || currentUserData.role === 'lector') && pathname === '/portal') {
+                 router.replace('/inicio');
+            }
         }
     }, [user, isUserLoading, router, currentUserData, pathname]);
 
     const isLoading = isUserLoading || isRoleLoading;
-    const isAuthPage = ['/login', '/activar', '/cambiar-password', '/'].includes(pathname);
+    const isPublicPage = ['/login', '/activar', '/cambiar-password'].includes(pathname);
     
-    if (isLoading && !isAuthPage) {
+    if (isLoading && !isPublicPage) {
         return (
             <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-2">
@@ -70,23 +83,11 @@ function RootContent({ children }: { children: React.ReactNode }) {
         );
     }
     
-    if (isAuthPage || !user || currentUserData?.requiresPasswordChange) {
+    // Muestra las páginas públicas, o mientras el usuario no esté verificado, o si requiere cambio de contraseña.
+    if (isPublicPage || !user || currentUserData?.requiresPasswordChange) {
         return <>{children}</>;
     }
     
-    // Si el usuario es un empleado y no está en su portal, redirigirlo.
-    if(currentUserData?.role === 'empleado' && pathname !== '/portal' && !pathname.startsWith('/portal/')) {
-        router.replace('/portal');
-        return (
-             <div className="flex h-screen items-center justify-center bg-background">
-                <div className="flex flex-col items-center gap-2">
-                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                    <p className="text-muted-foreground">Redirigiendo a tu portal...</p>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <MainUILayoutWrapper>
             {children}
