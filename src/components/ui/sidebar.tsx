@@ -38,6 +38,7 @@ import { doc } from 'firebase/firestore';
 import { useRoleCheck } from "@/hooks/use-role-check";
 import { cn } from "@/lib/utils"
 import { Notifications } from "./notifications";
+import { ThemeToggle } from "./theme-toggle";
 
 interface UserData {
     nombre?: string;
@@ -92,9 +93,7 @@ export function Sidebar() {
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-20 flex-col border-r bg-background/50 backdrop-blur-lg sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
         <Link href="/inicio" className="group flex h-12 w-12 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold text-primary-foreground md:h-10 md:w-10 md:text-base mb-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground">
-                <Briefcase className="h-5 w-5 transition-all group-hover:scale-110" />
-            </div>
+             <div className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">VP</div>
             <span className="sr-only">ViñoPlastic</span>
         </Link>
         <TooltipProvider>
@@ -116,6 +115,7 @@ export function Sidebar() {
       </nav>
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
          <Notifications />
+         <ThemeToggle />
         <DropdownMenu>
             <TooltipProvider>
             <Tooltip>
