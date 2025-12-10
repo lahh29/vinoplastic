@@ -12,7 +12,6 @@ import { BookMarked, BarChart3, Briefcase, ClipboardPlus, BookCopy, GraduationCa
 import { motion } from 'framer-motion';
 
 const navLinks = [
-    { href: "/empleados", icon: Users, title: "Gestión de Empleados", tourId: "capacitacion-empleados" },
     { href: "/capacitacion/matriz-de-habilidades", icon: BookMarked, title: "Matriz de Habilidades", tourId: "capacitacion-matriz" },
     { href: "/capacitacion/captura", icon: ClipboardPlus, title: "Captura de Cursos", tourId: "capacitacion-captura" },
     { href: "/capacitacion/cursos", icon: FileUp, title: "Gestión de Cursos", tourId: "capacitacion-cursos" },
