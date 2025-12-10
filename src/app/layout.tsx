@@ -27,7 +27,7 @@ function MainUILayoutWrapper({ children }: { children: React.ReactNode }) {
             <StarsBackground speed={0.2} className="absolute inset-0 z-0"/>
             <IdleTimeoutDialog />
             <Sidebar />
-            <main className="relative z-10 flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+            <main className="relative z-10 flex-1 overflow-auto p-4 sm:p-6 lg:p-8 sm:ml-20">
                 {children}
             </main>
         </div>

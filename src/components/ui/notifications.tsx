@@ -13,9 +13,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { format, addDays, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
 import {
-    DropdownMenuItem,
-  } from "@/components/ui/dropdown-menu"
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -102,13 +99,25 @@ export function Notifications() {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            <Bell className="mr-2 h-4 w-4" />
-            <span>Notificaciones</span>
-            {notifications.count > 0 && <span className="ml-auto w-2 h-2 rounded-full bg-red-500" />}
-        </DropdownMenuItem>
-      </DialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <button className="relative flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-9 md:w-9">
+                  <Bell className="h-5 w-5" />
+                  {notifications.count > 0 && (
+                    <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                    </span>
+                  )}
+                  <span className="sr-only">Notificaciones</span>
+              </button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="right">Notificaciones</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DialogContent className="sm:max-w-2xl rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl">Notificaciones</DialogTitle>

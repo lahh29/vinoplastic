@@ -4,7 +4,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  Bell,
   Home,
   Users,
   BookUser,
@@ -15,8 +14,6 @@ import {
   CalendarClock,
   BarChart,
   GitBranch,
-  Target,
-  FileUp,
   Briefcase
 } from "lucide-react"
 
@@ -40,7 +37,7 @@ import { useAuth, useUser, useDoc, useFirestore, useMemoFirebase } from '@/fireb
 import { doc } from 'firebase/firestore';
 import { useRoleCheck } from "@/hooks/use-role-check";
 import { cn } from "@/lib/utils"
-import { motion } from 'framer-motion';
+import { Notifications } from "./notifications";
 
 interface UserData {
     nombre?: string;
@@ -94,13 +91,10 @@ export function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-20 flex-col border-r bg-background/50 backdrop-blur-lg sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-        <Link href="/inicio" className="group flex h-12 w-12 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-10 md:w-10 md:text-base mb-4">
-             <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
-            >
+        <Link href="/inicio" className="group flex h-12 w-12 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold text-primary-foreground md:h-10 md:w-10 md:text-base mb-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground">
                 <Briefcase className="h-5 w-5 transition-all group-hover:scale-110" />
-            </motion.div>
+            </div>
             <span className="sr-only">ViñoPlastic</span>
         </Link>
         <TooltipProvider>
@@ -121,6 +115,7 @@ export function Sidebar() {
         </TooltipProvider>
       </nav>
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+         <Notifications />
         <DropdownMenu>
             <TooltipProvider>
             <Tooltip>
