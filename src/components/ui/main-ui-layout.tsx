@@ -146,7 +146,7 @@ function Header({ handleLogout, currentUserData, user, isAdmin }: any) {
 }
 
 
-function MainUILayout({ children }: { children: React.ReactNode }) {
+export default function MainUILayoutWrapper({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
@@ -209,8 +209,4 @@ function MainUILayout({ children }: { children: React.ReactNode }) {
         </div>
     </div>
   );
-}
-
-export default function MainUILayoutWrapper({ children }: { children: React.ReactNode }) {
-    return <MainUILayout>{children}</MainUILayout>;
 }
