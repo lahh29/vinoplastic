@@ -1,3 +1,4 @@
+
 'use client';
 
 import './globals.css';
@@ -19,6 +20,7 @@ import { Logo } from '@/components/logo';
 import { Notifications } from '@/components/ui/notifications';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 interface UserData {
     id: string;
@@ -57,7 +59,7 @@ function RootContent({ children }: { children: React.ReactNode }) {
         [user, firestore]
     );
     const { data: currentUserData, isLoading: isRoleLoading } = useDoc<UserData>(currentUserInfoRef);
-
+    
     useEffect(() => {
         if (!isUserLoading && !user) {
             if (pathname !== '/login' && pathname !== '/activar') {
@@ -106,9 +108,20 @@ function RootContent({ children }: { children: React.ReactNode }) {
             
             <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-background/80 backdrop-blur-sm sm:flex">
                 <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-                    <Link href="/inicio" className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base">
-                        <Logo className="h-4 w-4 transition-all group-hover:scale-110" />
-                        <span className="sr-only">Viñoplastic</span>
+                    <Link href="/inicio" className="group flex items-center justify-center gap-2 rounded-full text-lg font-semibold text-primary-foreground">
+                        <motion.span
+                            className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent"
+                            animate={{
+                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                            }}
+                            transition={{
+                                duration: 3,
+                                ease: "easeInOut",
+                                repeat: Infinity
+                            }}
+                        >
+                            ViñoPlastic
+                        </motion.span>
                     </Link>
                     <TooltipProvider>
                         {navItems.map((item) => (
