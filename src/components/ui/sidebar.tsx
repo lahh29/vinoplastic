@@ -93,7 +93,6 @@ export function Sidebar() {
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-20 flex-col border-r bg-background/50 backdrop-blur-lg sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
         <Link href="/inicio" className="group flex h-12 w-12 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold text-primary-foreground md:h-10 md:w-10 md:text-base mb-4">
-             <div className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">VP</div>
             <span className="sr-only">ViñoPlastic</span>
         </Link>
         <TooltipProvider>
