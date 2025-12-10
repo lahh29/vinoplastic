@@ -2,8 +2,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Switch } from '@/components/ui/switch';
+import { useRoleCheck } from '@/hooks/use-role-check';
 
 
 // --- Interfaces ---
@@ -67,13 +68,7 @@ const itemVariants: Variants = {
 };
 
 // --- Componente de Tarjeta de Mes ---
-const MonthCard = ({ mes, anio, planes, cumplimiento, onPlanificar, isLoading }: { mes: string, anio: number, planes: PlanFormacion[], cumplimiento: number, onPlanificar: () => void, isLoading: boolean }) => {
-    
-    const handleStatusChange = (plan: PlanFormacion, checked: boolean) => {
-        // La lógica para cambiar el estatus se manejará en el diálogo principal.
-        // Esta llamada simplemente abre el diálogo para que el usuario confirme/edite.
-        onPlanificar();
-    };
+const MonthCard = ({ mes, planes, cumplimiento, onPlanificar, onStatusChange, isLoading }: { mes: string, planes: PlanFormacion[], cumplimiento: number, onPlanificar: () => void, onStatusChange: (plan: PlanFormacion, checked: boolean) => void, isLoading: boolean }) => {
     
     return (
     <motion.div variants={itemVariants} whileHover={{y: -5}} className="h-full">
@@ -113,7 +108,7 @@ const MonthCard = ({ mes, anio, planes, cumplimiento, onPlanificar, isLoading }:
                                     <TableCell className="text-right">
                                         <Switch
                                             checked={plan.estatus === 'ENTREGADO'}
-                                            onCheckedChange={(checked) => handleStatusChange(plan, checked)}
+                                            onCheckedChange={(checked) => onStatusChange(plan, checked)}
                                         />
                                     </TableCell>
                                 </TableRow>
@@ -139,6 +134,7 @@ const MonthCard = ({ mes, anio, planes, cumplimiento, onPlanificar, isLoading }:
 export default function FormacionPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { checkAdminAndExecute } = useRoleCheck();
   
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -244,6 +240,22 @@ export default function FormacionPage() {
     };
   }, [planes]);
 
+  const handleStatusChange = (plan: PlanFormacion, checked: boolean) => {
+    checkAdminAndExecute(async () => {
+      if (!firestore) return;
+      const newStatus = checked ? 'ENTREGADO' : 'SIN ENTREGAR';
+      const docRef = doc(firestore, 'plan_formacion', plan.id_registro);
+      try {
+        await setDocumentNonBlocking(docRef, { estatus: newStatus }, { merge: true });
+        toast({
+          title: `Estatus actualizado para ${plan.nombre_empleado}`,
+        });
+      } catch (e) {
+        toast({ variant: 'destructive', title: 'Error al actualizar' });
+      }
+    });
+  };
+
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-8">
       <motion.div variants={itemVariants}>
@@ -334,10 +346,10 @@ export default function FormacionPage() {
                        <MonthCard 
                             key={grupo.mes}
                             mes={grupo.mes}
-                            anio={2026}
                             planes={grupo.planes}
                             cumplimiento={grupo.cumplimiento}
                             onPlanificar={()=>{}}
+                            onStatusChange={handleStatusChange}
                             isLoading={isLoading}
                         />
                     ))}
