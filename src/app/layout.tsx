@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { motion, Variants } from 'framer-motion';
 import { AnimatedDockIcon } from '@/components/ui/animated-dock-icon';
 import { Notifications } from '@/components/ui/notifications';
+import { Dock, DockIcon } from '@/components/ui/dock';
 
 
 interface UserData {
@@ -46,67 +47,111 @@ const employeeNavItems = [
   { href: '/portal', icon: Home, label: 'Mi Portal' },
 ];
 
-const Sidebar = ({ navItems, pathname }: { navItems: typeof adminNavItems, pathname: string }) => {
+function Header({ currentUserData, user, isAdmin }: { currentUserData: UserData, user: any, isAdmin: boolean }) {
+    const auth = useAuth();
+    const handleLogout = () => {
+        if (auth) {
+          auth.signOut();
+        }
+    };
+    
     return (
-        <motion.aside 
-            initial={{ x: -80, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5, ease: 'easeInOut' }}
-            className="fixed inset-y-0 left-0 z-50 flex items-center"
-        >
-            <div className="m-4">
-                <nav className="flex flex-col items-center gap-4 rounded-full border bg-background/50 p-2 backdrop-blur-md shadow-2xl">
-                    <Link href="/inicio" className="mt-2">
-                        <motion.span
-                            className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent"
-                            animate={{
-                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                            }}
-                            transition={{
-                                duration: 3,
-                                ease: "easeInOut",
-                                repeat: Infinity
-                            }}
-                        >
-                           ViñoPlastic
-                        </motion.span>
-                    </Link>
-                    <TooltipProvider>
-                        {navItems.map((item) => (
-                            <Tooltip key={item.label}>
-                                <TooltipTrigger asChild>
-                                    <Link
-                                        href={item.href}
-                                        className={cn(
-                                            "flex h-12 w-12 items-center justify-center rounded-full text-lg transition-colors",
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+            <div className="relative ml-auto flex flex-1 md:grow-0"></div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                    variant="outline"
+                    size="icon"
+                    className="overflow-hidden rounded-full"
+                    >
+                    <Avatar>
+                        <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=${user?.email}`} alt="@shadcn" />
+                        <AvatarFallback>{currentUserData?.nombre?.[0] || 'U'}</AvatarFallback>
+                    </Avatar>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
+                            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                        </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <Notifications />
+                    {isAdmin && (
+                        <DropdownMenuItem asChild>
+                            <Link href="/usuarios">
+                            <Users className="mr-2 h-4 w-4" />
+                            <span>Usuarios</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Cerrar sesión
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </header>
+    );
+}
+
+function MainUILayoutWrapper({ children, navItems }: { children: React.ReactNode, navItems: any[] }) {
+    const pathname = usePathname();
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const currentUserInfoRef = useMemoFirebase(
+      () => (user ? doc(firestore, 'usuarios', user.uid) : null),
+      [user, firestore]
+    );
+    const { data: currentUserData } = useDoc<UserData>(currentUserInfoRef);
+
+    return (
+        <div className="relative flex min-h-screen w-full flex-col bg-background">
+            <StarsBackground speed={0.2} className="absolute inset-0 z-0"/>
+            <IdleTimeoutDialog />
+            <Header currentUserData={currentUserData!} user={user} isAdmin={currentUserData?.role === 'admin'}/>
+            <main className="relative z-10 flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+                {children}
+            </main>
+            <footer className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+                 <Dock>
+                    {navItems.map((item) => (
+                        <DockIcon key={item.label}>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Link href={item.href} className={cn(
+                                            "flex items-center justify-center rounded-full text-lg transition-colors size-12",
                                             (pathname === item.href || (item.href !== '/inicio' && pathname.startsWith(item.href)))
                                             ? "bg-primary/20 text-primary"
                                             : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                        )}
-                                    >
-                                        <AnimatedDockIcon>
+                                        )}>
                                             <item.icon className="h-6 w-6" />
-                                        </AnimatedDockIcon>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">
-                                    <p>{item.label}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        ))}
-                    </TooltipProvider>
-                </nav>
-            </div>
-        </motion.aside>
+                                        </Link>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{item.label}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </DockIcon>
+                    ))}
+                </Dock>
+            </footer>
+        </div>
     );
-};
+}
+
 
 
 function RootContent({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const router = useRouter();
     const { user, isUserLoading } = useUser();
-    const auth = useAuth();
     const firestore = useFirestore();
 
     const currentUserInfoRef = useMemoFirebase(
@@ -125,12 +170,6 @@ function RootContent({ children }: { children: React.ReactNode }) {
         }
     }, [user, isUserLoading, router, currentUserData, pathname]);
 
-    const handleLogout = () => {
-        if (auth) {
-          auth.signOut();
-        }
-    };
-
     const isLoading = isUserLoading || isRoleLoading;
     const isAuthPage = ['/login', '/activar', '/cambiar-password', '/'].includes(pathname);
     
@@ -145,11 +184,7 @@ function RootContent({ children }: { children: React.ReactNode }) {
         );
     }
     
-    if (isAuthPage || !user) {
-        return <>{children}</>;
-    }
-
-    if (currentUserData?.requiresPasswordChange) {
+    if (isAuthPage || !user || currentUserData?.requiresPasswordChange) {
         return <>{children}</>;
     }
     
@@ -157,58 +192,9 @@ function RootContent({ children }: { children: React.ReactNode }) {
     const navItems = userRole === 'admin' ? adminNavItems : userRole === 'lector' ? lectorNavItems : employeeNavItems;
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col bg-background">
-            <StarsBackground speed={0.2} className="absolute inset-0 z-0"/>
-            <IdleTimeoutDialog />
-            
-            <Sidebar navItems={navItems} pathname={pathname} />
-
-            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-28">
-                 <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-                    <div className="relative ml-auto flex flex-1 md:grow-0"></div>
-                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                            variant="outline"
-                            size="icon"
-                            className="overflow-hidden rounded-full"
-                            >
-                            <Avatar>
-                                <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=${user?.email}`} alt="@shadcn" />
-                                <AvatarFallback>{currentUserData?.nombre?.[0] || 'U'}</AvatarFallback>
-                            </Avatar>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel className="font-normal">
-                                <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
-                                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                                </div>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <Notifications />
-                            {currentUserData?.role === 'admin' && (
-                                <DropdownMenuItem asChild>
-                                    <Link href="/usuarios">
-                                    <Users className="mr-2 h-4 w-4" />
-                                    <span>Usuarios</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
-                            <LogOut className="mr-2 h-4 w-4" />
-                            Cerrar sesión
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                        </DropdownMenu>
-                    </header>
-                <main className="relative z-10 flex-1 overflow-auto p-4 pt-0 sm:p-6 sm:pt-0">
-                    {children}
-                </main>
-            </div>
-        </div>
+        <MainUILayoutWrapper navItems={navItems}>
+            {children}
+        </MainUILayoutWrapper>
     );
 }
 

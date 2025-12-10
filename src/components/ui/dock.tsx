@@ -11,6 +11,7 @@ import {
   useTransform,
 } from "motion/react"
 import type { MotionProps } from "motion/react"
+import { useRef } from 'react';
 
 import { cn } from "@/lib/utils"
 
@@ -30,7 +31,7 @@ const DEFAULT_DISTANCE = 140
 const DEFAULT_DISABLEMAGNIFICATION = false
 
 const dockVariants = cva(
-  "mx-auto flex h-[58px] w-max items-center justify-center gap-2 rounded-2xl border p-2 backdrop-blur-md"
+  "mx-auto flex h-[58px] w-max items-center justify-center gap-2 rounded-2xl border bg-background/30 p-2 backdrop-blur-md"
 )
 
 const Dock = React.forwardRef<HTMLDivElement, DockProps>(
@@ -51,41 +52,18 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 
     const renderChildren = () => {
       return React.Children.map(children, (child) => {
-        // We need to make sure the child is a valid element and is a DockIcon
-        if (
-          React.isValidElement(child) &&
-          (child.type === DockIcon || 
-          (child.type === React.Fragment && (child.props.children as React.ReactElement)?.type === DockIcon) ||
-          (child.props.children as React.ReactElement)?.type === DockIcon
-          )
-        ) {
-            const dockIcon = React.Children.toArray((child.props as any).children).find((c: any) => c.type === DockIcon) as React.ReactElement<DockIconProps> | undefined;
-            if(dockIcon){
-                 return React.cloneElement(child, {
-                    ...child.props,
-                    children: React.cloneElement(dockIcon, {
-                         ...dockIcon.props,
-                        mouseX: mouseX,
-                        size: iconSize,
-                        magnification: iconMagnification,
-                        disableMagnification: disableMagnification,
-                        distance: iconDistance,
-                    }),
-                });
-            }
-
-          return React.cloneElement(child as React.ReactElement<any>, {
-            ...child.props,
+        if (React.isValidElement(child) && child.type === DockIcon) {
+          return React.cloneElement(child, {
             mouseX: mouseX,
             size: iconSize,
             magnification: iconMagnification,
             disableMagnification: disableMagnification,
             distance: iconDistance,
-          })
+          });
         }
-        return child
-      })
-    }
+        return child;
+      });
+    };
 
     return (
       <motion.div
