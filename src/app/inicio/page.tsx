@@ -56,7 +56,7 @@ export default function InicioPage() {
         return currentUserData?.nombre || user?.displayName || 'Usuario';
     }, [currentUserData, user]);
 
-    if (isUserLoading || isRoleLoading || currentUserData?.role === 'empleado') {
+    if (isUserLoading || isRoleLoading || !currentUserData || currentUserData.role === 'empleado') {
         return (
             <div className="flex h-full w-full items-center justify-center">
                 <div className="flex flex-col items-center gap-2">

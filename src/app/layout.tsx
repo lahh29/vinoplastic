@@ -58,18 +58,18 @@ function RootContent({ children }: { children: React.ReactNode }) {
             if (currentUserData.requiresPasswordChange && pathname !== '/cambiar-password') {
                 router.replace('/cambiar-password');
             }
-            // Si el usuario es 'empleado' y no está en su portal.
-            else if (currentUserData.role === 'empleado' && pathname !== '/portal' && !pathname.startsWith('/portal/')) {
+            // Si el usuario es 'empleado' y no está en su portal o examen.
+            else if (currentUserData.role === 'empleado' && !pathname.startsWith('/portal')) {
                  router.replace('/portal');
             }
             // Si el usuario es 'admin' o 'lector' y está en el portal de empleado.
-            else if ((currentUserData.role === 'admin' || currentUserData.role === 'lector') && pathname === '/portal') {
+            else if ((currentUserData.role === 'admin' || currentUserData.role === 'lector') && pathname.startsWith('/portal')) {
                  router.replace('/inicio');
             }
         }
     }, [user, isUserLoading, router, currentUserData, pathname]);
 
-    const isLoading = isUserLoading || isRoleLoading;
+    const isLoading = isUserLoading || (user && isRoleLoading);
     const isPublicPage = ['/login', '/activar', '/cambiar-password'].includes(pathname);
     
     if (isLoading && !isPublicPage) {

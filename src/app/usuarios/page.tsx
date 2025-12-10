@@ -35,7 +35,7 @@ export default function UsuariosPage() {
     const firestore = useFirestore();
     const { isAdmin } = useRoleCheck();
 
-    const usuariosRef = useMemoFirebase(() => collection(firestore, 'usuarios'), [firestore]);
+    const usuariosRef = useMemoFirebase(() => (isAdmin ? collection(firestore, 'usuarios') : null), [firestore, isAdmin]);
     const { data: users, isLoading: loadingUsers } = useCollection<UserData>(usuariosRef);
     
     const [searchTerm, setSearchTerm] = useState('');

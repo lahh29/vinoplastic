@@ -56,14 +56,16 @@ const formatDate = (timestamp: any): string => {
 // Componente de notificaciones
 export function Notifications() {
   const firestore = useFirestore();
-  const { isAdmin, isLector } = useRoleCheck();
+  const { isAdmin, isLector, isLoading: isRoleLoading } = useRoleCheck();
   const canReadData = isAdmin || isLector;
 
   const contratosRef = useMemoFirebase(() => (firestore && canReadData) ? collection(firestore, 'Contratos') : null, [firestore, canReadData]);
-  const { data: contratos, isLoading } = useCollection<Contrato>(contratosRef);
+  const { data: contratos, isLoading: isContratosLoading } = useCollection<Contrato>(contratosRef);
+  
+  const isLoading = isRoleLoading || isContratosLoading;
   
   const notifications = React.useMemo(() => {
-    if (!contratos || isLoading || !canReadData) {
+    if (!contratos || !canReadData) {
       return { expiringContracts: [], dueEvaluations: [], count: 0 };
     }
 
@@ -100,7 +102,7 @@ export function Notifications() {
       dueEvaluations: evaluationsDue.sort((a,b) => (getDate(a.contrato.evaluaciones.primera.fecha_programada)?.getTime() ?? 0) - (getDate(b.contrato.evaluaciones.primera.fecha_programada) ?? new Date(0)).getTime()),
       count: expiring.length + evaluationsDue.length,
     };
-  }, [contratos, isLoading, canReadData]);
+  }, [contratos, canReadData]);
 
   if (!canReadData) {
     return null; // No mostrar el icono de notificaciones para empleados

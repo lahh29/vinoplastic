@@ -17,7 +17,7 @@ interface UserData {
  * @returns {{ isAdmin: boolean, isLector: boolean, checkAdminAndExecute: (action: () => void) => void }}
  */
 export function useRoleCheck(showToast = true) {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
@@ -25,8 +25,9 @@ export function useRoleCheck(showToast = true) {
     () => (user ? doc(firestore, 'usuarios', user.uid) : null),
     [user, firestore]
   );
-  const { data: currentUserData } = useDoc<UserData>(currentUserInfoRef);
+  const { data: currentUserData, isLoading: isRoleLoading } = useDoc<UserData>(currentUserInfoRef);
 
+  const isLoading = isUserLoading || isRoleLoading;
   const isAdmin = useMemo(() => currentUserData?.role === 'admin', [currentUserData]);
   const isLector = useMemo(() => currentUserData?.role === 'lector', [currentUserData]);
 
@@ -43,5 +44,5 @@ export function useRoleCheck(showToast = true) {
     }
   };
 
-  return { isAdmin, isLector, checkAdminAndExecute };
+  return { isAdmin, isLector, isLoading, checkAdminAndExecute };
 }
