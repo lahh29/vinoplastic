@@ -28,7 +28,9 @@
         },
         "indeterminado": { "type": "boolean" },
         "solicitar_baja": { "type": "boolean", "description": "Flag to initiate contract termination process." },
-        "requiere_seguimiento": { "type": "boolean", "description": "Flag to indicate the employee needs a follow-up plan." }
+        "solicitar_baja_fecha_limite": { "type": "string", "format": "date-time", "description": "Deadline for the termination process." },
+        "requiere_seguimiento": { "type": "boolean", "description": "Flag to indicate the employee needs a follow-up plan." },
+        "requiere_seguimiento_fecha_limite": { "type": "string", "format": "date-time", "description": "Deadline for the follow-up plan." }
       },
       "required": ["id_empleado", "nombre_completo", "fechas"]
     },

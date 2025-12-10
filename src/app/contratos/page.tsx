@@ -41,7 +41,9 @@ import { useRoleCheck } from '@/hooks/use-role-check';
 import { motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 
 
 interface ContratoFechas {
@@ -83,7 +85,9 @@ interface Contrato {
   indeterminado?: boolean;
   fecha_ingreso_plantilla?: Timestamp;
   solicitar_baja?: boolean;
+  solicitar_baja_fecha_limite?: Timestamp;
   requiere_seguimiento?: boolean;
+  requiere_seguimiento_fecha_limite?: Timestamp;
 }
 
 const getDate = (timestamp: any): Date | null => {
@@ -138,7 +142,10 @@ export default function ContratosPage() {
   const [isIndeterminate, setIsIndeterminate] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [solicitarBaja, setSolicitarBaja] = useState(false);
+  const [solicitarBajaFecha, setSolicitarBajaFecha] = useState<Date | undefined>();
   const [requiereSeguimiento, setRequiereSeguimiento] = useState(false);
+  const [requiereSeguimientoFecha, setRequiereSeguimientoFecha] = useState<Date | undefined>();
+
 
   useEffect(() => {
     if (!contratosFusionados) return;
@@ -204,7 +211,10 @@ export default function ContratosPage() {
         });
         setIsIndeterminate(contrato.indeterminado || false);
         setSolicitarBaja(contrato.solicitar_baja || false);
+        setSolicitarBajaFecha(contrato.solicitar_baja_fecha_limite ? getDate(contrato.solicitar_baja_fecha_limite) : undefined);
         setRequiereSeguimiento(contrato.requiere_seguimiento || false);
+        setRequiereSeguimientoFecha(contrato.requiere_seguimiento_fecha_limite ? getDate(contrato.requiere_seguimiento_fecha_limite) : undefined);
+
 
         const ingresoDate = getDate(contrato.fecha_ingreso_plantilla);
         if(ingresoDate) {
@@ -242,7 +252,9 @@ export default function ContratosPage() {
       
       updatedData.indeterminado = isIndeterminate;
       updatedData.solicitar_baja = solicitarBaja;
+      updatedData.solicitar_baja_fecha_limite = solicitarBaja && solicitarBajaFecha ? Timestamp.fromDate(solicitarBajaFecha) : undefined;
       updatedData.requiere_seguimiento = requiereSeguimiento;
+      updatedData.requiere_seguimiento_fecha_limite = requiereSeguimiento && requiereSeguimientoFecha ? Timestamp.fromDate(requiereSeguimientoFecha) : undefined;
 
       delete (updatedData as any).id;
       delete (updatedData as any).fecha_ingreso_plantilla;
@@ -454,21 +466,33 @@ export default function ContratosPage() {
                     </div>
                      <div className="space-y-4 rounded-lg border p-4">
                         <h3 className="font-semibold text-lg flex items-center gap-2"><AlertTriangle className="text-orange-500"/> Acciones Administrativas</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                            <div className="flex items-center space-x-3">
-                                <Switch id="solicitar-baja" checked={solicitarBaja} onCheckedChange={setSolicitarBaja} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 pt-2">
+                            <div className="flex items-center justify-between space-x-3 p-3 bg-secondary/30 rounded-lg">
                                 <Label htmlFor="solicitar-baja" className="flex flex-col">
-                                    <span className="text-base">Solicitar Baja de Contrato</span>
-                                    <span className="text-xs text-muted-foreground">Marca para iniciar proceso de terminación.</span>
+                                    <span className="text-base font-medium">Solicitar Baja</span>
+                                    <span className="text-xs text-muted-foreground">Inicia proceso de terminación.</span>
                                 </Label>
+                                <Switch id="solicitar-baja" checked={solicitarBaja} onCheckedChange={setSolicitarBaja} />
                             </div>
-                             <div className="flex items-center space-x-3">
-                                <Switch id="requiere-seguimiento" checked={requiereSeguimiento} onCheckedChange={setRequiereSeguimiento} />
+                            <div className="flex items-center justify-between space-x-3 p-3 bg-secondary/30 rounded-lg">
                                 <Label htmlFor="requiere-seguimiento" className="flex flex-col">
-                                    <span className="text-base">Requiere Plan de Seguimiento</span>
-                                     <span className="text-xs text-muted-foreground">Indica que el desempeño necesita atención.</span>
+                                    <span className="text-base font-medium">Requiere Seguimiento</span>
+                                     <span className="text-xs text-muted-foreground">Indica necesidad de un plan.</span>
                                 </Label>
+                                <Switch id="requiere-seguimiento" checked={requiereSeguimiento} onCheckedChange={setRequiereSeguimiento} />
                             </div>
+                            {solicitarBaja && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="baja-fecha">Fecha Límite para Baja</Label>
+                                    <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !solicitarBajaFecha && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{solicitarBajaFecha ? format(solicitarBajaFecha, "PPP", {locale: es}) : <span>Elige fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={solicitarBajaFecha} onSelect={setSolicitarBajaFecha} initialFocus /></PopoverContent></Popover>
+                                </div>
+                            )}
+                             {requiereSeguimiento && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="seguimiento-fecha">Fecha Límite para Seguimiento</Label>
+                                    <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !requiereSeguimientoFecha && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{requiereSeguimientoFecha ? format(requiereSeguimientoFecha, "PPP", {locale: es}) : <span>Elige fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={requiereSeguimientoFecha} onSelect={setRequiereSeguimientoFecha} initialFocus /></PopoverContent></Popover>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -32,7 +32,9 @@ interface Contrato {
   nombre_completo: string;
   indeterminado?: boolean;
   solicitar_baja?: boolean;
+  solicitar_baja_fecha_limite?: Timestamp;
   requiere_seguimiento?: boolean;
+  requiere_seguimiento_fecha_limite?: Timestamp;
   fechas_contrato: {
     termino: Timestamp;
   };
@@ -158,6 +160,7 @@ export function Notifications() {
                                 <div key={c.id} className="p-3 bg-secondary/50 rounded-lg">
                                     <p className="font-semibold text-sm text-red-500">{c.nombre_completo}</p>
                                     <p className="text-xs text-muted-foreground">ID: {c.id_empleado}</p>
+                                    {c.solicitar_baja_fecha_limite && <p className="text-xs text-red-400 mt-1">Límite: {formatDate(c.solicitar_baja_fecha_limite)}</p>}
                                 </div>
                             ))
                         ) : <div className="flex h-full items-center justify-center"><p className="p-2 text-sm text-muted-foreground italic">Sin solicitudes.</p></div>}
@@ -176,6 +179,7 @@ export function Notifications() {
                                 <div key={c.id} className="p-3 bg-secondary/50 rounded-lg">
                                     <p className="font-semibold text-sm text-yellow-500">{c.nombre_completo}</p>
                                     <p className="text-xs text-muted-foreground">ID: {c.id_empleado}</p>
+                                    {c.requiere_seguimiento_fecha_limite && <p className="text-xs text-yellow-400 mt-1">Límite: {formatDate(c.requiere_seguimiento_fecha_limite)}</p>}
                                 </div>
                             ))
                         ) : <div className="flex h-full items-center justify-center"><p className="p-2 text-sm text-muted-foreground italic">Nadie requiere seguimiento.</p></div>}
