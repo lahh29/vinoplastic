@@ -25,7 +25,6 @@ interface UserData {
 }
 
 const navLinks = [
-    { href: "/reportes", icon: BarChart, title: "Reportes y Diagnósticos", description: "Genera informes y obtén una visión general del estado del personal.", tourId: "inicio-reportes" },
     { href: "/inicio/plan-de-carrera", icon: GitBranch, title: "Plan de Carrera", description: "Visualiza la lógica y requisitos para los cambios de categoría en cada puesto.", tourId: "inicio-carrera" },
     { href: "/perfil", icon: User, title: "Perfil de Empleado", description: "Consulta el perfil detallado de un empleado.", tourId: "inicio-perfil" },
     { href: "/inicio/plan-capacitacion", icon: TargetIcon, title: "Plan Anual de Capacitación", description: "Diseña y gestiona el plan estratégico de capacitación basado en datos.", tourId: "inicio-plan-capacitacion" },
