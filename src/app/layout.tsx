@@ -48,31 +48,37 @@ function RootContent({ children }: { children: React.ReactNode }) {
     const { data: currentUserData, isLoading: isRoleLoading } = useDoc<UserData>(currentUserInfoRef);
     
     useEffect(() => {
+        // No está cargando y no hay usuario
         if (!isUserLoading && !user) {
-            // Si el usuario no está logueado, redirigir al login, excepto si ya está en una página pública.
             if (pathname !== '/login' && pathname !== '/activar') {
                 router.replace('/login');
             }
-        } else if (user && currentUserData) {
-            // Si el usuario requiere cambio de contraseña y no está en la página correcta.
+        }
+        // Hay usuario y datos del usuario
+        else if (user && currentUserData) {
             if (currentUserData.requiresPasswordChange && pathname !== '/cambiar-password') {
                 router.replace('/cambiar-password');
-            }
-            // Si el usuario es 'empleado' y no está en su portal o examen.
-            else if (currentUserData.role === 'empleado' && !pathname.startsWith('/portal')) {
-                 router.replace('/portal');
-            }
-            // Si el usuario es 'admin' o 'lector' y está en el portal de empleado.
-            else if ((currentUserData.role === 'admin' || currentUserData.role === 'lector') && pathname.startsWith('/portal')) {
-                 router.replace('/inicio');
+            } else if (!currentUserData.requiresPasswordChange) {
+                if (currentUserData.role === 'empleado' && !pathname.startsWith('/portal')) {
+                     router.replace('/portal');
+                } else if ((currentUserData.role === 'admin' || currentUserData.role === 'lector') && (pathname.startsWith('/portal') || pathname === '/login')) {
+                     router.replace('/inicio');
+                }
             }
         }
     }, [user, isUserLoading, router, currentUserData, pathname]);
 
     const isLoading = isUserLoading || (user && isRoleLoading);
-    const isPublicPage = ['/login', '/activar', '/cambiar-password'].includes(pathname);
-    
-    if (isLoading && !isPublicPage) {
+    const isPublicPage = ['/login', '/activar'].includes(pathname);
+    const isChangePasswordPage = pathname === '/cambiar-password';
+
+    // Siempre muestra las páginas públicas
+    if (isPublicPage) return <>{children}</>;
+    // Muestra la página de cambio de contraseña si es necesaria
+    if (isChangePasswordPage && currentUserData?.requiresPasswordChange) return <>{children}</>;
+
+    // Muestra un loader en páginas protegidas mientras se verifica el estado
+    if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-2">
@@ -83,9 +89,9 @@ function RootContent({ children }: { children: React.ReactNode }) {
         );
     }
     
-    // Muestra las páginas públicas, o mientras el usuario no esté verificado, o si requiere cambio de contraseña.
-    if (isPublicPage || !user || currentUserData?.requiresPasswordChange) {
-        return <>{children}</>;
+    // Si después de cargar no hay usuario, no renderices el contenido protegido para evitar flashes
+    if (!user) {
+        return null; // O un loader más genérico si se prefiere
     }
     
     return (

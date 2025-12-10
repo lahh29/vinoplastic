@@ -38,7 +38,9 @@ export default function LoginPage() {
       setError(null);
       try {
         await initiateEmailSignIn(auth, email, password);
-        // La redirección ahora es manejada por el layout principal
+        // On successful sign-in, the onAuthStateChanged listener will update the user state.
+        // We then redirect to a protected route, and the layout will handle role-based redirection.
+        router.push('/inicio');
       } catch (err: any) {
         let message = "Ocurrió un error al iniciar sesión.";
         if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
@@ -51,9 +53,11 @@ export default function LoginPage() {
   };
   
   React.useEffect(() => {
-    // Si el usuario ya está logueado, el layout se encargará de redirigir.
-    // Solo si el proceso de login se completa y 'user' se actualiza,
-    // el layout reaccionará.
+    // This effect is to handle cases where a user is already logged in and lands on this page.
+    // The main redirection logic is now in the RootLayout.
+    if (!isUserLoading && user) {
+        router.replace('/inicio');
+    }
   }, [user, isUserLoading, router]);
 
 
