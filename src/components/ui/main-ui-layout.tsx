@@ -4,9 +4,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Users, BookUser, LogOut, User, Sun, Moon } from 'lucide-react';
+import { Home, Users, BookUser, LogOut, User, Sun, Moon, Bell } from 'lucide-react';
 import { useAuth, useUser, useDoc, useFirestore } from '@/firebase';
-import { Dock, DockIcon } from '@/components/ui/dock';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,23 +15,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { AnimatedUserIcon } from '@/components/ui/animated-user-icon';
 import { motion } from 'framer-motion';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { IdleTimeoutDialog } from './idle-timeout-dialog';
 import { useTheme } from "next-themes";
-import { AnimatedDockIcon } from './animated-dock-icon';
 import { useMemoFirebase } from '@/hooks/use-memo-firebase';
 import { useRoleCheck } from '@/hooks/use-role-check';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { doc } from 'firebase/firestore';
 import { Notifications } from '@/components/ui/notifications';
-import { Auth } from 'firebase/auth';
+import { cn } from '@/lib/utils';
+import { Logo } from '@/components/logo';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 const adminNavItems = [
   { href: '/inicio', icon: Home, label: 'Inicio' },
   { href: '/capacitacion', icon: BookUser, label: 'Capacitación' },
+  { href: '/empleados', icon: Users, label: 'Empleados' },
 ];
 
 const lectorNavItems = [
@@ -59,24 +58,61 @@ const isActive = (href: string, pathname: string) => {
     return pathname.startsWith(href);
 }
 
-function MobileNav({ navItems, pathname, handleLogout, currentUserData, user, isAdmin }: any) {
-  return (
-    <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-background/70 backdrop-blur-sm border-t border-border/60">
-      <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
-        {navItems.map((item: any) => (
-          <Link key={item.label} href={item.href} className="inline-flex flex-col items-center justify-center px-5 hover:bg-muted/50 group">
-            <item.icon className={`w-6 h-6 mb-1 ${isActive(item.href, pathname) ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`} />
-            <span className={`text-xs ${isActive(item.href, pathname) ? 'text-primary' : 'text-muted-foreground'}`}>{item.label}</span>
-          </Link>
-        ))}
-         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <button className="inline-flex flex-col items-center justify-center px-5 hover:bg-muted/50 group">
-                    <User className="w-6 h-6 mb-1 text-muted-foreground group-hover:text-foreground" />
-                    <span className="text-xs text-muted-foreground">Perfil</span>
-                </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
+function Sidebar({ navItems, pathname }: { navItems: typeof adminNavItems, pathname: string }) {
+    return (
+        <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-background/80 backdrop-blur-sm sm:flex">
+            <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
+                 <Link href="/inicio" className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base">
+                    <Logo className="h-4 w-4 transition-all group-hover:scale-110" />
+                    <span className="sr-only">Viñoplastic</span>
+                </Link>
+                <TooltipProvider>
+                    {navItems.map((item) => (
+                        <Tooltip key={item.label}>
+                            <TooltipTrigger asChild>
+                                <Link
+                                    href={item.href}
+                                    className={cn(
+                                        "flex h-9 w-full items-center justify-start rounded-lg px-3 transition-colors md:h-8",
+                                        isActive(item.href, pathname)
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                    )}
+                                >
+                                    <item.icon className="h-5 w-5 mr-4" />
+                                    <span className="text-sm font-medium">{item.label}</span>
+                                </Link>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">{item.label}</TooltipContent>
+                        </Tooltip>
+                    ))}
+                </TooltipProvider>
+            </nav>
+        </aside>
+    );
+}
+
+function Header({ handleLogout, currentUserData, user, isAdmin }: any) {
+     const { setTheme, theme } = useTheme();
+    return (
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+           <div className="relative ml-auto flex flex-1 md:grow-0">
+             {/* Este espacio puede ser usado para un breadcrumb o título de página si se desea */}
+           </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="overflow-hidden rounded-full"
+                >
+                   <Avatar>
+                        <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=${user?.email}`} alt="@shadcn" />
+                        <AvatarFallback>{currentUserData?.nombre?.[0] || 'U'}</AvatarFallback>
+                    </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
@@ -85,17 +121,29 @@ function MobileNav({ navItems, pathname, handleLogout, currentUserData, user, is
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {(isAdmin) && (<Notifications />)}
+                <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+                        {theme === 'light' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
+                        <span>Cambiar Tema</span>
+                    </DropdownMenuItem>
+                {isAdmin && (
+                    <DropdownMenuItem asChild>
+                        <Link href="/usuarios">
+                        <Users className="mr-2 h-4 w-4" />
+                        <span>Usuarios</span>
+                        </Link>
+                    </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Cerrar sesión</span>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Cerrar sesión
                 </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
-  );
+              </DropdownMenuContent>
+            </DropdownMenu>
+        </header>
+    )
 }
+
 
 function MainUILayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -103,8 +151,6 @@ function MainUILayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const auth = useAuth();
   const { isAdmin } = useRoleCheck();
-  const { setTheme, theme } = useTheme();
-  const isMobile = useIsMobile();
   const firestore = useFirestore();
   
   const currentUserInfoRef = useMemoFirebase(
@@ -148,97 +194,18 @@ function MainUILayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background overflow-hidden">
-        <StarsBackground speed={0.5} className="absolute inset-0 z-0"/>
+    <div className="relative flex min-h-screen w-full flex-col bg-background">
+        <StarsBackground speed={0.2} className="absolute inset-0 z-0"/>
         <IdleTimeoutDialog />
-        <main className="relative z-10 flex-1 overflow-auto pb-24">
-            <div className="h-full p-4 sm:p-6 lg:p-8">
-                {children}
-            </div>
-        </main>
         
-        {isMobile ? (
-            <MobileNav navItems={navItems} pathname={pathname} handleLogout={handleLogout} currentUserData={currentUserData} user={user} isAdmin={isAdmin}/>
-        ) : (
-            <motion.div 
-                className="fixed inset-x-0 bottom-4 z-50 sm:bottom-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-            >
-                <TooltipProvider>
-                    <Dock 
-                        direction="middle" 
-                        className="bg-background/70 border-border/60 backdrop-blur-sm"
-                    >
-                        {navItems.map((item) => (
-                            <Tooltip key={item.label}>
-                                <TooltipTrigger asChild>
-                                    <Link href={item.href}>
-                                        <DockIcon className={isActive(item.href, pathname) ? 'bg-primary/10' : ''}>
-                                            <AnimatedDockIcon>
-                                            <item.icon className="h-6 w-6" />
-                                            </AnimatedDockIcon>
-                                        </DockIcon>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{item.label}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        ))}
+        <Sidebar navItems={navItems} pathname={pathname}/>
 
-                        <div className="border-l h-full mx-2 border-border/60" />
-
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <div>
-                                    <DockIcon>
-                                        <AnimatedUserIcon />
-                                    </DockIcon>
-                                    </div>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
-                                    <DropdownMenuLabel className="font-normal">
-                                        <div className="flex flex-col space-y-1">
-                                            <p className="text-sm font-medium leading-none">{currentUserData?.nombre || user.displayName || 'Usuario'}</p>
-                                            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                                        </div>
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-
-                                    {(isAdmin) && (<Notifications />)}
-                                    
-                                    <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-                                            {theme === 'light' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
-                                            <span>Cambiar Tema</span>
-                                        </DropdownMenuItem>
-                                    {isAdmin && (
-                                        <DropdownMenuItem asChild>
-                                            <Link href="/usuarios">
-                                            <Users className="mr-2 h-4 w-4" />
-                                            <span>Usuarios</span>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    )}
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Cerrar sesión</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Perfil y Sesión</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </Dock>
-                </TooltipProvider>
-            </motion.div>
-        )}
+        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-60">
+            <Header handleLogout={handleLogout} currentUserData={currentUserData} user={user} isAdmin={isAdmin}/>
+            <main className="relative z-10 flex-1 overflow-auto p-4 pt-0 sm:p-6 sm:pt-0">
+                {children}
+            </main>
+        </div>
     </div>
   );
 }
