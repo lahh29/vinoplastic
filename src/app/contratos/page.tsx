@@ -8,6 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import {
   Table,
@@ -153,17 +154,9 @@ export default function ContratosPage() {
     contratosFusionados.forEach(c => {
         if (!c.evaluaciones) return;
         const eval1Date = getDate(c.evaluaciones.primera?.fecha_programada);
-        const eval2Date = getDate(c.evaluaciones.segunda?.fecha_programada);
-        const eval3Date = getDate(c.evaluaciones.tercera?.fecha_programada);
 
         if (eval1Date && eval1Date >= today && eval1Date <= sevenDaysFromNow && (c.evaluaciones.primera.estatus === 'Pendiente')) {
             evaluationsDue.push({ contrato: c, fecha: formatDate(c.evaluaciones.primera.fecha_programada), tipo: 'Primera' });
-        }
-        if (eval2Date && eval2Date >= today && eval2Date <= sevenDaysFromNow && (c.evaluaciones.segunda.estatus === 'Pendiente')) {
-            evaluationsDue.push({ contrato: c, fecha: formatDate(c.evaluaciones.segunda.fecha_programada), tipo: 'Segunda' });
-        }
-        if (eval3Date && eval3Date >= today && eval3Date <= sevenDaysFromNow && (c.evaluaciones.tercera.estatus === 'Pendiente')) {
-            evaluationsDue.push({ contrato: c, fecha: formatDate(c.evaluaciones.tercera.fecha_programada), tipo: 'Tercera' });
         }
     });
 
