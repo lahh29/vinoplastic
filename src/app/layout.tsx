@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import { FirebaseClientProvider, useUser, useDoc, useFirestore, useAuth, useMemoFirebase } from '@/firebase';
 import { usePathname, useRouter } from 'next/navigation';
-import { Loader2, Home, Users, BookUser, LogOut, User, Sun, Moon } from 'lucide-react';
+import { Loader2, Home, Users, BookUser, LogOut, User } from 'lucide-react';
 import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { doc } from 'firebase/firestore';
@@ -16,11 +16,12 @@ import { IdleTimeoutDialog } from '@/components/ui/idle-timeout-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
-import { Logo } from '@/components/logo';
-import { Notifications } from '@/components/ui/notifications';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
+import { AnimatedDockIcon } from '@/components/ui/animated-dock-icon';
+import { Notifications } from '@/components/ui/notifications';
+
 
 interface UserData {
     id: string;
@@ -45,12 +46,66 @@ const employeeNavItems = [
   { href: '/portal', icon: Home, label: 'Mi Portal' },
 ];
 
+const Sidebar = ({ navItems, pathname }: { navItems: typeof adminNavItems, pathname: string }) => {
+    return (
+        <motion.aside 
+            initial={{ x: -80, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="fixed inset-y-0 left-0 z-50 flex items-center"
+        >
+            <div className="m-4">
+                <nav className="flex flex-col items-center gap-4 rounded-full border bg-background/50 p-2 backdrop-blur-md shadow-2xl">
+                    <Link href="/inicio" className="mt-2">
+                        <motion.span
+                            className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent"
+                            animate={{
+                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                            }}
+                            transition={{
+                                duration: 3,
+                                ease: "easeInOut",
+                                repeat: Infinity
+                            }}
+                        >
+                           ViñoPlastic
+                        </motion.span>
+                    </Link>
+                    <TooltipProvider>
+                        {navItems.map((item) => (
+                            <Tooltip key={item.label}>
+                                <TooltipTrigger asChild>
+                                    <Link
+                                        href={item.href}
+                                        className={cn(
+                                            "flex h-12 w-12 items-center justify-center rounded-full text-lg transition-colors",
+                                            (pathname === item.href || (item.href !== '/inicio' && pathname.startsWith(item.href)))
+                                            ? "bg-primary/20 text-primary"
+                                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                        )}
+                                    >
+                                        <AnimatedDockIcon>
+                                            <item.icon className="h-6 w-6" />
+                                        </AnimatedDockIcon>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">
+                                    <p>{item.label}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ))}
+                    </TooltipProvider>
+                </nav>
+            </div>
+        </motion.aside>
+    );
+};
+
 
 function RootContent({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const router = useRouter();
     const { user, isUserLoading } = useUser();
-    const { isAdmin } = useRoleCheck();
     const auth = useAuth();
     const firestore = useFirestore();
 
@@ -106,48 +161,9 @@ function RootContent({ children }: { children: React.ReactNode }) {
             <StarsBackground speed={0.2} className="absolute inset-0 z-0"/>
             <IdleTimeoutDialog />
             
-            <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-background/80 backdrop-blur-sm sm:flex">
-                <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-                    <Link href="/inicio" className="group flex items-center justify-center gap-2 rounded-full text-lg font-semibold text-primary-foreground">
-                        <motion.span
-                            className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent"
-                            animate={{
-                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                            }}
-                            transition={{
-                                duration: 3,
-                                ease: "easeInOut",
-                                repeat: Infinity
-                            }}
-                        >
-                            ViñoPlastic
-                        </motion.span>
-                    </Link>
-                    <TooltipProvider>
-                        {navItems.map((item) => (
-                            <Tooltip key={item.label}>
-                                <TooltipTrigger asChild>
-                                    <Link
-                                        href={item.href}
-                                        className={cn(
-                                            "flex h-9 w-full items-center justify-start rounded-lg px-3 transition-colors md:h-8",
-                                            (pathname === item.href || (item.href !== '/inicio' && pathname.startsWith(item.href)))
-                                            ? "bg-primary text-primary-foreground"
-                                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                        )}
-                                    >
-                                        <item.icon className="h-5 w-5 mr-4" />
-                                        <span className="text-sm font-medium">{item.label}</span>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">{item.label}</TooltipContent>
-                            </Tooltip>
-                        ))}
-                    </TooltipProvider>
-                </nav>
-            </aside>
+            <Sidebar navItems={navItems} pathname={pathname} />
 
-            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-60">
+            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-28">
                  <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
                     <div className="relative ml-auto flex flex-1 md:grow-0"></div>
                      <DropdownMenu>
@@ -171,8 +187,8 @@ function RootContent({ children }: { children: React.ReactNode }) {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            {(isAdmin) && (<Notifications />)}
-                            {isAdmin && (
+                            <Notifications />
+                            {currentUserData?.role === 'admin' && (
                                 <DropdownMenuItem asChild>
                                     <Link href="/usuarios">
                                     <Users className="mr-2 h-4 w-4" />
@@ -227,3 +243,4 @@ export default function RootLayout({
     </html>
   );
 }
+
