@@ -74,12 +74,7 @@ const getStatusInfo = (empleado: EmpleadoPerfil, regla?: ReglaAscenso): { status
     const evaluacionDesempeno = empleado.promocionData?.evaluacion_desempeno;
     if (evaluacionDesempeno === undefined || evaluacionDesempeno < regla.min_evaluacion_desempeno) return { status: 'Requiere Atención', message: `Tu evaluación de desempeño (${evaluacionDesempeno ?? 'N/A'}) es inferior al ${regla.min_evaluacion_desempeno} requerido.`, esElegibleParaExamen: false };
     
-    if (regla.min_examen_teorico) {
-        const examenScore = empleado.promocionData?.examen_teorico;
-        if(examenScore === undefined || examenScore < regla.min_examen_teorico) {
-            return { status: 'Requiere Atención', message: 'Tienes pendiente el examen teórico o tu calificación es menor a la requerida.', esElegibleParaExamen: true };
-        }
-    }
+    if (regla.min_examen_teorico && (empleado.promocionData?.examen_teorico === undefined || empleado.promocionData.examen_teorico < regla.min_examen_teorico)) return { status: 'Requiere Atención', message: 'Tienes pendiente el examen teórico o tu calificación es menor a la requerida.', esElegibleParaExamen: true };
     
     if (empleado.coberturaCursos < regla.min_cobertura_matriz) return { status: 'Requiere Atención', message: `Cobertura de cursos insuficiente. Requiere ${regla.min_cobertura_matriz}% y tiene ${empleado.coberturaCursos.toFixed(0)}%.`, esElegibleParaExamen: false };
     
@@ -320,9 +315,41 @@ export default function PortalPage() {
 
        <motion.div variants={itemVariants}>
             <Card className='bg-card/30 backdrop-blur-lg border-white/10 h-full'>
-              <CardHeader><CardTitle className="text-xl flex items-center gap-3"><CheckCircle2 className="text-green-500" />Historial de Cursos</CardTitle></CardHeader>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl flex items-center gap-3"><CheckCircle2 className="text-green-500" />Cursos Completados</CardTitle>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="secondary">Ver Todos los Cursos</Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl h-[90vh]">
+                            <DialogHeader>
+                                <DialogTitle>Matriz de Habilidades: {empleadoPerfil.puesto.titulo}</DialogTitle>
+                                <DialogDescription>Listado completo de cursos asignados a tu puesto y tu estado actual.</DialogDescription>
+                            </DialogHeader>
+                            <CursosTable cursos={empleadoPerfil.cursosConEstado} />
+                        </DialogContent>
+                    </Dialog>
+                </div>
+              </CardHeader>
               <CardContent>
-                <CursosTable cursos={empleadoPerfil.cursosConEstado} />
+                 <Table>
+                    <TableBody>
+                        {(empleadoPerfil.cursosConEstado.filter(c => c.estado === 'Aprobado').slice(0, 5)).map(({curso}) => (
+                             <TableRow key={curso.id}>
+                                <TableCell className="font-medium">{curso.nombre_oficial}</TableCell>
+                                <TableCell className="text-right">
+                                     <Button asChild variant="ghost" size="icon" disabled={!curso.url_pdf}>
+                                        <a href={curso.url_pdf} target="_blank" rel="noopener noreferrer"><View className="h-4 w-4"/></a>
+                                    </Button>
+                                </TableCell>
+                             </TableRow>
+                        ))}
+                         {empleadoPerfil.cursosConEstado.filter(c => c.estado === 'Aprobado').length === 0 && (
+                            <TableRow><TableCell colSpan={2} className="h-24 text-center text-muted-foreground">Aún no has completado cursos.</TableCell></TableRow>
+                        )}
+                    </TableBody>
+                 </Table>
               </CardContent>
             </Card>
         </motion.div>
