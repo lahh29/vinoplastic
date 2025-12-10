@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, FileClock, Search, Calendar, Star, TrendingUp, Loader2 } from 'lucide-react';
+import { AlertTriangle, FileClock, Search, Calendar, Star, TrendingUp, Loader2, ListTodo, UserX } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -81,13 +81,14 @@ interface Contrato {
   fechas_contrato: ContratoFechas;
   evaluaciones: ContratoEvaluaciones;
   indeterminado?: boolean;
-  fecha_ingreso_plantilla?: Timestamp; // Campo fusionado
+  fecha_ingreso_plantilla?: Timestamp;
+  solicitar_baja?: boolean;
+  requiere_seguimiento?: boolean;
 }
 
 const getDate = (timestamp: any): Date | null => {
     if (!timestamp) return null;
     if (timestamp.toDate) return timestamp.toDate();
-    // Handle cases where the date might be a string or number from older data structures
     const date = new Date(timestamp);
     return isValid(date) ? date : null;
 };
@@ -118,7 +119,7 @@ export default function ContratosPage() {
     const empleadosMap = new Map(empleados.map(e => [e.id_empleado, e]));
 
     return contratos
-      .filter(c => empleadosMap.has(c.id_empleado)) // Solo contratos de empleados existentes
+      .filter(c => empleadosMap.has(c.id_empleado))
       .map(c => {
         const empleadoData = empleadosMap.get(c.id_empleado);
         return {
@@ -136,6 +137,8 @@ export default function ContratosPage() {
   const [calculatedDates, setCalculatedDates] = useState<{ eval1: Date | null; eval2: Date | null; eval3: Date | null; termino: Date | null; }>({ eval1: null, eval2: null, eval3: null, termino: null });
   const [isIndeterminate, setIsIndeterminate] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [solicitarBaja, setSolicitarBaja] = useState(false);
+  const [requiereSeguimiento, setRequiereSeguimiento] = useState(false);
 
   useEffect(() => {
     if (!contratosFusionados) return;
@@ -200,6 +203,8 @@ export default function ContratosPage() {
             eval3: contrato.evaluaciones?.tercera?.calificacion_texto || 'Pendiente',
         });
         setIsIndeterminate(contrato.indeterminado || false);
+        setSolicitarBaja(contrato.solicitar_baja || false);
+        setRequiereSeguimiento(contrato.requiere_seguimiento || false);
 
         const ingresoDate = getDate(contrato.fecha_ingreso_plantilla);
         if(ingresoDate) {
@@ -236,6 +241,8 @@ export default function ContratosPage() {
       updatedData.evaluaciones.tercera.estatus = (evaluations.eval3 === 'Pendiente' || evaluations.eval3 === '') ? 'Pendiente' : 'Evaluado';
       
       updatedData.indeterminado = isIndeterminate;
+      updatedData.solicitar_baja = solicitarBaja;
+      updatedData.requiere_seguimiento = requiereSeguimiento;
 
       delete (updatedData as any).id;
       delete (updatedData as any).fecha_ingreso_plantilla;
@@ -433,24 +440,36 @@ export default function ContratosPage() {
                             </div>
                         </div>
                     </div>
-                    <div className="space-y-4 rounded-lg border p-4">
+                     <div className="space-y-4 rounded-lg border p-4">
                        <h3 className="font-semibold text-lg flex items-center gap-2"><TrendingUp className="text-green-500"/> Estatus del Contrato</h3>
-                       <div className="flex items-center space-x-3 justify-between pt-2">
+                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-2">
                             <div className="flex items-center space-x-3">
-                                <Switch 
-                                    id="indeterminate-mode" 
-                                    checked={isIndeterminate}
-                                    onCheckedChange={setIsIndeterminate}
-                                />
+                                <Switch id="indeterminate-mode" checked={isIndeterminate} onCheckedChange={setIsIndeterminate} />
                                 <Label htmlFor="indeterminate-mode" className="text-base">Marcar como Contrato Indeterminado</Label>
                             </div>
-                             <div>
+                            <div>
                                 <Label className="text-sm text-muted-foreground">Término de contrato: {formatDate(calculatedDates.termino)}</Label>
                             </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                            Al activar esta opción, el contrato se considerará permanente y no aparecerá en las alertas de vencimiento.
-                        </p>
+                    </div>
+                     <div className="space-y-4 rounded-lg border p-4">
+                        <h3 className="font-semibold text-lg flex items-center gap-2"><AlertTriangle className="text-orange-500"/> Acciones Administrativas</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <div className="flex items-center space-x-3">
+                                <Switch id="solicitar-baja" checked={solicitarBaja} onCheckedChange={setSolicitarBaja} />
+                                <Label htmlFor="solicitar-baja" className="flex flex-col">
+                                    <span className="text-base">Solicitar Baja de Contrato</span>
+                                    <span className="text-xs text-muted-foreground">Marca para iniciar proceso de terminación.</span>
+                                </Label>
+                            </div>
+                             <div className="flex items-center space-x-3">
+                                <Switch id="requiere-seguimiento" checked={requiereSeguimiento} onCheckedChange={setRequiereSeguimiento} />
+                                <Label htmlFor="requiere-seguimiento" className="flex flex-col">
+                                    <span className="text-base">Requiere Plan de Seguimiento</span>
+                                     <span className="text-xs text-muted-foreground">Indica que el desempeño necesita atención.</span>
+                                </Label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <DialogFooter>

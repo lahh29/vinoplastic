@@ -26,7 +26,9 @@
             "calificacion_texto_3": { "type": "string" }
           }
         },
-        "indeterminado": { "type": "boolean" }
+        "indeterminado": { "type": "boolean" },
+        "solicitar_baja": { "type": "boolean", "description": "Flag to initiate contract termination process." },
+        "requiere_seguimiento": { "type": "boolean", "description": "Flag to indicate the employee needs a follow-up plan." }
       },
       "required": ["id_empleado", "nombre_completo", "fechas"]
     },
