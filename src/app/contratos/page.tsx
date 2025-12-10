@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, FileClock, Search, Calendar, Star, TrendingUp, Loader2, ListTodo, UserX, Briefcase } from 'lucide-react';
+import { AlertTriangle, FileClock, Search, Calendar as CalendarIcon, Star, TrendingUp, Loader2, ListTodo, UserX, Briefcase, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -263,13 +263,13 @@ export default function ContratosPage() {
 
         if (solicitarBaja && solicitarBajaFecha) {
             updatedData.solicitar_baja_fecha_limite = Timestamp.fromDate(solicitarBajaFecha);
-        } else {
+        } else if (!solicitarBaja) {
             updatedData.solicitar_baja_fecha_limite = deleteField();
         }
 
         if (requiereSeguimiento && requiereSeguimientoFecha) {
             updatedData.requiere_seguimiento_fecha_limite = Timestamp.fromDate(requiereSeguimientoFecha);
-        } else {
+        } else if (!requiereSeguimiento) {
             updatedData.requiere_seguimiento_fecha_limite = deleteField();
         }
         
@@ -435,15 +435,15 @@ export default function ContratosPage() {
                             <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Star className="text-amber-400"/> Evaluaciones</CardTitle></CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="eval1" className="flex items-center gap-2 text-muted-foreground"><Calendar size={16}/> 1ra Evaluación ({formatDate(calculatedDates.eval1)})</Label>
+                                    <Label htmlFor="eval1" className="flex items-center gap-2 text-muted-foreground"><CalendarIcon size={16}/> 1ra Evaluación ({formatDate(calculatedDates.eval1)})</Label>
                                     <Input id="eval1" value={evaluations.eval1} onChange={(e) => setEvaluations({...evaluations, eval1: e.target.value})} placeholder="Ej: 95%" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="eval2" className="flex items-center gap-2 text-muted-foreground"><Calendar size={16}/> 2da Evaluación ({formatDate(calculatedDates.eval2)})</Label>
+                                    <Label htmlFor="eval2" className="flex items-center gap-2 text-muted-foreground"><CalendarIcon size={16}/> 2da Evaluación ({formatDate(calculatedDates.eval2)})</Label>
                                     <Input id="eval2" value={evaluations.eval2} onChange={(e) => setEvaluations({...evaluations, eval2: e.target.value})} placeholder="Ej: 95%" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="eval3" className="flex items-center gap-2 text-muted-foreground"><Calendar size={16}/> 3ra Evaluación ({formatDate(calculatedDates.eval3)})</Label>
+                                    <Label htmlFor="eval3" className="flex items-center gap-2 text-muted-foreground"><CalendarIcon size={16}/> 3ra Evaluación ({formatDate(calculatedDates.eval3)})</Label>
                                     <Input id="eval3" value={evaluations.eval3} onChange={(e) => setEvaluations({...evaluations, eval3: e.target.value})} placeholder="Ej: 95%" />
                                 </div>
                             </CardContent>
@@ -470,14 +470,14 @@ export default function ContratosPage() {
                                         <Label htmlFor="solicitar-baja" className="text-base">Solicitar Baja de Contrato</Label>
                                         <Switch id="solicitar-baja" checked={solicitarBaja} onCheckedChange={setSolicitarBaja} />
                                     </div>
-                                    {solicitarBaja && (<Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !solicitarBajaFecha && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{solicitarBajaFecha ? format(solicitarBajaFecha, "PPP", {locale: es}) : <span>Fecha Límite</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={solicitarBajaFecha} onSelect={setSolicitarBajaFecha} initialFocus /></PopoverContent></Popover>)}
+                                    {solicitarBaja && (<Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !solicitarBajaFecha && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4"/>{solicitarBajaFecha ? format(solicitarBajaFecha, "PPP", {locale: es}) : <span>Fecha Límite</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={solicitarBajaFecha} onSelect={setSolicitarBajaFecha} initialFocus /></PopoverContent></Popover>)}
                                 </div>
                                 <div className="p-3 bg-secondary rounded-lg space-y-3">
                                     <div className="flex items-center justify-between">
                                         <Label htmlFor="requiere-seguimiento" className="text-base">Requiere Plan de Seguimiento</Label>
                                         <Switch id="requiere-seguimiento" checked={requiereSeguimiento} onCheckedChange={setRequiereSeguimiento} />
                                     </div>
-                                    {requiereSeguimiento && (<Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !requiereSeguimientoFecha && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{requiereSeguimientoFecha ? format(requiereSeguimientoFecha, "PPP", {locale: es}) : <span>Fecha Límite</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={requiereSeguimientoFecha} onSelect={setRequiereSeguimientoFecha} initialFocus /></PopoverContent></Popover>)}
+                                    {requiereSeguimiento && (<Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !requiereSeguimientoFecha && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4"/>{requiereSeguimientoFecha ? format(requiereSeguimientoFecha, "PPP", {locale: es}) : <span>Fecha Límite</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={requiereSeguimientoFecha} onSelect={setRequiereSeguimientoFecha} initialFocus /></PopoverContent></Popover>)}
                                 </div>
                             </CardContent>
                         </Card>
