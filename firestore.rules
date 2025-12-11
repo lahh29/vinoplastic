@@ -40,7 +40,7 @@ service cloud.firestore {
     }
     
     match /usuarios/{userId} {
-      allow read: if true; // Permitir lectura para verificar duplicados
+      allow read: if isSignedIn(); // Un usuario puede leer otros perfiles si está logueado
       allow create: if true; // Permitir que cualquiera cree su documento de usuario al registrarse
       allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == userId);
     }
@@ -122,7 +122,7 @@ service cloud.firestore {
 service firebase.storage {
   match /b/{bucket}/o {
     match /cursos/{allPaths=**} {
-      allow read: if true;
+      allow read: if request.auth != null;
       allow write: if request.auth != null && get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
     }
   }
