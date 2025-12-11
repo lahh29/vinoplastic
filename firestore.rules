@@ -40,7 +40,7 @@ service cloud.firestore {
     }
     
     match /usuarios/{userId} {
-      allow read: if isSignedIn(); // Un usuario puede leer otros perfiles si está logueado
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
       allow create: if true; // Permitir que cualquiera cree su documento de usuario al registrarse
       allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == userId);
     }
