@@ -1,4 +1,3 @@
-
 {
   "name": "nextn",
   "version": "0.1.0",
@@ -15,7 +14,8 @@
     "upload:fechas": "node src/scripts/actualizar_fechas_ingreso.js",
     "upload:festivos": "node src/scripts/subir_dias_festivos.js",
     "limpiar-usuarios": "node src/scripts/eliminar_usuarios_empleados.js",
-    "crear:examenes": "node src/scripts/crear_examenes_produccion.js"
+    "crear:examenes": "node src/scripts/crear_examenes_produccion.js",
+    "create-verification": "node scripts/create-verification-collection.js"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.25.0",
@@ -49,12 +49,12 @@
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.1.6",
     "firebase": "^12.6.0",
-    "firebase-admin": "^12.2.0",
+    "firebase-admin": "^12.7.0",
     "framer-motion": "^11.3.19",
     "genkit": "^1.25.0",
     "lucide-react": "^0.555.0",
     "motion": "^12.23.25",
-    "next": "14.2.5",
+    "next": "14.2.35",
     "next-themes": "^0.3.0",
     "patch-package": "^8.0.1",
     "radix-ui": "^1.4.3",

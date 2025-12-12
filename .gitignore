@@ -43,3 +43,8 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# Firebase Admin SDK credentials - NUNCA SUBIR
+serviceAccountKey.json
+**/serviceAccountKey.json
+scripts/serviceAccountKey.json
